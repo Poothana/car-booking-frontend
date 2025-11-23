@@ -1,6 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './CarsList.css'
+// Import car images
+import car1 from '../assets/images/cars/car1.jpeg'
+import car2 from '../assets/images/cars/car2.jpeg'
+import car3 from '../assets/images/cars/car3.jpeg'
+import car4 from '../assets/images/cars/car4.jpeg'
+import car5 from '../assets/images/cars/car5.jpeg'
+import car6 from '../assets/images/cars/car6.jpeg'
+
+interface ApiCategory {
+  id: number
+  name: string
+}
+
+interface ApiCar {
+  id: number
+  car_name: string
+  car_model: string
+  car_image_url: string
+  car_category: number
+  is_active: boolean
+  category: ApiCategory
+}
+
+interface ApiResponse {
+  success: boolean
+  data: ApiCar[]
+}
 
 interface Car {
   id: number
@@ -16,6 +43,7 @@ interface Car {
   fuel: string
   available: boolean
   discount?: number
+  category?: string
 }
 
 function CarsList() {
@@ -23,78 +51,143 @@ function CarsList() {
   const [priceRange, setPriceRange] = useState([5000, 30000])
   const [selectedFilters, setSelectedFilters] = useState<string[]>(['Non Stop'])
   const [selectedDate, setSelectedDate] = useState('Fri, Nov 14, 2025')
+  const [cars, setCars] = useState<Car[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const cars: Car[] = [
-    {
-      id: 1,
-      name: 'Toyota Innova Crysta',
-      model: '2024',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop',
-      price: 5769,
-      originalPrice: 6500,
-      rating: 4.5,
-      features: ['AC', 'Music System', 'GPS'],
-      transmission: 'Manual',
-      seats: 7,
-      fuel: 'Diesel',
-      available: true,
-      discount: 20
-    },
-    {
-      id: 2,
-      name: 'Toyota Innova',
-      model: '2023',
-      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop',
-      price: 5844,
-      rating: 4.3,
-      features: ['AC', 'Music System', 'GPS', 'Reverse Camera'],
-      transmission: 'Automatic',
-      seats: 7,
-      fuel: 'Petrol',
-      available: true
-    },
-    {
-      id: 3,
-      name: 'Toyota Innova Crysta',
-      model: '2024',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&q=80',
-      price: 4998,
-      originalPrice: 6000,
-      rating: 4.7,
-      features: ['AC', 'Music System', 'GPS', 'Reverse Camera', 'Sunroof'],
-      transmission: 'Automatic',
-      seats: 7,
-      fuel: 'Diesel',
-      available: true,
-      discount: 15
-    },
-    {
-      id: 4,
-      name: 'Toyota Innova',
-      model: '2023',
-      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop&q=80',
-      price: 6500,
-      rating: 4.4,
-      features: ['AC', 'Music System', 'GPS'],
-      transmission: 'Manual',
-      seats: 7,
-      fuel: 'Diesel',
-      available: true
-    },
-    {
-      id: 5,
-      name: 'Toyota Innova Crysta',
-      model: '2024',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&q=80',
-      price: 5747,
-      rating: 4.6,
-      features: ['AC', 'Music System', 'GPS', 'Reverse Camera'],
-      transmission: 'Automatic',
-      seats: 7,
-      fuel: 'Petrol',
-      available: true
+  // Map of available car images
+  const carImages: Record<string, string> = {
+    car1: car1,
+    car2: car2,
+    car3: car3,
+    car4: car4,
+    car5: car5,
+    car6: car6,
+  }
+
+  // Function to get local image path from API image URL/name or car ID
+  const getLocalImage = (imageUrl: string, carId: number): string => {
+    // Extract filename from URL if it's a full URL, otherwise use as-is
+    let filename = imageUrl || ''
+    if (imageUrl && imageUrl.includes('/')) {
+      filename = imageUrl.split('/').pop() || imageUrl
     }
-  ]
+    
+    // Remove extension and convert to lowercase for matching
+    const nameWithoutExt = filename.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '').toLowerCase()
+    
+    // Try to match by filename pattern like "car1", "car2", etc.
+    const carMatch = nameWithoutExt.match(/car(\d+)/)
+    if (carMatch) {
+      const carNum = carMatch[1]
+      const imageKey = `car${carNum}` as keyof typeof carImages
+      if (carImages[imageKey]) {
+        return carImages[imageKey]
+      }
+    }
+    
+    // Fallback: map by car ID to cycle through available images
+    // Car ID 1 → car1, Car ID 2 → car2, etc., cycling through available images
+    const carImageKeys = Object.keys(carImages)
+    const imageIndex = (carId - 1) % carImageKeys.length
+    return carImages[carImageKeys[imageIndex]] || car1
+  }
+
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        // Using proxy path through Vite dev server to avoid CORS issues
+        const apiUrl = import.meta.env.DEV 
+          ? '/api/cars/list' 
+          : 'http://127.0.0.1:8000/api/cars/list'
+        const response = await fetch(apiUrl)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const apiResponse: ApiResponse = await response.json()
+        
+        if (apiResponse.success && apiResponse.data) {
+          // Map API data to component's Car interface
+          const mappedCars: Car[] = apiResponse.data
+            .filter(car => car.is_active) // Only show active cars
+            .map((apiCar) => {
+              // Generate default values for fields not in API response
+              // Price varies by category (you can adjust these defaults)
+              const categoryPrices: Record<number, number> = {
+                1: 4500, // Hatchback
+                2: 5500, // Sedan
+                3: 7000, // SUV
+                4: 6500, // MUV
+                5: 12000, // Luxury
+                6: 8500, // Premium Sedan
+              }
+              
+              const basePrice = categoryPrices[apiCar.car_category] || 5000
+              const rating = 4.0 + (Math.random() * 1.0) // Random rating between 4.0-5.0
+              
+              // Default features based on category
+              const defaultFeatures = ['AC', 'Music System', 'GPS']
+              if (apiCar.car_category >= 5) {
+                defaultFeatures.push('Premium Sound', 'Sunroof')
+              }
+              
+              // Default specs based on category
+              const getTransmission = () => {
+                if (apiCar.car_category >= 5) return 'Automatic'
+                return Math.random() > 0.5 ? 'Automatic' : 'Manual'
+              }
+              
+              const getSeats = () => {
+                if (apiCar.car_category === 4) return 7 // MUV
+                if (apiCar.car_category === 3) return 7 // SUV
+                return 5 // Others
+              }
+              
+              const getFuel = () => {
+                const fuels = ['Petrol', 'Diesel', 'Hybrid']
+                return fuels[Math.floor(Math.random() * fuels.length)]
+              }
+
+              // Get local image path from API image URL/name, using car ID as fallback
+              const localImagePath = getLocalImage(apiCar.car_image_url, apiCar.id)
+
+              return {
+                id: apiCar.id,
+                name: apiCar.car_name,
+                model: apiCar.car_model,
+                image: localImagePath,
+                price: basePrice + Math.floor(Math.random() * 2000),
+                originalPrice: Math.random() > 0.7 ? basePrice + Math.floor(Math.random() * 2000) + 500 : undefined,
+                rating: Math.round(rating * 10) / 10,
+                features: defaultFeatures,
+                transmission: getTransmission(),
+                seats: getSeats(),
+                fuel: getFuel(),
+                available: apiCar.is_active,
+                discount: Math.random() > 0.8 ? Math.floor(Math.random() * 20) + 10 : undefined,
+                category: apiCar.category?.name,
+              }
+            })
+          
+          setCars(mappedCars)
+        } else {
+          throw new Error('Invalid API response format')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch cars')
+        console.error('Error fetching cars:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCars()
+  }, [])
 
   const dates = [
     { date: 'Thu, Nov 13', price: 7134 },
@@ -124,6 +217,65 @@ function CarsList() {
     if (sortBy === 'rating') return b.rating - a.rating
     return 0
   })
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="cars-list-container">
+        <header className="cars-list-nav">
+          <div className="nav-content">
+            <Link to="/" className="logo-link">
+              <div className="logo-circle">Be</div>
+              <span className="logo-text">CarRental</span>
+            </Link>
+            <nav className="main-nav">
+              <Link to="/" className="nav-link">Home</Link>
+              <a href="#" className="nav-link">Who we are</a>
+              <Link to="/cars" className="nav-link active">Cars</Link>
+              <a href="#" className="nav-link">Special offer</a>
+              <a href="#" className="nav-link">Contact us</a>
+            </nav>
+          </div>
+        </header>
+        <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
+          Loading cars...
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="cars-list-container">
+        <header className="cars-list-nav">
+          <div className="nav-content">
+            <Link to="/" className="logo-link">
+              <div className="logo-circle">Be</div>
+              <span className="logo-text">CarRental</span>
+            </Link>
+            <nav className="main-nav">
+              <Link to="/" className="nav-link">Home</Link>
+              <a href="#" className="nav-link">Who we are</a>
+              <Link to="/cars" className="nav-link active">Cars</Link>
+              <a href="#" className="nav-link">Special offer</a>
+              <a href="#" className="nav-link">Contact us</a>
+            </nav>
+          </div>
+        </header>
+        <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px', color: '#ff4444' }}>
+          Error: {error}
+          <br />
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="cars-list-container">
@@ -288,18 +440,24 @@ function CarsList() {
               onClick={() => setSortBy('cheapest')}
             >
               CHEAPEST
-              <span className="sort-info">₹ {sortedCars[0]?.price.toLocaleString()} | 7 Seater</span>
+              <span className="sort-info">
+                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+              </span>
             </button>
             <button
               className={`sort-btn ${sortBy === 'rating' ? 'active' : ''}`}
               onClick={() => setSortBy('rating')}
             >
               HIGHEST RATED
-              <span className="sort-info">₹ {sortedCars[0]?.price.toLocaleString()} | 7 Seater</span>
+              <span className="sort-info">
+                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+              </span>
             </button>
             <button className="sort-btn">
               YOU MAY PREFER
-              <span className="sort-info">₹ {sortedCars[0]?.price.toLocaleString()} | 7 Seater</span>
+              <span className="sort-info">
+                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+              </span>
             </button>
             <button className="sort-btn other-sort">
               Other Sort
@@ -313,7 +471,12 @@ function CarsList() {
 
           {/* Car Listings */}
           <div className="car-listings">
-            {sortedCars.map((car) => (
+            {sortedCars.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
+                No cars available
+              </div>
+            ) : (
+              sortedCars.map((car) => (
               <div key={car.id} className="car-listing-card">
                 {car.discount && (
                   <div className="discount-badge">{car.discount}% OFF</div>
@@ -325,7 +488,21 @@ function CarsList() {
                   <div className="car-details-section">
                     <div className="car-header">
                       <div className="car-name-section">
-                        <h3 className="car-listing-name">{car.name}</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+                          <h3 className="car-listing-name">{car.name}</h3>
+                          {car.category && (
+                            <span style={{
+                              background: '#e3f2fd',
+                              color: '#007bff',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                              fontWeight: '600'
+                            }}>
+                              {car.category}
+                            </span>
+                          )}
+                        </div>
                         <span className="car-model">{car.model}</span>
                         <div className="car-rating">
                           <span className="stars">★★★★★</span>
@@ -375,7 +552,8 @@ function CarsList() {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
         </main>
       </div>

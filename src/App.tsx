@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
 import CarsList from './components/CarsList'
+import AdminCar from './components/AdminCar'
+import AdminCarList from './components/AdminCarList'
+import AdminCarEdit from './components/AdminCarEdit'
 import './App.css'
 
 function App() {
@@ -9,6 +12,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/cars" element={<CarsList />} />
+        <Route path="/admin/car" element={<AdminCar />} />
+        <Route path="/admin/car/list" element={<AdminCarList />} />
+        <Route path="/admin/car/edit/:id" element={<AdminCarEdit />} />
       </Routes>
     </BrowserRouter>
   )
