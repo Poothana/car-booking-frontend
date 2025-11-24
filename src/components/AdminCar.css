@@ -193,6 +193,22 @@
   margin-top: -5px;
 }
 
+/* Multi-select styling */
+.multi-select {
+  min-height: 150px;
+  padding: 8px;
+}
+
+.multi-select option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.multi-select option:checked {
+  background-color: #007bff;
+  color: white;
+}
+
 .checkbox-group {
   flex-direction: row;
   align-items: center;

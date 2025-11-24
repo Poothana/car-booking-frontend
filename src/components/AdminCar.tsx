@@ -7,10 +7,20 @@ interface Category {
   name: string
 }
 
+interface PriceType {
+  id: number
+  type_name: string
+}
+
+interface Amenity {
+  id: number
+  name: string
+}
+
 interface PriceDetail {
   price_type: string
   min_hours: number
-  price?: number
+  price: number
 }
 
 interface DiscountPriceDetail {
@@ -24,6 +34,7 @@ interface CarFormData {
   car_category: number
   is_active: boolean
   no_of_seats: number
+  amenities: number[] // Array of amenity IDs
   price_details: PriceDetail[]
   discount_price_details: DiscountPriceDetail[]
 }
@@ -32,15 +43,14 @@ function AdminCar() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [categories, setCategories] = useState<Category[]>([])
+  const [priceTypes, setPriceTypes] = useState<PriceType[]>([])
+  const [amenities, setAmenities] = useState<Amenity[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFileName, setImageFileName] = useState<string>('')
-  const [uploadingImage, setUploadingImage] = useState(false)
-  const [uploadedImageName, setUploadedImageName] = useState<string>('')
-  const [useDirectFileUpload, setUseDirectFileUpload] = useState(false)
 
   const [formData, setFormData] = useState<CarFormData>({
     car_name: '',
@@ -48,9 +58,10 @@ function AdminCar() {
     car_category: 0,
     is_active: true,
     no_of_seats: 5,
+    amenities: [], // Array of selected amenity IDs
     price_details: [
-      { price_type: 'day', min_hours: 24 },
-      { price_type: 'week', min_hours: 168 }
+      { price_type: 'day', min_hours: 24, price: 0 },
+      { price_type: 'week', min_hours: 168, price: 0 }
     ],
     discount_price_details: [
       { price_type: 'day', price: 0 },
@@ -58,9 +69,11 @@ function AdminCar() {
     ]
   })
 
-  // Fetch categories on component mount
+  // Fetch categories, price types, and amenities on component mount
   useEffect(() => {
     fetchCategories()
+    fetchPriceTypes()
+    fetchAmenities()
   }, [])
 
   const fetchCategories = async () => {
@@ -94,7 +107,81 @@ function AdminCar() {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const fetchPriceTypes = async () => {
+    try {
+      const apiUrl = import.meta.env.DEV 
+        ? '/api/price-type' 
+        : 'http://127.0.0.1:8000/api/price-type'
+      
+      const response = await fetch(apiUrl)
+      if (response.ok) {
+        const data = await response.json()
+        // Handle different response formats
+        if (data.success && data.data) {
+          setPriceTypes(data.data)
+          // Initialize price_details with fetched price types if form is empty
+          if (data.data.length > 0 && formData.price_details.length === 2 && formData.price_details[0].price_type === 'day') {
+            // Find 'day' and 'week' price types or use first two
+            const dayType = data.data.find((pt: PriceType) => pt.type_name === 'day')
+            const weekType = data.data.find((pt: PriceType) => pt.type_name === 'week')
+            const typesToUse = dayType && weekType ? [dayType, weekType] : data.data.slice(0, 2)
+            
+            const initialPriceDetails = typesToUse.map((pt: PriceType) => ({
+              price_type: pt.type_name,
+              min_hours: 24, // Default min_hours
+              price: 0
+            }))
+            const initialDiscountPrices = typesToUse.map((pt: PriceType) => ({
+              price_type: pt.type_name,
+              price: 0
+            }))
+            setFormData(prev => ({
+              ...prev,
+              price_details: initialPriceDetails,
+              discount_price_details: initialDiscountPrices
+            }))
+          }
+        } else if (Array.isArray(data)) {
+          setPriceTypes(data)
+        } else if (data.price_types) {
+          setPriceTypes(data.price_types)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching price types:', err)
+      // Fallback to default price types
+      setPriceTypes([
+        { id: 1, type_name: 'day' },
+        { id: 2, type_name: 'week' }
+      ])
+    }
+  }
+
+  const fetchAmenities = async () => {
+    try {
+      const apiUrl = import.meta.env.DEV 
+        ? '/api/amenities' 
+        : 'http://127.0.0.1:8000/api/amenities'
+      
+      const response = await fetch(apiUrl)
+      if (response.ok) {
+        const data = await response.json()
+        // Handle different response formats
+        if (data.success && data.data) {
+          setAmenities(data.data)
+        } else if (Array.isArray(data)) {
+          setAmenities(data)
+        } else if (data.amenities) {
+          setAmenities(data.amenities)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching amenities:', err)
+    }
+  }
+
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
     const checked = (e.target as HTMLInputElement).checked
 
@@ -121,7 +208,7 @@ function AdminCar() {
       const newPriceDetails = [...prev.price_details]
       newPriceDetails[index] = {
         ...newPriceDetails[index],
-        [field]: field === 'min_hours' ? Number(value) : value
+        [field]: field === 'min_hours' || field === 'price' ? Number(value) : value
       }
       return {
         ...prev,
@@ -144,50 +231,7 @@ function AdminCar() {
     })
   }
 
-  const uploadImage = async (file: File): Promise<string> => {
-    const uploadFormData = new FormData()
-    uploadFormData.append('car_image', file, file.name)
-
-    const uploadUrl = import.meta.env.DEV 
-      ? '/api/admin/car/upload-image' 
-      : 'http://127.0.0.1:8000/api/admin/car/upload-image'
-    
-    const response = await fetch(uploadUrl, {
-      method: 'POST',
-      body: uploadFormData,
-    })
-
-    // Handle 404 - endpoint doesn't exist
-    if (response.status === 404) {
-      console.warn('Upload endpoint not found. Will send file directly with car creation.')
-      // Return the original filename - we'll send the file directly
-      return file.name
-    }
-
-    const contentType = response.headers.get('content-type')
-    let data
-
-    try {
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json()
-      } else {
-        const text = await response.text()
-        throw new Error(`Server error (${response.status}): ${text || response.statusText}`)
-      }
-    } catch (parseError) {
-      console.error('Error parsing upload response:', parseError)
-      throw new Error(`Server error (${response.status}): ${response.statusText || 'Unknown error'}`)
-    }
-
-    if (response.ok && data.success) {
-      return data.filename || data.image_name || file.name
-    } else {
-      const errorMessage = data.message || data.error || 'Failed to upload image'
-      throw new Error(errorMessage)
-    }
-  }
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       // Validate file type
@@ -204,9 +248,7 @@ function AdminCar() {
 
       setSelectedImage(file)
       setImageFileName(file.name)
-      setUploadedImageName('') // Reset previous upload
       setError(null)
-      setUploadingImage(true)
       
       // Create preview
       const reader = new FileReader()
@@ -214,37 +256,7 @@ function AdminCar() {
         setImagePreview(reader.result as string)
       }
       reader.readAsDataURL(file)
-
-      // Upload image immediately (or mark for direct upload if endpoint doesn't exist)
-      try {
-        const savedFileName = await uploadImage(file)
-        setUploadedImageName(savedFileName)
-        setImageFileName(savedFileName)
-        
-        // If we got back the original filename (404 fallback), use direct file upload
-        if (savedFileName === file.name) {
-          setUseDirectFileUpload(true)
-          console.log('Upload endpoint not available. Will send file directly with car creation.')
-        } else {
-          setUseDirectFileUpload(false)
-          console.log('Image uploaded successfully:', savedFileName)
-        }
-      } catch (uploadError) {
-        console.error('Image upload error:', uploadError)
-        // Don't reset on upload error - allow user to proceed with direct file upload
-        // The error message will guide them
-        const errorMsg = uploadError instanceof Error ? uploadError.message : 'Failed to upload image'
-        if (errorMsg.includes('404')) {
-          // Endpoint doesn't exist - allow direct file upload
-          setUseDirectFileUpload(true)
-          setUploadedImageName(file.name)
-          setError('Upload endpoint not found. Image will be sent directly with car creation.')
-        } else {
-          setError(errorMsg)
-        }
-      } finally {
-        setUploadingImage(false)
-      }
+      console.log('Image selected. Will be sent directly in the car creation request.')
     }
   }
 
@@ -252,7 +264,6 @@ function AdminCar() {
     setSelectedImage(null)
     setImagePreview(null)
     setImageFileName('')
-    setUploadedImageName('')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -274,10 +285,6 @@ function AdminCar() {
         throw new Error('Please select a car image')
       }
 
-      if (!useDirectFileUpload && !uploadedImageName && uploadingImage) {
-        throw new Error('Image is still uploading. Please wait...')
-      }
-
       // Create FormData to match the API structure
       const formDataToSend = new FormData()
       
@@ -290,10 +297,18 @@ function AdminCar() {
       // Additional details
       formDataToSend.append('additional_details[no_of_seats]', formData.no_of_seats.toString())
       
+      // Add amenities as array
+      if (formData.amenities && formData.amenities.length > 0) {
+        formData.amenities.forEach((amenityId, index) => {
+          formDataToSend.append(`additional_details[amenities][${index}]`, amenityId.toString())
+        })
+      }
+      
       // Price details
       formData.price_details.forEach((priceDetail, index) => {
         formDataToSend.append(`price_details[${index}][price_type]`, priceDetail.price_type)
         formDataToSend.append(`price_details[${index}][min_hours]`, priceDetail.min_hours.toString())
+        formDataToSend.append(`price_details[${index}][price]`, (priceDetail.price || 0).toString())
       })
       
       // Discount price details (format price with 2 decimal places)
@@ -303,14 +318,10 @@ function AdminCar() {
         formDataToSend.append(`discount_price_details[${index}][price]`, formattedPrice)
       })
       
-      // Add image - either filename (if uploaded separately) or file (if direct upload)
-      if (useDirectFileUpload && selectedImage) {
-        // Send the file directly (fallback when upload endpoint doesn't exist)
+      // Add image file directly in the request
+      // Backend will handle saving it and storing the filename
+      if (selectedImage) {
         formDataToSend.append('car_image', selectedImage, selectedImage.name)
-      } else if (uploadedImageName) {
-        // Send only the filename (preferred method when upload endpoint exists)
-        formDataToSend.append('car_image_url', uploadedImageName)
-        formDataToSend.append('car_image', uploadedImageName) // Some APIs might expect this field name
       }
 
       const apiUrl = import.meta.env.DEV 
@@ -318,16 +329,17 @@ function AdminCar() {
         : 'http://127.0.0.1:8000/api/admin/car/add'
       
       // Log FormData for debugging
-      console.log('Sending FormData:', {
+      console.log('Sending FormData with image file:', {
         car_name: formData.car_name,
         car_model: formData.car_model,
         car_category: formData.car_category,
         is_active: formData.is_active,
         no_of_seats: formData.no_of_seats,
-        image_filename: uploadedImageName,
+        image_file: selectedImage?.name,
         price_details: formData.price_details,
         discount_price_details: formData.discount_price_details
       })
+      console.log('Sending image file directly in request. Backend will handle storage.')
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -475,6 +487,46 @@ function AdminCar() {
                 />
               </div>
 
+              <div className="form-group">
+                <label htmlFor="amenities">Amenities</label>
+                <select
+                  id="amenities"
+                  name="amenities"
+                  multiple
+                  value={formData.amenities ? formData.amenities.map(id => id.toString()) : []}
+                  onChange={(e) => {
+                    // Get all selected options from the multiselect
+                    const selectedOptions = Array.from(e.target.selectedOptions, option => parseInt(option.value))
+                    console.log('Selected amenities:', selectedOptions)
+                    setFormData(prev => ({
+                      ...prev,
+                      amenities: selectedOptions.length > 0 ? selectedOptions : []
+                    }))
+                  }}
+                  className="multi-select"
+                  size={Math.min(amenities.length || 5, 8)}
+                  style={{ minHeight: '150px' }}
+                >
+                  {amenities.length === 0 ? (
+                    <option disabled>Loading amenities...</option>
+                  ) : (
+                    amenities.map((amenity) => (
+                      <option key={amenity.id} value={amenity.id.toString()}>
+                        {amenity.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+                <small className="form-help">
+                  <strong>How to select multiple:</strong> Hold Ctrl (Windows/Linux) or Cmd (Mac) and click to select multiple amenities
+                  {formData.amenities && formData.amenities.length > 0 && (
+                    <span style={{ display: 'block', marginTop: '5px', color: '#007bff', fontWeight: '600' }}>
+                      ✓ {formData.amenities.length} amenit{formData.amenities.length === 1 ? 'y' : 'ies'} selected
+                    </span>
+                  )}
+                </small>
+              </div>
+
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -498,29 +550,14 @@ function AdminCar() {
                 {imagePreview ? (
                   <div className="image-preview-container">
                     <img src={imagePreview} alt="Car preview" className="image-preview" />
-                    {uploadingImage && (
-                      <div className="upload-status">
-                        <span className="upload-spinner">⏳</span>
-                        <span>Uploading...</span>
-                      </div>
-                    )}
-                    {uploadedImageName && !uploadingImage && !useDirectFileUpload && (
-                      <div className="upload-success">
-                        <span className="success-icon">✓</span>
-                        <span>Uploaded: {uploadedImageName}</span>
-                      </div>
-                    )}
-                    {useDirectFileUpload && !uploadingImage && (
-                      <div className="upload-status" style={{ background: '#fff3cd', color: '#856404' }}>
-                        <span>⚠</span>
-                        <span>Will be sent with car creation request</span>
-                      </div>
-                    )}
+                    <div className="upload-status" style={{ background: '#e8f5e9', color: '#2e7d32', marginTop: '10px' }}>
+                      <span className="success-icon">✓</span>
+                      <span>Image ready to send</span>
+                    </div>
                     <button
                       type="button"
                       onClick={handleRemoveImage}
                       className="btn-remove-image"
-                      disabled={uploadingImage}
                     >
                       Remove Image
                     </button>
@@ -536,19 +573,17 @@ function AdminCar() {
                       accept="image/*"
                       onChange={handleImageChange}
                       className="file-input"
-                      disabled={uploadingImage}
                     />
                     <label htmlFor="car_image" className="file-input-label">
                       <span className="upload-icon">📷</span>
                       <span>Click to upload car image</span>
                       <small>PNG, JPG, JPEG up to 5MB</small>
-                      {uploadingImage && <small style={{ color: '#007bff' }}>Uploading...</small>}
                     </label>
                   </div>
                 )}
               </div>
               <small className="form-help">
-                Image will be automatically saved to src/assets/images/cars/ folder. Only the filename will be sent in the request.
+                Image file will be sent directly in the request. Backend will handle storage.
               </small>
             </div>
           </div>
@@ -557,34 +592,52 @@ function AdminCar() {
           <div className="form-section">
             <h2 className="section-title">Price Details</h2>
             <div className="price-details-grid">
-              {formData.price_details.map((priceDetail, index) => (
-                <div key={index} className="price-detail-card">
-                  <h3 className="price-detail-title">
-                    {priceDetail.price_type === 'day' ? 'Daily' : 'Weekly'} Pricing
-                  </h3>
-                  <div className="form-group">
-                    <label>Price Type</label>
-                    <select
-                      value={priceDetail.price_type}
-                      onChange={(e) => handlePriceDetailChange(index, 'price_type', e.target.value)}
-                      disabled
-                    >
-                      <option value="day">Day</option>
-                      <option value="week">Week</option>
-                    </select>
+              {formData.price_details.map((priceDetail, index) => {
+                const priceType = priceTypes.find(pt => pt.type_name === priceDetail.price_type)
+                return (
+                  <div key={index} className="price-detail-card">
+                    <h3 className="price-detail-title">
+                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : priceDetail.price_type} Pricing
+                    </h3>
+                    <div className="form-group">
+                      <label>Price Type</label>
+                      <select
+                        value={priceDetail.price_type}
+                        onChange={(e) => {
+                          handlePriceDetailChange(index, 'price_type', e.target.value)
+                        }}
+                      >
+                        {priceTypes.map(pt => (
+                          <option key={pt.id} value={pt.type_name}>
+                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Minimum Hours</label>
+                      <input
+                        type="number"
+                        value={priceDetail.min_hours}
+                        onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
+                        min="1"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Price (₹) <span className="required">*</span></label>
+                      <input
+                        type="number"
+                        value={priceDetail.price || 0}
+                        onChange={(e) => handlePriceDetailChange(index, 'price', e.target.value)}
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Minimum Hours</label>
-                    <input
-                      type="number"
-                      value={priceDetail.min_hours}
-                      onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
-                      min="1"
-                      required
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -592,34 +645,39 @@ function AdminCar() {
           <div className="form-section">
             <h2 className="section-title">Discount Price Details (Optional)</h2>
             <div className="price-details-grid">
-              {formData.discount_price_details.map((discountPrice, index) => (
-                <div key={index} className="price-detail-card">
-                  <h3 className="price-detail-title">
-                    {discountPrice.price_type === 'day' ? 'Daily' : 'Weekly'} Discount Price
-                  </h3>
-                  <div className="form-group">
-                    <label>Price Type</label>
-                    <select
-                      value={discountPrice.price_type}
-                      onChange={(e) => handleDiscountPriceChange(index, 'price_type', e.target.value)}
-                      disabled
-                    >
-                      <option value="day">Day</option>
-                      <option value="week">Week</option>
-                    </select>
+              {formData.discount_price_details.map((discountPrice, index) => {
+                const priceType = priceTypes.find(pt => pt.type_name === discountPrice.price_type)
+                return (
+                  <div key={index} className="price-detail-card">
+                    <h3 className="price-detail-title">
+                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : discountPrice.price_type} Discount Price
+                    </h3>
+                    <div className="form-group">
+                      <label>Price Type</label>
+                      <select
+                        value={discountPrice.price_type}
+                        onChange={(e) => handleDiscountPriceChange(index, 'price_type', e.target.value)}
+                      >
+                        {priceTypes.map(pt => (
+                          <option key={pt.id} value={pt.type_name}>
+                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Discount Price (₹)</label>
+                      <input
+                        type="number"
+                        value={discountPrice.price}
+                        onChange={(e) => handleDiscountPriceChange(index, 'price', e.target.value)}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Discount Price (₹)</label>
-                    <input
-                      type="number"
-                      value={discountPrice.price}
-                      onChange={(e) => handleDiscountPriceChange(index, 'price', e.target.value)}
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -628,7 +686,7 @@ function AdminCar() {
             <button 
               type="submit" 
               className="btn-submit" 
-              disabled={loading || !selectedImage || !uploadedImageName || uploadingImage}
+              disabled={loading || !selectedImage}
             >
               {loading ? 'Adding Car...' : 'Add Car'}
             </button>

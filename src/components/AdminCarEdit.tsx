@@ -7,10 +7,20 @@ interface Category {
   name: string
 }
 
+interface PriceType {
+  id: number
+  type_name: string
+}
+
+interface Amenity {
+  id: number
+  name: string
+}
+
 interface PriceDetail {
   price_type: string
   min_hours: number
-  price?: number
+  price: number
 }
 
 interface DiscountPriceDetail {
@@ -24,6 +34,7 @@ interface CarFormData {
   car_category: number
   is_active: boolean
   no_of_seats: number
+  amenities: number[] // Array of amenity IDs
   price_details: PriceDetail[]
   discount_price_details: DiscountPriceDetail[]
 }
@@ -32,7 +43,10 @@ function AdminCarEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const amenitiesSelectRef = useRef<HTMLSelectElement>(null)
   const [categories, setCategories] = useState<Category[]>([])
+  const [priceTypes, setPriceTypes] = useState<PriceType[]>([])
+  const [amenities, setAmenities] = useState<Amenity[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -51,9 +65,10 @@ function AdminCarEdit() {
     car_category: 0,
     is_active: true,
     no_of_seats: 5,
+    amenities: [], // Array of selected amenity IDs
     price_details: [
-      { price_type: 'day', min_hours: 24 },
-      { price_type: 'week', min_hours: 168 }
+      { price_type: 'day', min_hours: 24, price: 0 },
+      { price_type: 'week', min_hours: 168, price: 0 }
     ],
     discount_price_details: [
       { price_type: 'day', price: 0 },
@@ -61,9 +76,11 @@ function AdminCarEdit() {
     ]
   })
 
-  // Fetch categories on component mount
+  // Fetch categories, price types, and amenities on component mount
   useEffect(() => {
     fetchCategories()
+    fetchPriceTypes()
+    fetchAmenities()
   }, [])
 
   // Fetch car data for editing
@@ -72,6 +89,67 @@ function AdminCarEdit() {
       fetchCarData(parseInt(id))
     }
   }, [id])
+
+  // Sync selected amenities when amenities list is loaded
+  // This ensures existing amenities show as selected even if amenities list loads after car data
+  useEffect(() => {
+    if (!loadingData && amenities.length > 0 && formData.amenities && formData.amenities.length > 0) {
+      // Filter to only include valid amenity IDs that exist in the loaded list
+      const validAmenities = formData.amenities.filter(id => 
+        amenities.some(a => a.id === id)
+      )
+      
+      // Update if there's a mismatch (some amenities were invalid)
+      if (validAmenities.length !== formData.amenities.length) {
+        console.log('Syncing amenities: removing invalid IDs', {
+          original: formData.amenities,
+          valid: validAmenities
+        })
+        setFormData(prev => ({
+          ...prev,
+          amenities: validAmenities
+        }))
+      }
+      
+      // Manually set selected state in DOM to ensure visibility
+      // This is needed because React's controlled component might not always reflect selection immediately
+      if (amenitiesSelectRef.current && validAmenities.length > 0) {
+        // Use setTimeout to ensure options are rendered first
+        setTimeout(() => {
+          const select = amenitiesSelectRef.current
+          if (select && select.options.length > 0) {
+            console.log('=== MANUALLY SETTING SELECTION ===')
+            console.log('Select element found with', select.options.length, 'options')
+            console.log('Valid amenity IDs to select:', validAmenities)
+            
+            // Clear all selections first
+            Array.from(select.options).forEach(option => {
+              option.selected = false
+            })
+            
+            // Set selected state for each valid amenity
+            let selectedCount = 0
+            validAmenities.forEach(id => {
+              const option = Array.from(select.options).find(opt => 
+                parseInt(opt.value) === id
+              )
+              if (option) {
+                option.selected = true
+                selectedCount++
+                console.log(`✓ Selected option: ${option.value} - ${option.text}`)
+              } else {
+                console.warn(`✗ Option not found for amenity ID: ${id}`)
+              }
+            })
+            
+            console.log(`Successfully selected ${selectedCount} out of ${validAmenities.length} amenities`)
+          } else {
+            console.warn('Select element or options not ready yet')
+          }
+        }, 200) // Increased timeout to ensure DOM is fully ready
+      }
+    }
+  }, [amenities.length, loadingData, formData.amenities]) // Depend on all relevant values
 
   const fetchCategories = async () => {
     try {
@@ -100,6 +178,57 @@ function AdminCarEdit() {
         { id: 5, name: 'Luxury' },
         { id: 6, name: 'Premium Sedan' },
       ])
+    }
+  }
+
+  const fetchPriceTypes = async () => {
+    try {
+      const apiUrl = import.meta.env.DEV 
+        ? '/api/price-type' 
+        : 'http://127.0.0.1:8000/api/price-type'
+      
+      const response = await fetch(apiUrl)
+      if (response.ok) {
+        const data = await response.json()
+        // Handle different response formats
+        if (data.success && data.data) {
+          setPriceTypes(data.data)
+        } else if (Array.isArray(data)) {
+          setPriceTypes(data)
+        } else if (data.price_types) {
+          setPriceTypes(data.price_types)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching price types:', err)
+      // Fallback to default price types
+      setPriceTypes([
+        { id: 1, type_name: 'day' },
+        { id: 2, type_name: 'week' }
+      ])
+    }
+  }
+
+  const fetchAmenities = async () => {
+    try {
+      const apiUrl = import.meta.env.DEV 
+        ? '/api/amenities' 
+        : 'http://127.0.0.1:8000/api/amenities'
+      
+      const response = await fetch(apiUrl)
+      if (response.ok) {
+        const data = await response.json()
+        // Handle different response formats
+        if (data.success && data.data) {
+          setAmenities(data.data)
+        } else if (Array.isArray(data)) {
+          setAmenities(data)
+        } else if (data.amenities) {
+          setAmenities(data.amenities)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching amenities:', err)
     }
   }
 
@@ -133,15 +262,75 @@ function AdminCarEdit() {
         throw new Error('Invalid car data format')
       }
 
+      // Parse amenities from additional_details
+      const parsedAmenities = (() => {
+        const amenitiesData = car.additional_details?.amenities
+        
+        if (!amenitiesData) {
+          return []
+        }
+        
+        // If it's already an array of numbers
+        if (Array.isArray(amenitiesData) && amenitiesData.length > 0) {
+          // Check if it's array of objects with id property
+          if (typeof amenitiesData[0] === 'object' && amenitiesData[0]?.id) {
+            return amenitiesData.map((item: any) => parseInt(item.id)).filter((id: number) => !isNaN(id))
+          }
+          // If it's array of numbers, return as is
+          if (typeof amenitiesData[0] === 'number') {
+            return amenitiesData
+          }
+          // If it's array of strings (IDs as strings), convert to numbers
+          if (typeof amenitiesData[0] === 'string') {
+            return amenitiesData.map((id: string) => parseInt(id)).filter((id: number) => !isNaN(id))
+          }
+          return []
+        }
+        
+        // If it's a string (comma-separated IDs)
+        if (typeof amenitiesData === 'string') {
+          return amenitiesData.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id))
+        }
+        
+        return []
+      })()
+      
+      // Debug log to verify amenities loading
+      console.log('=== FETCHING CAR DATA ===')
+      console.log('Car additional_details:', car.additional_details)
+      console.log('Raw amenities data from API:', car.additional_details?.amenities)
+      console.log('Parsed amenities IDs:', parsedAmenities)
+      console.log('Currently loaded amenities list:', amenities.length, 'items')
+      
+      // Determine which amenities to set in formData
+      // If amenities list is loaded, filter to only valid ones
+      // Otherwise, keep all parsed amenities (they'll be filtered later when amenities list loads)
+      let amenitiesToSet = parsedAmenities
+      if (parsedAmenities.length > 0 && amenities.length > 0) {
+        const validAmenities = parsedAmenities.filter(id => 
+          amenities.some(a => a.id === id)
+        )
+        console.log('Valid amenities that exist in list:', validAmenities)
+        if (validAmenities.length !== parsedAmenities.length) {
+          console.warn('Some amenity IDs from car data do not exist in amenities list')
+        }
+        amenitiesToSet = validAmenities
+      } else if (parsedAmenities.length > 0 && amenities.length === 0) {
+        console.log('Amenities list not loaded yet, will set all parsed amenities and filter later')
+      }
+
+      console.log('Setting formData.amenities to:', amenitiesToSet)
+
       setFormData({
         car_name: car.car_name || '',
         car_model: car.car_model || '',
         car_category: car.car_category || 0,
         is_active: car.is_active !== undefined ? car.is_active : true,
         no_of_seats: car.additional_details?.no_of_seats || car.no_of_seats || 5,
+        amenities: amenitiesToSet,
         price_details: car.price_details || [
-          { price_type: 'day', min_hours: 24 },
-          { price_type: 'week', min_hours: 168 }
+          { price_type: 'day', min_hours: 24, price: 0 },
+          { price_type: 'week', min_hours: 168, price: 0 }
         ],
         discount_price_details: car.discount_price_details || [
           { price_type: 'day', price: 0 },
@@ -158,7 +347,7 @@ function AdminCarEdit() {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
     const checked = (e.target as HTMLInputElement).checked
 
@@ -185,7 +374,7 @@ function AdminCarEdit() {
       const newPriceDetails = [...prev.price_details]
       newPriceDetails[index] = {
         ...newPriceDetails[index],
-        [field]: field === 'min_hours' ? Number(value) : value
+        [field]: field === 'min_hours' || field === 'price' ? Number(value) : value
       }
       return {
         ...prev,
@@ -221,8 +410,9 @@ function AdminCarEdit() {
       body: uploadFormData,
     })
 
-    if (response.status === 404) {
-      console.warn('Upload endpoint not found. Will send file directly with car update.')
+    // Handle 404 (not found) or 405 (method not allowed) - skip upload, send file directly
+    if (response.status === 404 || response.status === 405) {
+      console.warn(`Upload endpoint not available (${response.status}). Will send file directly with car update.`)
       return file.name
     }
 
@@ -289,10 +479,12 @@ function AdminCarEdit() {
       } catch (uploadError) {
         console.error('Image upload error:', uploadError)
         const errorMsg = uploadError instanceof Error ? uploadError.message : 'Failed to upload image'
-        if (errorMsg.includes('404')) {
+        // Handle 404 or 405 errors - allow direct file upload
+        if (errorMsg.includes('404') || errorMsg.includes('405') || errorMsg.includes('Method Not Allowed')) {
           setUseDirectFileUpload(true)
           setUploadedImageName(file.name)
-          setError('Upload endpoint not found. Image will be sent directly with car update.')
+          setError(null) // Clear error since we'll use direct upload
+          console.log('Upload endpoint not available. Image will be sent directly with car update.')
         } else {
           setError(errorMsg)
         }
@@ -338,9 +530,17 @@ function AdminCarEdit() {
       formDataToSend.append('is_active', formData.is_active ? '1' : '0')
       formDataToSend.append('additional_details[no_of_seats]', formData.no_of_seats.toString())
       
+      // Add amenities as array
+      if (formData.amenities && formData.amenities.length > 0) {
+        formData.amenities.forEach((amenityId, index) => {
+          formDataToSend.append(`additional_details[amenities][${index}]`, amenityId.toString())
+        })
+      }
+      
       formData.price_details.forEach((priceDetail, index) => {
         formDataToSend.append(`price_details[${index}][price_type]`, priceDetail.price_type)
         formDataToSend.append(`price_details[${index}][min_hours]`, priceDetail.min_hours.toString())
+        formDataToSend.append(`price_details[${index}][price]`, (priceDetail.price || 0).toString())
       })
       
       formData.discount_price_details.forEach((discountPrice, index) => {
@@ -528,6 +728,77 @@ function AdminCarEdit() {
                 />
               </div>
 
+              <div className="form-group">
+                <label htmlFor="amenities">Amenities</label>
+                {loadingData ? (
+                  <p>Loading amenities...</p>
+                ) : (
+                  <>
+                    <select
+                      key={`amenities-select-${amenities.length}-${formData.amenities?.join(',') || ''}`}
+                      ref={amenitiesSelectRef}
+                      id="amenities"
+                      name="amenities"
+                      multiple
+                      value={(() => {
+                        // Get valid selected amenity IDs as strings
+                        if (formData.amenities && formData.amenities.length > 0 && amenities.length > 0) {
+                          const validIds = formData.amenities
+                            .filter(id => amenities.some(a => a.id === id))
+                            .map(id => id.toString())
+                          console.log('=== MULTISELECT RENDER ===')
+                          console.log('formData.amenities:', formData.amenities)
+                          console.log('Available amenities:', amenities.map(a => ({ id: a.id, name: a.name })))
+                          console.log('Setting multiselect value (selected IDs):', validIds)
+                          return validIds
+                        }
+                        return []
+                      })()}
+                      onChange={(e) => {
+                        // Get all selected options from the multiselect
+                        const selectedOptions = Array.from(e.target.selectedOptions, option => parseInt(option.value))
+                        console.log('Selected amenities:', selectedOptions)
+                        setFormData(prev => ({
+                          ...prev,
+                          amenities: selectedOptions.length > 0 ? selectedOptions : []
+                        }))
+                      }}
+                      className="multi-select"
+                      size={Math.min(amenities.length || 5, 8)}
+                      style={{ minHeight: '150px' }}
+                    >
+                      {amenities.length === 0 ? (
+                        <option disabled>No amenities available</option>
+                      ) : (
+                        amenities.map((amenity) => {
+                          const isSelected = formData.amenities && formData.amenities.includes(amenity.id)
+                          return (
+                            <option 
+                              key={amenity.id} 
+                              value={amenity.id.toString()}
+                              selected={isSelected}
+                            >
+                              {amenity.name}
+                            </option>
+                          )
+                        })
+                      )}
+                    </select>
+                    <small className="form-help">
+                      <strong>How to select multiple:</strong> Hold Ctrl (Windows/Linux) or Cmd (Mac) and click to select multiple amenities
+                      {formData.amenities && formData.amenities.length > 0 && (
+                        <span style={{ display: 'block', marginTop: '5px', color: '#007bff', fontWeight: '600' }}>
+                          ✓ {formData.amenities.length} amenit{formData.amenities.length === 1 ? 'y' : 'ies'} selected: {formData.amenities.map(id => {
+                            const amenity = amenities.find(a => a.id === id)
+                            return amenity ? amenity.name : id
+                          }).join(', ')}
+                        </span>
+                      )}
+                    </small>
+                  </>
+                )}
+              </div>
+
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -614,34 +885,52 @@ function AdminCarEdit() {
           <div className="form-section">
             <h2 className="section-title">Price Details</h2>
             <div className="price-details-grid">
-              {formData.price_details.map((priceDetail, index) => (
-                <div key={index} className="price-detail-card">
-                  <h3 className="price-detail-title">
-                    {priceDetail.price_type === 'day' ? 'Daily' : 'Weekly'} Pricing
-                  </h3>
-                  <div className="form-group">
-                    <label>Price Type</label>
-                    <select
-                      value={priceDetail.price_type}
-                      onChange={(e) => handlePriceDetailChange(index, 'price_type', e.target.value)}
-                      disabled
-                    >
-                      <option value="day">Day</option>
-                      <option value="week">Week</option>
-                    </select>
+              {formData.price_details.map((priceDetail, index) => {
+                const priceType = priceTypes.find(pt => pt.type_name === priceDetail.price_type)
+                return (
+                  <div key={index} className="price-detail-card">
+                    <h3 className="price-detail-title">
+                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : priceDetail.price_type} Pricing
+                    </h3>
+                    <div className="form-group">
+                      <label>Price Type</label>
+                      <select
+                        value={priceDetail.price_type}
+                        onChange={(e) => {
+                          handlePriceDetailChange(index, 'price_type', e.target.value)
+                        }}
+                      >
+                        {priceTypes.map(pt => (
+                          <option key={pt.id} value={pt.type_name}>
+                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Minimum Hours</label>
+                      <input
+                        type="number"
+                        value={priceDetail.min_hours}
+                        onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
+                        min="1"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Price (₹) <span className="required">*</span></label>
+                      <input
+                        type="number"
+                        value={priceDetail.price || 0}
+                        onChange={(e) => handlePriceDetailChange(index, 'price', e.target.value)}
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Minimum Hours</label>
-                    <input
-                      type="number"
-                      value={priceDetail.min_hours}
-                      onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
-                      min="1"
-                      required
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -649,34 +938,39 @@ function AdminCarEdit() {
           <div className="form-section">
             <h2 className="section-title">Discount Price Details (Optional)</h2>
             <div className="price-details-grid">
-              {formData.discount_price_details.map((discountPrice, index) => (
-                <div key={index} className="price-detail-card">
-                  <h3 className="price-detail-title">
-                    {discountPrice.price_type === 'day' ? 'Daily' : 'Weekly'} Discount Price
-                  </h3>
-                  <div className="form-group">
-                    <label>Price Type</label>
-                    <select
-                      value={discountPrice.price_type}
-                      onChange={(e) => handleDiscountPriceChange(index, 'price_type', e.target.value)}
-                      disabled
-                    >
-                      <option value="day">Day</option>
-                      <option value="week">Week</option>
-                    </select>
+              {formData.discount_price_details.map((discountPrice, index) => {
+                const priceType = priceTypes.find(pt => pt.type_name === discountPrice.price_type)
+                return (
+                  <div key={index} className="price-detail-card">
+                    <h3 className="price-detail-title">
+                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : discountPrice.price_type} Discount Price
+                    </h3>
+                    <div className="form-group">
+                      <label>Price Type</label>
+                      <select
+                        value={discountPrice.price_type}
+                        onChange={(e) => handleDiscountPriceChange(index, 'price_type', e.target.value)}
+                      >
+                        {priceTypes.map(pt => (
+                          <option key={pt.id} value={pt.type_name}>
+                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Discount Price (₹)</label>
+                      <input
+                        type="number"
+                        value={discountPrice.price}
+                        onChange={(e) => handleDiscountPriceChange(index, 'price', e.target.value)}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Discount Price (₹)</label>
-                    <input
-                      type="number"
-                      value={discountPrice.price}
-                      onChange={(e) => handleDiscountPriceChange(index, 'price', e.target.value)}
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 

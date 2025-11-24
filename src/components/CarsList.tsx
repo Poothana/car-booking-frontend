@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './CarsList.css'
-// Import car images
-import car1 from '../assets/images/cars/car1.jpeg'
-import car2 from '../assets/images/cars/car2.jpeg'
-import car3 from '../assets/images/cars/car3.jpeg'
-import car4 from '../assets/images/cars/car4.jpeg'
-import car5 from '../assets/images/cars/car5.jpeg'
-import car6 from '../assets/images/cars/car6.jpeg'
 
 interface ApiCategory {
   id: number
   name: string
+}
+
+interface ApiPriceDetail {
+  id?: number
+  car_id?: number
+  price_type: string
+  min_hours?: number
+  price: string | number // Can be string from API
+  created_at?: string
+  updated_at?: string
 }
 
 interface ApiCar {
@@ -22,6 +25,8 @@ interface ApiCar {
   car_category: number
   is_active: boolean
   category: ApiCategory
+  price_details?: ApiPriceDetail[]
+  discount_price_details?: ApiPriceDetail[]
 }
 
 interface ApiResponse {
@@ -34,7 +39,7 @@ interface Car {
   name: string
   model: string
   image: string
-  price: number
+  price: number | undefined
   originalPrice?: number
   rating: number
   features: string[]
@@ -43,6 +48,7 @@ interface Car {
   fuel: string
   available: boolean
   discount?: number
+  isDiscount?: boolean // Flag to indicate if showing discount price
   category?: string
 }
 
@@ -55,42 +61,28 @@ function CarsList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Map of available car images
-  const carImages: Record<string, string> = {
-    car1: car1,
-    car2: car2,
-    car3: car3,
-    car4: car4,
-    car5: car5,
-    car6: car6,
-  }
-
-  // Function to get local image path from API image URL/name or car ID
-  const getLocalImage = (imageUrl: string, carId: number): string => {
-    // Extract filename from URL if it's a full URL, otherwise use as-is
-    let filename = imageUrl || ''
-    if (imageUrl && imageUrl.includes('/')) {
-      filename = imageUrl.split('/').pop() || imageUrl
+  // Function to get backend image URL from API image URL/name
+  const getBackendImageUrl = (imageUrl: string): string => {
+    if (!imageUrl) {
+      return '' // Return empty string or a placeholder image URL
     }
     
-    // Remove extension and convert to lowercase for matching
-    const nameWithoutExt = filename.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '').toLowerCase()
-    
-    // Try to match by filename pattern like "car1", "car2", etc.
-    const carMatch = nameWithoutExt.match(/car(\d+)/)
-    if (carMatch) {
-      const carNum = carMatch[1]
-      const imageKey = `car${carNum}` as keyof typeof carImages
-      if (carImages[imageKey]) {
-        return carImages[imageKey]
-      }
+    // If it's already a full URL (starts with http:// or https://), use it as-is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl
     }
     
-    // Fallback: map by car ID to cycle through available images
-    // Car ID 1 → car1, Car ID 2 → car2, etc., cycling through available images
-    const carImageKeys = Object.keys(carImages)
-    const imageIndex = (carId - 1) % carImageKeys.length
-    return carImages[carImageKeys[imageIndex]] || car1
+    // If it's just a filename, construct the backend storage URL
+    // Backend serves images at /storage/cars/
+    const backendBaseUrl = import.meta.env.DEV 
+      ? 'http://localhost:8000' 
+      : window.location.origin
+    
+    // Remove leading slash if present to avoid double slashes
+    const cleanImagePath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl
+    
+    // Construct URL: http://localhost:8000/storage/cars/{filename}
+    return `${backendBaseUrl}/storage/cars/${cleanImagePath}`
   }
 
   // Fetch cars from API
@@ -114,20 +106,8 @@ function CarsList() {
         if (apiResponse.success && apiResponse.data) {
           // Map API data to component's Car interface
           const mappedCars: Car[] = apiResponse.data
-            .filter(car => car.is_active) // Only show active cars
-            .map((apiCar) => {
+            .map((apiCar): Car => {
               // Generate default values for fields not in API response
-              // Price varies by category (you can adjust these defaults)
-              const categoryPrices: Record<number, number> = {
-                1: 4500, // Hatchback
-                2: 5500, // Sedan
-                3: 7000, // SUV
-                4: 6500, // MUV
-                5: 12000, // Luxury
-                6: 8500, // Premium Sedan
-              }
-              
-              const basePrice = categoryPrices[apiCar.car_category] || 5000
               const rating = 4.0 + (Math.random() * 1.0) // Random rating between 4.0-5.0
               
               // Default features based on category
@@ -153,23 +133,111 @@ function CarsList() {
                 return fuels[Math.floor(Math.random() * fuels.length)]
               }
 
-              // Get local image path from API image URL/name, using car ID as fallback
-              const localImagePath = getLocalImage(apiCar.car_image_url, apiCar.id)
+              // Get backend image URL from API response
+              const backendImageUrl = getBackendImageUrl(apiCar.car_image_url)
 
+              // Helper function to convert price string/number to number, treating "0.00" as invalid
+              const parsePrice = (price: string | number | undefined): number | undefined => {
+                if (!price) return undefined
+                const numPrice = typeof price === 'string' ? parseFloat(price) : price
+                // Treat 0 or "0.00" as no price
+                return numPrice && numPrice > 0 ? numPrice : undefined
+              }
+
+              // Extract prices from price_details
+              let weeklyPrice: number | undefined = undefined
+              let dayPrice: number | undefined = undefined
+              
+              if (apiCar.price_details && apiCar.price_details.length > 0) {
+                // Find weekly price
+                const weeklyPriceDetail = apiCar.price_details.find(pd => 
+                  pd.price_type && pd.price_type.toLowerCase() === 'week'
+                )
+                
+                // Find day price
+                const dayPriceDetail = apiCar.price_details.find(pd => 
+                  pd.price_type && pd.price_type.toLowerCase() === 'day'
+                )
+                
+                if (weeklyPriceDetail) {
+                  weeklyPrice = parsePrice(weeklyPriceDetail.price)
+                }
+                
+                if (dayPriceDetail) {
+                  dayPrice = parsePrice(dayPriceDetail.price)
+                }
+              }
+              
+              // Extract discount prices if available (priority: weekly -> day)
+              let discountWeeklyPrice: number | undefined = undefined
+              let discountDayPrice: number | undefined = undefined
+              
+              if (apiCar.discount_price_details && apiCar.discount_price_details.length > 0) {
+                // Check weekly discount first
+                const weeklyDiscount = apiCar.discount_price_details.find(pd => 
+                  pd.price_type && pd.price_type.toLowerCase() === 'week'
+                )
+                
+                // Then day discount
+                const dayDiscount = apiCar.discount_price_details.find(pd => 
+                  pd.price_type && pd.price_type.toLowerCase() === 'day'
+                )
+                
+                if (weeklyDiscount) {
+                  discountWeeklyPrice = parsePrice(weeklyDiscount.price)
+                }
+                
+                if (dayDiscount) {
+                  discountDayPrice = parsePrice(dayDiscount.price)
+                }
+              }
+              
+              // Determine which price to display
+              // Priority: discount weekly > discount day > regular weekly > regular day
+              let displayPrice: number | undefined = undefined
+              let originalPrice: number | undefined = undefined
+              let discountPercentage: number | undefined = undefined
+              let isDiscount: boolean = false
+              
+              if (discountWeeklyPrice && discountWeeklyPrice > 0) {
+                // Show discount weekly price
+                displayPrice = discountWeeklyPrice
+                originalPrice = weeklyPrice
+                isDiscount = true
+                if (weeklyPrice && weeklyPrice > 0) {
+                  discountPercentage = Math.round(((weeklyPrice - discountWeeklyPrice) / weeklyPrice) * 100)
+                }
+              } else if (discountDayPrice && discountDayPrice > 0) {
+                // Show discount day price
+                displayPrice = discountDayPrice
+                originalPrice = dayPrice
+                isDiscount = true
+                if (dayPrice && dayPrice > 0) {
+                  discountPercentage = Math.round(((dayPrice - discountDayPrice) / dayPrice) * 100)
+                }
+              } else if (weeklyPrice && weeklyPrice > 0) {
+                // No discount, show weekly price
+                displayPrice = weeklyPrice
+              } else if (dayPrice && dayPrice > 0) {
+                // No discount, show day price
+                displayPrice = dayPrice
+              }
+              
               return {
                 id: apiCar.id,
                 name: apiCar.car_name,
                 model: apiCar.car_model,
-                image: localImagePath,
-                price: basePrice + Math.floor(Math.random() * 2000),
-                originalPrice: Math.random() > 0.7 ? basePrice + Math.floor(Math.random() * 2000) + 500 : undefined,
+                image: backendImageUrl,
+                price: displayPrice, // Show discount price if available, otherwise weekly/day price
+                originalPrice: originalPrice, // Show original price when discount exists
                 rating: Math.round(rating * 10) / 10,
                 features: defaultFeatures,
                 transmission: getTransmission(),
                 seats: getSeats(),
                 fuel: getFuel(),
                 available: apiCar.is_active,
-                discount: Math.random() > 0.8 ? Math.floor(Math.random() * 20) + 10 : undefined,
+                discount: discountPercentage,
+                isDiscount: isDiscount, // Flag to show discount label
                 category: apiCar.category?.name,
               }
             })
@@ -213,7 +281,11 @@ function CarsList() {
   }
 
   const sortedCars = [...cars].sort((a, b) => {
-    if (sortBy === 'cheapest') return a.price - b.price
+    if (sortBy === 'cheapest') {
+      const priceA = a.price ?? Infinity // Treat undefined as highest price
+      const priceB = b.price ?? Infinity
+      return priceA - priceB
+    }
     if (sortBy === 'rating') return b.rating - a.rating
     return 0
   })
@@ -402,17 +474,8 @@ function CarsList() {
             </div>
 
             <div className="filter-group">
-              <h3>Transmission</h3>
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                <span>Manual</span>
-                <span className="filter-price">₹ 5,769</span>
-              </label>
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                <span>Automatic</span>
-                <span className="filter-price">₹ 6,500</span>
-              </label>
+              <h3>Category</h3>
+              {/* Category filters can be added here if needed */}
             </div>
 
             <div className="filter-group">
@@ -441,7 +504,7 @@ function CarsList() {
             >
               CHEAPEST
               <span className="sort-info">
-                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+                {sortedCars[0] ? `${sortedCars[0].price ? `₹ ${sortedCars[0].price.toLocaleString()}` : 'Price N/A'} | ${sortedCars[0].seats} Seater` : 'No cars'}
               </span>
             </button>
             <button
@@ -450,13 +513,13 @@ function CarsList() {
             >
               HIGHEST RATED
               <span className="sort-info">
-                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+                {sortedCars[0] ? `${sortedCars[0].price ? `₹ ${sortedCars[0].price.toLocaleString()}` : 'Price N/A'} | ${sortedCars[0].seats} Seater` : 'No cars'}
               </span>
             </button>
             <button className="sort-btn">
               YOU MAY PREFER
               <span className="sort-info">
-                {sortedCars[0] ? `₹ ${sortedCars[0].price.toLocaleString()} | ${sortedCars[0].seats} Seater` : 'No cars'}
+                {sortedCars[0] ? `${sortedCars[0].price ? `₹ ${sortedCars[0].price.toLocaleString()}` : 'Price N/A'} | ${sortedCars[0].seats} Seater` : 'No cars'}
               </span>
             </button>
             <button className="sort-btn other-sort">
@@ -483,7 +546,16 @@ function CarsList() {
                 )}
                 <div className="car-listing-content">
                   <div className="car-image-section">
-                    <img src={car.image} alt={car.name} className="car-listing-image" />
+                    <img 
+                      src={car.image} 
+                      alt={car.name} 
+                      className="car-listing-image"
+                      onError={(e) => {
+                        // Fallback to a placeholder if image fails to load
+                        const target = e.target as HTMLImageElement
+                        target.src = 'https://via.placeholder.com/300x200?text=Car+Image'
+                      }}
+                    />
                   </div>
                   <div className="car-details-section">
                     <div className="car-header">
@@ -510,18 +582,26 @@ function CarsList() {
                         </div>
                       </div>
                       <div className="car-price-section">
-                        {car.originalPrice && (
+                        {car.originalPrice && car.originalPrice > 0 && (
                           <span className="original-price">₹ {car.originalPrice.toLocaleString()}</span>
                         )}
-                        <span className="current-price">₹ {car.price.toLocaleString()}</span>
-                        <span className="price-label">per day</span>
+                        {car.price ? (
+                          <>
+                            <span className="current-price">₹ {car.price.toLocaleString()}</span>
+                            <span className="price-label">
+                              {car.isDiscount ? 'discount' : 'per day'}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="current-price">Price N/A</span>
+                        )}
                       </div>
                     </div>
 
                     <div className="car-specs">
                       <div className="spec-item">
-                        <span className="spec-label">Transmission:</span>
-                        <span className="spec-value">{car.transmission}</span>
+                        <span className="spec-label">Category:</span>
+                        <span className="spec-value">{car.category || 'N/A'}</span>
                       </div>
                       <div className="spec-item">
                         <span className="spec-label">Seats:</span>
