@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './Home.css'
 
 function Home() {
-  const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate()
   const [pickupLocation, setPickupLocation] = useState('')
   const [dropLocation, setDropLocation] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
+  const [journeyStartDate, setJourneyStartDate] = useState('')
+  const [journeyEndDate, setJourneyEndDate] = useState('')
   const [currentSlide, setCurrentSlide] = useState(0)
 
   // Car images array
@@ -102,8 +103,24 @@ function Home() {
 
   const handleBookNow = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle booking logic here
-    console.log('Booking with:', { searchQuery, pickupLocation, dropLocation, selectedDate })
+    
+    // Validate required fields
+    if (!journeyStartDate || !journeyEndDate) {
+      alert('Please select journey start date and end date')
+      return
+    }
+    
+    // Navigate to cars list page with journey details
+    navigate('/cars', {
+      state: {
+        journeyDetails: {
+          pickup_location: pickupLocation,
+          drop_location: dropLocation,
+          journey_from_date: journeyStartDate,
+          journey_end_date: journeyEndDate
+        }
+      }
+    })
   }
 
   return (
@@ -153,17 +170,6 @@ function Home() {
           <div className="filter-container">
             <form className="filter-form" onSubmit={handleBookNow}>
               <div className="filter-field">
-                <label htmlFor="search">Search</label>
-                <input
-                  type="text"
-                  id="search"
-                  placeholder="Search for cars..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="filter-input"
-                />
-              </div>
-              <div className="filter-field">
                 <label htmlFor="pickup">Pickup Location</label>
                 <input
                   type="text"
@@ -186,13 +192,25 @@ function Home() {
                 />
               </div>
               <div className="filter-field">
-                <label htmlFor="date">Selected Date</label>
+                <label htmlFor="journey_start_date">Journey Start Date</label>
                 <input
                   type="date"
-                  id="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  id="journey_start_date"
+                  value={journeyStartDate}
+                  onChange={(e) => setJourneyStartDate(e.target.value)}
                   className="filter-input"
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <div className="filter-field">
+                <label htmlFor="journey_end_date">Journey End Date</label>
+                <input
+                  type="date"
+                  id="journey_end_date"
+                  value={journeyEndDate}
+                  onChange={(e) => setJourneyEndDate(e.target.value)}
+                  className="filter-input"
+                  min={journeyStartDate || new Date().toISOString().split('T')[0]}
                 />
               </div>
               <button type="submit" className="book-now-btn">

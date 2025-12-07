@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import './CarsList.css'
 
 interface ApiCategory {
@@ -27,6 +27,27 @@ interface ApiCar {
   category: ApiCategory
   price_details?: ApiPriceDetail[]
   discount_price_details?: ApiPriceDetail[]
+  display_price?: {
+    day?: number | null
+    week?: number | null
+    km?: number | null
+    trip?: number | null
+    hour?: number | null
+    month?: number | null
+    discount_price_amount?: {
+      price: number
+      type: string
+    } | null
+    regular_price_amount?: {
+      price: number
+      min_hours?: number
+      type: string
+    } | null
+  }
+  additional_details?: {
+    no_of_seats?: number
+    amenity_names?: string[]
+  }
 }
 
 interface ApiResponse {
@@ -41,6 +62,7 @@ interface Car {
   image: string
   price: number | undefined
   originalPrice?: number
+  priceType?: string // Type of price: 'day', 'week', 'km', 'trip', 'hour', 'month'
   rating: number
   features: string[]
   transmission: string
@@ -50,16 +72,42 @@ interface Car {
   discount?: number
   isDiscount?: boolean // Flag to indicate if showing discount price
   category?: string
+  amenities?: string[] // Amenities from API
+  priceDetails?: ApiPriceDetail[] // Store all price details
+  discountPriceDetails?: ApiPriceDetail[] // Store all discount price details
+}
+
+interface Amenity {
+  id: number
+  name: string
+}
+
+interface LocationState {
+  journeyDetails?: {
+    pickup_location?: string
+    drop_location?: string
+    journey_from_date?: string
+    journey_end_date?: string
+  }
 }
 
 function CarsList() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const state = location.state as LocationState
+  const journeyDetails = state?.journeyDetails
+  
   const [sortBy, setSortBy] = useState('cheapest')
   const [priceRange, setPriceRange] = useState([5000, 30000])
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(['Non Stop'])
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+  const [selectedSeatingCapacity, setSelectedSeatingCapacity] = useState<number[]>([])
   const [selectedDate, setSelectedDate] = useState('Fri, Nov 14, 2025')
   const [cars, setCars] = useState<Car[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [amenities, setAmenities] = useState<Amenity[]>([])
+  const [selectedCarForPrices, setSelectedCarForPrices] = useState<Car | null>(null)
+  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false)
 
   // Function to get backend image URL from API image URL/name
   const getBackendImageUrl = (imageUrl: string): string => {
@@ -85,16 +133,66 @@ function CarsList() {
     return `${backendBaseUrl}/storage/cars/${cleanImagePath}`
   }
 
+  // Fetch amenities from API
+  useEffect(() => {
+    const fetchAmenities = async () => {
+      try {
+        const apiUrl = import.meta.env.DEV 
+          ? '/api/amenities' 
+          : 'http://127.0.0.1:8000/api/amenities'
+        
+        const response = await fetch(apiUrl)
+        if (response.ok) {
+          const data = await response.json()
+          // Handle different response formats
+          if (data.success && data.data) {
+            setAmenities(data.data)
+          } else if (Array.isArray(data)) {
+            setAmenities(data)
+          } else if (data.amenities) {
+            setAmenities(data.amenities)
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching amenities:', err)
+      }
+    }
+
+    fetchAmenities()
+  }, [])
+
   // Fetch cars from API
   useEffect(() => {
     const fetchCars = async () => {
       try {
         setLoading(true)
         setError(null)
-        // Using proxy path through Vite dev server to avoid CORS issues
-        const apiUrl = import.meta.env.DEV 
+        
+        // Build API URL with query parameters if journey details are available
+        let apiUrl = import.meta.env.DEV 
           ? '/api/cars/list' 
           : 'http://127.0.0.1:8000/api/cars/list'
+        
+        // Add query parameters if journey details exist
+        const queryParams = new URLSearchParams()
+        if (journeyDetails?.journey_from_date) {
+          // Convert date to datetime format (YYYY-MM-DD HH:MM:SS)
+          // Add default time 10:00:00 for start date
+          const formattedStartDate = `${journeyDetails.journey_from_date} 10:00:00`
+          queryParams.append('journey_start_date', formattedStartDate)
+        }
+        if (journeyDetails?.journey_end_date) {
+          // Convert date to datetime format (YYYY-MM-DD HH:MM:SS)
+          // Add default time 18:00:00 for end date
+          const formattedEndDate = `${journeyDetails.journey_end_date} 18:00:00`
+          queryParams.append('journey_end_date', formattedEndDate)
+        }
+        
+        // Append query string if we have parameters
+        if (queryParams.toString()) {
+          apiUrl += '?' + queryParams.toString()
+        }
+        
         const response = await fetch(apiUrl)
         
         if (!response.ok) {
@@ -103,18 +201,20 @@ function CarsList() {
         
         const apiResponse: ApiResponse = await response.json()
         
+        // Debug: Log raw API response
+        console.log('Raw API response:', apiResponse)
+        if (apiResponse.data && apiResponse.data.length > 0) {
+          console.log('First car from API:', apiResponse.data[0])
+          console.log('First car price_details:', apiResponse.data[0].price_details)
+          console.log('First car discount_price_details:', apiResponse.data[0].discount_price_details)
+        }
+        
         if (apiResponse.success && apiResponse.data) {
           // Map API data to component's Car interface
           const mappedCars: Car[] = apiResponse.data
             .map((apiCar): Car => {
               // Generate default values for fields not in API response
               const rating = 4.0 + (Math.random() * 1.0) // Random rating between 4.0-5.0
-              
-              // Default features based on category
-              const defaultFeatures = ['AC', 'Music System', 'GPS']
-              if (apiCar.car_category >= 5) {
-                defaultFeatures.push('Premium Sound', 'Sunroof')
-              }
               
               // Default specs based on category
               const getTransmission = () => {
@@ -136,91 +236,39 @@ function CarsList() {
               // Get backend image URL from API response
               const backendImageUrl = getBackendImageUrl(apiCar.car_image_url)
 
-              // Helper function to convert price string/number to number, treating "0.00" as invalid
-              const parsePrice = (price: string | number | undefined): number | undefined => {
-                if (!price) return undefined
-                const numPrice = typeof price === 'string' ? parseFloat(price) : price
-                // Treat 0 or "0.00" as no price
-                return numPrice && numPrice > 0 ? numPrice : undefined
-              }
+              // Get amenities from additional_details.amenity_names
+              const carAmenities = apiCar.additional_details?.amenity_names || []
 
-              // Extract prices from price_details
-              let weeklyPrice: number | undefined = undefined
-              let dayPrice: number | undefined = undefined
-              
-              if (apiCar.price_details && apiCar.price_details.length > 0) {
-                // Find weekly price
-                const weeklyPriceDetail = apiCar.price_details.find(pd => 
-                  pd.price_type && pd.price_type.toLowerCase() === 'week'
-                )
-                
-                // Find day price
-                const dayPriceDetail = apiCar.price_details.find(pd => 
-                  pd.price_type && pd.price_type.toLowerCase() === 'day'
-                )
-                
-                if (weeklyPriceDetail) {
-                  weeklyPrice = parsePrice(weeklyPriceDetail.price)
-                }
-                
-                if (dayPriceDetail) {
-                  dayPrice = parsePrice(dayPriceDetail.price)
-                }
-              }
-              
-              // Extract discount prices if available (priority: weekly -> day)
-              let discountWeeklyPrice: number | undefined = undefined
-              let discountDayPrice: number | undefined = undefined
-              
-              if (apiCar.discount_price_details && apiCar.discount_price_details.length > 0) {
-                // Check weekly discount first
-                const weeklyDiscount = apiCar.discount_price_details.find(pd => 
-                  pd.price_type && pd.price_type.toLowerCase() === 'week'
-                )
-                
-                // Then day discount
-                const dayDiscount = apiCar.discount_price_details.find(pd => 
-                  pd.price_type && pd.price_type.toLowerCase() === 'day'
-                )
-                
-                if (weeklyDiscount) {
-                  discountWeeklyPrice = parsePrice(weeklyDiscount.price)
-                }
-                
-                if (dayDiscount) {
-                  discountDayPrice = parsePrice(dayDiscount.price)
-                }
-              }
-              
-              // Determine which price to display
-              // Priority: discount weekly > discount day > regular weekly > regular day
+              // Extract price from display_price object
+              // Priority: discount_price_amount > regular_price_amount
               let displayPrice: number | undefined = undefined
               let originalPrice: number | undefined = undefined
-              let discountPercentage: number | undefined = undefined
+              let priceType: string | undefined = undefined
               let isDiscount: boolean = false
-              
-              if (discountWeeklyPrice && discountWeeklyPrice > 0) {
-                // Show discount weekly price
-                displayPrice = discountWeeklyPrice
-                originalPrice = weeklyPrice
-                isDiscount = true
-                if (weeklyPrice && weeklyPrice > 0) {
-                  discountPercentage = Math.round(((weeklyPrice - discountWeeklyPrice) / weeklyPrice) * 100)
+              let discountPercentage: number | undefined = undefined
+
+              if (apiCar.display_price) {
+                const discountPrice = apiCar.display_price.discount_price_amount
+                const regularPrice = apiCar.display_price.regular_price_amount
+
+                // Check if discount price exists and is valid (> 0)
+                if (discountPrice && discountPrice.price && discountPrice.price > 0) {
+                  displayPrice = discountPrice.price
+                  priceType = discountPrice.type
+                  isDiscount = true
+                  
+                  // Calculate discount percentage if regular price exists
+                  if (regularPrice && regularPrice.price && regularPrice.price > 0) {
+                    originalPrice = regularPrice.price
+                    discountPercentage = Math.round(((regularPrice.price - discountPrice.price) / regularPrice.price) * 100)
+                  }
+                } 
+                // If no discount or discount is 0, use regular price
+                else if (regularPrice && regularPrice.price && regularPrice.price > 0) {
+                  displayPrice = regularPrice.price
+                  priceType = regularPrice.type
+                  isDiscount = false
                 }
-              } else if (discountDayPrice && discountDayPrice > 0) {
-                // Show discount day price
-                displayPrice = discountDayPrice
-                originalPrice = dayPrice
-                isDiscount = true
-                if (dayPrice && dayPrice > 0) {
-                  discountPercentage = Math.round(((dayPrice - discountDayPrice) / dayPrice) * 100)
-                }
-              } else if (weeklyPrice && weeklyPrice > 0) {
-                // No discount, show weekly price
-                displayPrice = weeklyPrice
-              } else if (dayPrice && dayPrice > 0) {
-                // No discount, show day price
-                displayPrice = dayPrice
               }
               
               return {
@@ -228,19 +276,51 @@ function CarsList() {
                 name: apiCar.car_name,
                 model: apiCar.car_model,
                 image: backendImageUrl,
-                price: displayPrice, // Show discount price if available, otherwise weekly/day price
+                price: displayPrice, // Show discount price if available, otherwise regular price
                 originalPrice: originalPrice, // Show original price when discount exists
+                priceType: priceType, // Type of price: 'day', 'week', etc.
                 rating: Math.round(rating * 10) / 10,
-                features: defaultFeatures,
+                features: carAmenities, // Use amenities from API instead of default features
                 transmission: getTransmission(),
-                seats: getSeats(),
+                seats: apiCar.additional_details?.no_of_seats || getSeats(), // Use API value if available
                 fuel: getFuel(),
                 available: apiCar.is_active,
                 discount: discountPercentage,
                 isDiscount: isDiscount, // Flag to show discount label
                 category: apiCar.category?.name,
+                amenities: carAmenities, // Add amenities from API
+                // Store price_details array - ensure it's properly structured
+                priceDetails: apiCar.price_details && Array.isArray(apiCar.price_details) && apiCar.price_details.length > 0
+                  ? apiCar.price_details.map(p => ({
+                      id: p.id,
+                      car_id: p.car_id,
+                      price_type: String(p.price_type || '').trim(),
+                      min_hours: p.min_hours,
+                      price: String(p.price || '0.00'),
+                      created_at: p.created_at,
+                      updated_at: p.updated_at
+                    }))
+                  : [],
+                // Store discount_price_details array - ensure it's properly structured
+                discountPriceDetails: apiCar.discount_price_details && Array.isArray(apiCar.discount_price_details) && apiCar.discount_price_details.length > 0
+                  ? apiCar.discount_price_details.map(p => ({
+                      id: p.id,
+                      car_id: p.car_id,
+                      price_type: String(p.price_type || '').trim(),
+                      price: String(p.price || '0.00'),
+                      created_at: p.created_at,
+                      updated_at: p.updated_at
+                    }))
+                  : []
               }
             })
+          
+          // Debug: Log a sample car to verify data is stored
+          if (mappedCars.length > 0) {
+            console.log('Sample mapped car:', mappedCars[0])
+            console.log('Sample car priceDetails:', mappedCars[0].priceDetails)
+            console.log('Sample car discountPriceDetails:', mappedCars[0].discountPriceDetails)
+          }
           
           setCars(mappedCars)
         } else {
@@ -255,7 +335,7 @@ function CarsList() {
     }
 
     fetchCars()
-  }, [])
+  }, [journeyDetails?.journey_from_date, journeyDetails?.journey_end_date])
 
   const dates = [
     { date: 'Thu, Nov 13', price: 7134 },
@@ -276,11 +356,39 @@ function CarsList() {
     )
   }
 
-  const clearAllFilters = () => {
-    setSelectedFilters([])
+  const toggleSeatingCapacity = (seats: number) => {
+    setSelectedSeatingCapacity(prev =>
+      prev.includes(seats)
+        ? prev.filter(s => s !== seats)
+        : [...prev, seats]
+    )
   }
 
-  const sortedCars = [...cars].sort((a, b) => {
+  const clearAllFilters = () => {
+    setSelectedFilters([])
+    setSelectedSeatingCapacity([])
+  }
+
+  // Filter cars based on selected amenities and seating capacity
+  const filteredCars = cars.filter(car => {
+    // Filter by amenities
+    if (selectedFilters.length > 0) {
+      if (!car.amenities || car.amenities.length === 0) return false
+      const hasAllAmenities = selectedFilters.every(filter => 
+        car.amenities?.includes(filter)
+      )
+      if (!hasAllAmenities) return false
+    }
+
+    // Filter by seating capacity
+    if (selectedSeatingCapacity.length > 0) {
+      if (!selectedSeatingCapacity.includes(car.seats)) return false
+    }
+
+    return true
+  })
+
+  const sortedCars = [...filteredCars].sort((a, b) => {
     if (sortBy === 'cheapest') {
       const priceA = a.price ?? Infinity // Treat undefined as highest price
       const priceB = b.price ?? Infinity
@@ -397,12 +505,18 @@ function CarsList() {
           <div className="filters-section">
             <div className="applied-filters">
               <h3>Applied Filters</h3>
-              {selectedFilters.length > 0 ? (
+              {selectedFilters.length > 0 || selectedSeatingCapacity.length > 0 ? (
                 <div className="filter-tags">
                   {selectedFilters.map((filter, index) => (
                     <span key={index} className="filter-tag">
                       {filter}
                       <button onClick={() => toggleFilter(filter)}>×</button>
+                    </span>
+                  ))}
+                  {selectedSeatingCapacity.map((seats, index) => (
+                    <span key={`seats-${index}`} className="filter-tag">
+                      {seats} Seater
+                      <button onClick={() => toggleSeatingCapacity(seats)}>×</button>
                     </span>
                   ))}
                   <button className="clear-all" onClick={clearAllFilters}>
@@ -416,42 +530,20 @@ function CarsList() {
 
             <div className="filter-group">
               <h3>Popular Filters</h3>
-              <label className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes('Non Stop')}
-                  onChange={() => toggleFilter('Non Stop')}
-                />
-                <span>Non Stop</span>
-                <span className="filter-price">₹ 5,769</span>
-              </label>
-              <label className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes('AC')}
-                  onChange={() => toggleFilter('AC')}
-                />
-                <span>AC Available</span>
-                <span className="filter-price">₹ 5,769</span>
-              </label>
-              <label className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes('Automatic')}
-                  onChange={() => toggleFilter('Automatic')}
-                />
-                <span>Automatic</span>
-                <span className="filter-price">₹ 6,500</span>
-              </label>
-              <label className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes('GPS')}
-                  onChange={() => toggleFilter('GPS')}
-                />
-                <span>GPS Navigation</span>
-                <span className="filter-price">₹ 5,844</span>
-              </label>
+              {amenities.length === 0 ? (
+                <p style={{ padding: '10px', color: '#666', fontSize: '14px' }}>Loading amenities...</p>
+              ) : (
+                amenities.map((amenity) => (
+                  <label key={amenity.id} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedFilters.includes(amenity.name)}
+                      onChange={() => toggleFilter(amenity.name)}
+                    />
+                    <span>{amenity.name}</span>
+                  </label>
+                ))
+              )}
             </div>
 
             <div className="filter-group">
@@ -481,14 +573,28 @@ function CarsList() {
             <div className="filter-group">
               <h3>Seating Capacity</h3>
               <label className="filter-checkbox">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={selectedSeatingCapacity.includes(5)}
+                  onChange={() => toggleSeatingCapacity(5)}
+                />
                 <span>5 Seater</span>
-                <span className="filter-price">₹ 4,500</span>
               </label>
               <label className="filter-checkbox">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={selectedSeatingCapacity.includes(7)}
+                  onChange={() => toggleSeatingCapacity(7)}
+                />
                 <span>7 Seater</span>
-                <span className="filter-price">₹ 5,769</span>
+              </label>
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={selectedSeatingCapacity.includes(8)}
+                  onChange={() => toggleSeatingCapacity(8)}
+                />
+                <span>8 Seater</span>
               </label>
             </div>
           </div>
@@ -541,9 +647,9 @@ function CarsList() {
             ) : (
               sortedCars.map((car) => (
               <div key={car.id} className="car-listing-card">
-                {car.discount && (
+                {/* {car.discount && (
                   <div className="discount-badge">{car.discount}% OFF</div>
-                )}
+                )} */}
                 <div className="car-listing-content">
                   <div className="car-image-section">
                     <img 
@@ -582,19 +688,42 @@ function CarsList() {
                         </div>
                       </div>
                       <div className="car-price-section">
-                        {car.originalPrice && car.originalPrice > 0 && (
-                          <span className="original-price">₹ {car.originalPrice.toLocaleString()}</span>
-                        )}
-                        {car.price ? (
-                          <>
-                            <span className="current-price">₹ {car.price.toLocaleString()}</span>
-                            <span className="price-label">
-                              {car.isDiscount ? 'discount' : 'per day'}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="current-price">Price N/A</span>
-                        )}
+                        <div>
+                          {car.originalPrice && car.originalPrice > 0 && (
+                            <span className="original-price">₹ {car.originalPrice.toLocaleString()}</span>
+                          )}
+                          {car.price ? (
+                            <>
+                              <span className="current-price">₹ {car.price.toLocaleString()}</span>
+                              <span className="price-label">
+                                {car.isDiscount 
+                                  ? `discount (${car.priceType || 'per day'})` 
+                                  : `per ${car.priceType || 'day'}`}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="current-price">Price N/A</span>
+                          )}
+                        </div>
+                        <button 
+                          className="book-now-btn"
+                          onClick={() => {
+                            navigate('/booking', {
+                              state: {
+                                car: {
+                                  id: car.id,
+                                  name: car.name,
+                                  model: car.model,
+                                  image: car.image,
+                                  price: car.price,
+                                  priceType: car.priceType
+                                }
+                              }
+                            })
+                          }}
+                        >
+                          BOOK NOW
+                        </button>
                       </div>
                     </div>
 
@@ -619,10 +748,67 @@ function CarsList() {
                       ))}
                     </div>
 
+                    {car.amenities && car.amenities.length > 0 && (
+                      <div className="car-amenities" style={{ marginTop: '10px' }}>
+                        <span className="spec-label" style={{ fontWeight: '600', marginRight: '8px' }}>Amenities:</span>
+                        {car.amenities.map((amenity, index) => (
+                          <span 
+                            key={index} 
+                            className="amenity-tag" 
+                            style={{
+                              display: 'inline-block',
+                              background: '#f0f7ff',
+                              color: '#0066cc',
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              marginRight: '6px',
+                              marginTop: '4px',
+                              border: '1px solid #cce5ff'
+                            }}
+                          >
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="car-actions">
-                      <button className="view-prices-btn">VIEW PRICES</button>
-                      <button className="lock-price-btn">Lock this price starting from ₹ 306 →</button>
-                      <button className="compare-btn">Add to compare +</button>
+                      <button 
+                        className="view-prices-btn"
+                        onClick={() => {
+                          console.log('=== CLICKING VIEW PRICES ===')
+                          console.log('Original car object:', car)
+                          console.log('car.priceDetails:', car.priceDetails)
+                          console.log('car.priceDetails type:', typeof car.priceDetails)
+                          console.log('car.priceDetails isArray:', Array.isArray(car.priceDetails))
+                          console.log('car.discountPriceDetails:', car.discountPriceDetails)
+                          console.log('car.discountPriceDetails type:', typeof car.discountPriceDetails)
+                          console.log('car.discountPriceDetails isArray:', Array.isArray(car.discountPriceDetails))
+                          
+                          // Ensure we have the price details arrays
+                          const carWithPrices: Car = {
+                            ...car,
+                            priceDetails: Array.isArray(car.priceDetails) && car.priceDetails.length > 0 
+                              ? [...car.priceDetails] 
+                              : [],
+                            discountPriceDetails: Array.isArray(car.discountPriceDetails) && car.discountPriceDetails.length > 0
+                              ? [...car.discountPriceDetails]
+                              : []
+                          }
+                          
+                          console.log('Car with prices to set:', carWithPrices)
+                          console.log('carWithPrices.priceDetails:', carWithPrices.priceDetails)
+                          console.log('carWithPrices.discountPriceDetails:', carWithPrices.discountPriceDetails)
+                          
+                          setSelectedCarForPrices(carWithPrices)
+                          setIsPriceModalOpen(true)
+                        }}
+                      >
+                        VIEW PRICES
+                      </button>
+                      {/* <button className="lock-price-btn">Lock this price starting from ₹ 306 →</button>
+                      <button className="compare-btn">Add to compare +</button> */}
                     </div>
 
                     <div className="car-offers">
@@ -637,6 +823,205 @@ function CarsList() {
           </div>
         </main>
       </div>
+
+      {/* Price Details Modal */}
+      {isPriceModalOpen && selectedCarForPrices && (
+        <div className="price-modal-overlay" onClick={() => setIsPriceModalOpen(false)}>
+          <div className="price-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="price-modal-header">
+              <h2>Price Details - {selectedCarForPrices.name} {selectedCarForPrices.model}</h2>
+              <button className="price-modal-close" onClick={() => setIsPriceModalOpen(false)}>×</button>
+            </div>
+            <div className="price-modal-body">
+              <div className="price-table-container">
+                {(() => {
+                  // Debug logging
+                  console.log('=== MODAL RENDER ===')
+                  console.log('selectedCarForPrices:', selectedCarForPrices)
+                  console.log('priceDetails:', selectedCarForPrices.priceDetails)
+                  console.log('discountPriceDetails:', selectedCarForPrices.discountPriceDetails)
+                  console.log('priceDetails type:', typeof selectedCarForPrices.priceDetails)
+                  console.log('priceDetails isArray:', Array.isArray(selectedCarForPrices.priceDetails))
+                  console.log('priceDetails length:', Array.isArray(selectedCarForPrices.priceDetails) ? selectedCarForPrices.priceDetails.length : 'N/A')
+                  
+                  // Get all unique price types from both arrays
+                  const allPriceTypes = new Set<string>()
+                  
+                  // Collect price types from price_details
+                  const priceDetails = selectedCarForPrices.priceDetails
+                  if (priceDetails && Array.isArray(priceDetails)) {
+                    console.log('Processing priceDetails, count:', priceDetails.length)
+                    priceDetails.forEach((p, idx) => {
+                      console.log(`  Price detail ${idx}:`, p)
+                      if (p && p.price_type) {
+                        const type = String(p.price_type).toLowerCase().trim()
+                        console.log(`  Adding type: ${type}`)
+                        allPriceTypes.add(type)
+                      }
+                    })
+                  } else {
+                    console.log('priceDetails is not an array or is null')
+                  }
+                  
+                  // Collect price types from discount_price_details
+                  const discountPriceDetails = selectedCarForPrices.discountPriceDetails
+                  if (discountPriceDetails && Array.isArray(discountPriceDetails)) {
+                    console.log('Processing discountPriceDetails, count:', discountPriceDetails.length)
+                    discountPriceDetails.forEach((p, idx) => {
+                      console.log(`  Discount price detail ${idx}:`, p)
+                      if (p && p.price_type) {
+                        const type = String(p.price_type).toLowerCase().trim()
+                        console.log(`  Adding type: ${type}`)
+                        allPriceTypes.add(type)
+                      }
+                    })
+                  } else {
+                    console.log('discountPriceDetails is not an array or is null')
+                  }
+                  
+                  console.log('All collected price types:', Array.from(allPriceTypes))
+                  
+                  // Sort price types for consistent display
+                  const priceTypesToShow = Array.from(allPriceTypes).sort()
+                  
+                  // If no price types found, show message with debug info
+                  if (priceTypesToShow.length === 0) {
+                    return (
+                      <div style={{padding: '20px'}}>
+                        <p className="no-prices-message">No price details available for this car.</p>
+                        <div style={{marginTop: '15px', padding: '15px', background: '#f5f5f5', borderRadius: '4px', fontSize: '12px'}}>
+                          <strong>Debug Info:</strong>
+                          <pre style={{marginTop: '10px', overflow: 'auto'}}>
+                            {JSON.stringify({
+                              hasPriceDetails: !!selectedCarForPrices.priceDetails,
+                              priceDetailsIsArray: Array.isArray(selectedCarForPrices.priceDetails),
+                              priceDetailsLength: Array.isArray(selectedCarForPrices.priceDetails) ? selectedCarForPrices.priceDetails.length : null,
+                              hasDiscountPriceDetails: !!selectedCarForPrices.discountPriceDetails,
+                              discountPriceDetailsIsArray: Array.isArray(selectedCarForPrices.discountPriceDetails),
+                              discountPriceDetailsLength: Array.isArray(selectedCarForPrices.discountPriceDetails) ? selectedCarForPrices.discountPriceDetails.length : null,
+                              priceDetails: selectedCarForPrices.priceDetails,
+                              discountPriceDetails: selectedCarForPrices.discountPriceDetails
+                            }, null, 2)}
+                          </pre>
+                        </div>
+                      </div>
+                    )
+                  }
+                  
+                  return (
+                    <table className="price-table">
+                      <thead>
+                        <tr>
+                          <th>Price Type</th>
+                          <th>Regular Price</th>
+                          <th>Discount Price</th>
+                          <th>Min Hours</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {priceTypesToShow.map((type) => {
+                          // Find matching price in price_details
+                          const regularPrice = selectedCarForPrices.priceDetails?.find(
+                            p => p && p.price_type && p.price_type.toLowerCase().trim() === type
+                          )
+                          
+                          // Find matching price in discount_price_details
+                          const discountPrice = selectedCarForPrices.discountPriceDetails?.find(
+                            p => p && p.price_type && p.price_type.toLowerCase().trim() === type
+                          )
+                          
+                          // Parse regular price value
+                          let regularPriceValue: number | null = null
+                          if (regularPrice && regularPrice.price !== undefined && regularPrice.price !== null) {
+                            const parsed = typeof regularPrice.price === 'string' 
+                              ? parseFloat(regularPrice.price) 
+                              : regularPrice.price
+                            regularPriceValue = isNaN(parsed) ? null : parsed
+                          }
+                          
+                          // Parse discount price value
+                          let discountPriceValue: number | null = null
+                          if (discountPrice && discountPrice.price !== undefined && discountPrice.price !== null) {
+                            const parsed = typeof discountPrice.price === 'string' 
+                              ? parseFloat(discountPrice.price) 
+                              : discountPrice.price
+                            discountPriceValue = isNaN(parsed) ? null : parsed
+                          }
+                          
+                          // Determine if we have entries
+                          const hasRegularEntry = regularPrice !== undefined
+                          const hasDiscountEntry = discountPrice !== undefined
+                          
+                          return (
+                            <tr key={type}>
+                              <td className="price-type-cell">
+                                <span className="price-type-badge">{type.toUpperCase()}</span>
+                              </td>
+                              <td className="regular-price-cell">
+                                {hasRegularEntry && regularPriceValue !== null && regularPriceValue > 0 ? (
+                                  <span className="regular-price">₹ {regularPriceValue.toLocaleString()}</span>
+                                ) : hasRegularEntry ? (
+                                  <span className="no-price">₹ 0.00</span>
+                                ) : (
+                                  <span className="no-price">-</span>
+                                )}
+                              </td>
+                              <td className="discount-price-cell">
+                                {hasDiscountEntry && discountPriceValue !== null && discountPriceValue > 0 ? (
+                                  <div>
+                                    <span className="discount-price">₹ {discountPriceValue.toLocaleString()}</span>
+                                    {regularPriceValue && regularPriceValue > 0 && regularPriceValue > discountPriceValue && (
+                                      <span className="discount-badge-small">
+                                        {Math.round(((regularPriceValue - discountPriceValue) / regularPriceValue) * 100)}% OFF
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : hasDiscountEntry ? (
+                                  <span className="no-price">₹ 0.00</span>
+                                ) : (
+                                  <span className="no-price">-</span>
+                                )}
+                              </td>
+                              <td className="min-hours-cell">
+                                {regularPrice?.min_hours !== undefined && regularPrice?.min_hours !== null 
+                                  ? `${regularPrice.min_hours} hrs` 
+                                  : '-'}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  )
+                })()}
+              </div>
+            </div>
+            <div className="price-modal-footer">
+              <button 
+                className="book-now-modal-btn" 
+                onClick={() => {
+                  setIsPriceModalOpen(false)
+                  navigate('/booking', {
+                    state: {
+                      car: {
+                        id: selectedCarForPrices.id,
+                        name: selectedCarForPrices.name,
+                        model: selectedCarForPrices.model,
+                        image: selectedCarForPrices.image,
+                        price: selectedCarForPrices.price,
+                        priceType: selectedCarForPrices.priceType
+                      },
+                      journeyDetails: journeyDetails
+                    }
+                  })
+                }}
+              >
+                BOOK NOW
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
