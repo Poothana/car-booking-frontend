@@ -7,11 +7,6 @@ interface Category {
   name: string
 }
 
-interface PriceType {
-  id: number
-  type_name: string
-}
-
 interface Amenity {
   id: number
   name: string
@@ -43,7 +38,6 @@ function AdminCar() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [categories, setCategories] = useState<Category[]>([])
-  const [priceTypes, setPriceTypes] = useState<PriceType[]>([])
   const [amenities, setAmenities] = useState<Amenity[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -69,10 +63,15 @@ function AdminCar() {
     ]
   })
 
-  // Fetch categories, price types, and amenities on component mount
+  // New price logic fields
+  const [km, setKm] = useState<number>(0)
+  const [pricePerKm, setPricePerKm] = useState<number>(0)
+  const [pricePerDay, setPricePerDay] = useState<number>(0)
+  const [fuelChargePerLiter, setFuelChargePerLiter] = useState<number>(0)
+
+  // Fetch categories and amenities on component mount
   useEffect(() => {
     fetchCategories()
-    fetchPriceTypes()
     fetchAmenities()
   }, [])
 
@@ -103,56 +102,6 @@ function AdminCar() {
         { id: 4, name: 'MUV' },
         { id: 5, name: 'Luxury' },
         { id: 6, name: 'Premium Sedan' },
-      ])
-    }
-  }
-
-  const fetchPriceTypes = async () => {
-    try {
-      const apiUrl = import.meta.env.DEV 
-        ? '/api/price-type' 
-        : 'http://127.0.0.1:8000/api/price-type'
-      
-      const response = await fetch(apiUrl)
-      if (response.ok) {
-        const data = await response.json()
-        // Handle different response formats
-        if (data.success && data.data) {
-          setPriceTypes(data.data)
-          // Initialize price_details with fetched price types if form is empty
-          if (data.data.length > 0 && formData.price_details.length === 2 && formData.price_details[0].price_type === 'day') {
-            // Find 'day' and 'week' price types or use first two
-            const dayType = data.data.find((pt: PriceType) => pt.type_name === 'day')
-            const weekType = data.data.find((pt: PriceType) => pt.type_name === 'week')
-            const typesToUse = dayType && weekType ? [dayType, weekType] : data.data.slice(0, 2)
-            
-            const initialPriceDetails = typesToUse.map((pt: PriceType) => ({
-              price_type: pt.type_name,
-              min_hours: 24, // Default min_hours
-              price: 0
-            }))
-            const initialDiscountPrices = typesToUse.map((pt: PriceType) => ({
-              price_type: pt.type_name,
-              price: 0
-            }))
-            setFormData(prev => ({
-              ...prev,
-              price_details: initialPriceDetails,
-              discount_price_details: initialDiscountPrices
-            }))
-          }
-        } else if (Array.isArray(data)) {
-          setPriceTypes(data)
-        } else if (data.price_types) {
-          setPriceTypes(data.price_types)
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching price types:', err)
-      // Fallback to default price types
-      setPriceTypes([
-        { id: 1, type_name: 'day' },
-        { id: 2, type_name: 'week' }
       ])
     }
   }
@@ -203,33 +152,7 @@ function AdminCar() {
     }
   }
 
-  const handlePriceDetailChange = (index: number, field: string, value: string | number) => {
-    setFormData(prev => {
-      const newPriceDetails = [...prev.price_details]
-      newPriceDetails[index] = {
-        ...newPriceDetails[index],
-        [field]: field === 'min_hours' || field === 'price' ? Number(value) : value
-      }
-      return {
-        ...prev,
-        price_details: newPriceDetails
-      }
-    })
-  }
-
-  const handleDiscountPriceChange = (index: number, field: string, value: string | number) => {
-    setFormData(prev => {
-      const newDiscountPrices = [...prev.discount_price_details]
-      newDiscountPrices[index] = {
-        ...newDiscountPrices[index],
-        [field]: field === 'price' ? Number(value) : value
-      }
-      return {
-        ...prev,
-        discount_price_details: newDiscountPrices
-      }
-    })
-  }
+  // Removed handlePriceDetailChange and handleDiscountPriceChange as price details sections are hidden
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -285,6 +208,24 @@ function AdminCar() {
         throw new Error('Please select a car image')
       }
 
+      // Validate new price fields
+      if (km <= 0) {
+        throw new Error('Please enter a valid distance (KM)')
+      }
+
+      if (km > 300) {
+        if (pricePerKm <= 0) {
+          throw new Error('Please enter a valid price per KM')
+        }
+      } else {
+        if (pricePerDay <= 0) {
+          throw new Error('Please enter a valid price per day')
+        }
+        if (fuelChargePerLiter <= 0) {
+          throw new Error('Please enter a valid fuel charge per liter')
+        }
+      }
+
       // Create FormData to match the API structure
       const formDataToSend = new FormData()
       
@@ -304,19 +245,24 @@ function AdminCar() {
         })
       }
       
-      // Price details
-      formData.price_details.forEach((priceDetail, index) => {
-        formDataToSend.append(`price_details[${index}][price_type]`, priceDetail.price_type)
-        formDataToSend.append(`price_details[${index}][min_hours]`, priceDetail.min_hours.toString())
-        formDataToSend.append(`price_details[${index}][price]`, (priceDetail.price || 0).toString())
-      })
+      // Price details array format
+      // First entry: price_type = 'km', price = km value
+      formDataToSend.append('price_details[0][price_type]', 'km')
+      formDataToSend.append('price_details[0][price]', km.toFixed(2))
       
-      // Discount price details (format price with 2 decimal places)
-      formData.discount_price_details.forEach((discountPrice, index) => {
-        formDataToSend.append(`discount_price_details[${index}][price_type]`, discountPrice.price_type)
-        const formattedPrice = parseFloat(discountPrice.price.toString()).toFixed(2)
-        formDataToSend.append(`discount_price_details[${index}][price]`, formattedPrice)
-      })
+      // Second entry: price_type = 'day', price = price per day value
+      formDataToSend.append('price_details[1][price_type]', 'day')
+      formDataToSend.append('price_details[1][price]', pricePerDay.toFixed(2))
+      
+      // If km > 300, also send price_per_km
+      if (km > 300) {
+        formDataToSend.append('price_per_km', pricePerKm.toFixed(2))
+      }
+      
+      // If km <= 300, also send fuel charge
+      if (km <= 300) {
+        formDataToSend.append('fuel_charge_per_liter', fuelChargePerLiter.toFixed(2))
+      }
       
       // Add image file directly in the request
       // Backend will handle saving it and storing the filename
@@ -336,8 +282,10 @@ function AdminCar() {
         is_active: formData.is_active,
         no_of_seats: formData.no_of_seats,
         image_file: selectedImage?.name,
-        price_details: formData.price_details,
-        discount_price_details: formData.discount_price_details
+        km: km,
+        price_structure: km > 300 
+          ? { price_per_km: pricePerKm }
+          : { price_per_day: pricePerDay, fuel_charge_per_liter: fuelChargePerLiter }
       })
       console.log('Sending image file directly in request. Backend will handle storage.')
 
@@ -588,96 +536,85 @@ function AdminCar() {
             </div>
           </div>
 
-          {/* Price Details Section */}
+          {/* New Price Details Section */}
           <div className="form-section">
             <h2 className="section-title">Price Details</h2>
-            <div className="price-details-grid">
-              {formData.price_details.map((priceDetail, index) => {
-                const priceType = priceTypes.find(pt => pt.type_name === priceDetail.price_type)
-                return (
-                  <div key={index} className="price-detail-card">
-                    <h3 className="price-detail-title">
-                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : priceDetail.price_type} Pricing
-                    </h3>
-                    <div className="form-group">
-                      <label>Price Type</label>
-                      <select
-                        value={priceDetail.price_type}
-                        onChange={(e) => {
-                          handlePriceDetailChange(index, 'price_type', e.target.value)
-                        }}
-                      >
-                        {priceTypes.map(pt => (
-                          <option key={pt.id} value={pt.type_name}>
-                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Minimum Hours</label>
-                      <input
-                        type="number"
-                        value={priceDetail.min_hours}
-                        onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
-                        min="1"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Price (₹) <span className="required">*</span></label>
-                      <input
-                        type="number"
-                        value={priceDetail.price || 0}
-                        onChange={(e) => handlePriceDetailChange(index, 'price', e.target.value)}
-                        min="0"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="km">Distance (KM) <span className="required">*</span></label>
+                <input
+                  type="number"
+                  id="km"
+                  name="km"
+                  value={km}
+                  onChange={(e) => setKm(parseFloat(e.target.value) || 0)}
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="Enter distance in kilometers"
+                />
+                <small className="form-help">
+                  Enter the distance in kilometers to determine pricing structure
+                </small>
+              </div>
 
-          {/* Discount Price Details Section */}
-          <div className="form-section">
-            <h2 className="section-title">Discount Price Details (Optional)</h2>
-            <div className="price-details-grid">
-              {formData.discount_price_details.map((discountPrice, index) => {
-                const priceType = priceTypes.find(pt => pt.type_name === discountPrice.price_type)
-                return (
-                  <div key={index} className="price-detail-card">
-                    <h3 className="price-detail-title">
-                      {priceType ? priceType.type_name.charAt(0).toUpperCase() + priceType.type_name.slice(1) : discountPrice.price_type} Discount Price
-                    </h3>
-                    <div className="form-group">
-                      <label>Price Type</label>
-                      <select
-                        value={discountPrice.price_type}
-                        onChange={(e) => handleDiscountPriceChange(index, 'price_type', e.target.value)}
-                      >
-                        {priceTypes.map(pt => (
-                          <option key={pt.id} value={pt.type_name}>
-                            {pt.type_name.charAt(0).toUpperCase() + pt.type_name.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Discount Price (₹)</label>
-                      <input
-                        type="number"
-                        value={discountPrice.price}
-                        onChange={(e) => handleDiscountPriceChange(index, 'price', e.target.value)}
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
+              {km > 300 ? (
+                // Price per km (when km > 300)
+                <div className="form-group">
+                  <label htmlFor="price_per_km">Price Per KM (₹) <span className="required">*</span></label>
+                  <input
+                    type="number"
+                    id="price_per_km"
+                    name="price_per_km"
+                    value={pricePerKm}
+                    onChange={(e) => setPricePerKm(parseFloat(e.target.value) || 0)}
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="Enter price per kilometer"
+                  />
+                  <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
+                    Pricing Mode: Per Kilometer (Distance is above 300 KM)
+                  </small>
+                </div>
+              ) : (
+                // Price per day + fuel charge (when km <= 300)
+                <>
+                  <div className="form-group">
+                    <label htmlFor="price_per_day">Price Per Day Rent (₹) <span className="required">*</span></label>
+                    <input
+                      type="number"
+                      id="price_per_day"
+                      name="price_per_day"
+                      value={pricePerDay}
+                      onChange={(e) => setPricePerDay(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="Enter price per day"
+                    />
                   </div>
-                )
-              })}
+                  <div className="form-group">
+                    <label htmlFor="fuel_charge_per_liter">Fuel Charge Per Liter (₹) <span className="required">*</span></label>
+                    <input
+                      type="number"
+                      id="fuel_charge_per_liter"
+                      name="fuel_charge_per_liter"
+                      value={fuelChargePerLiter}
+                      onChange={(e) => setFuelChargePerLiter(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="Enter fuel charge per liter"
+                    />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
+                      Pricing Mode: Per Day Rent + Fuel Charge (Distance is 300 KM or below)
+                    </small>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

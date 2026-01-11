@@ -59,6 +59,12 @@ function AdminCarEdit() {
   const [useDirectFileUpload, setUseDirectFileUpload] = useState(false)
   const [existingImageUrl, setExistingImageUrl] = useState<string>('')
 
+  // New price logic fields
+  const [km, setKm] = useState<number>(0)
+  const [pricePerKm, setPricePerKm] = useState<number>(0)
+  const [pricePerDay, setPricePerDay] = useState<number>(0)
+  const [fuelChargePerLiter, setFuelChargePerLiter] = useState<number>(0)
+
   const [formData, setFormData] = useState<CarFormData>({
     car_name: '',
     car_model: '',
@@ -337,6 +343,41 @@ function AdminCarEdit() {
           { price_type: 'week', price: 0 }
         ]
       })
+      
+      // Extract new price fields from price_details array
+      if (car.price_details && Array.isArray(car.price_details)) {
+        const kmPrice = car.price_details.find((pd: any) => pd.price_type === 'km')
+        const dayPrice = car.price_details.find((pd: any) => pd.price_type === 'day')
+        
+        if (kmPrice) {
+          setKm(parseFloat(kmPrice.price) || 0)
+          // Extract fuel_charge_per_liter from price_details item if available
+          if (kmPrice.fuel_charge_per_liter !== undefined) {
+            setFuelChargePerLiter(parseFloat(kmPrice.fuel_charge_per_liter) || 0)
+          }
+        }
+        if (dayPrice) {
+          setPricePerDay(parseFloat(dayPrice.price) || 0)
+          // Extract fuel_charge_per_liter from price_details item if available (fallback)
+          if (dayPrice.fuel_charge_per_liter !== undefined && !kmPrice?.fuel_charge_per_liter) {
+            setFuelChargePerLiter(parseFloat(dayPrice.fuel_charge_per_liter) || 0)
+          }
+        }
+      }
+      
+      // Extract fuel_charge_per_liter from root level of API response (highest priority)
+      if (car.fuel_charge_per_liter !== undefined) {
+        setFuelChargePerLiter(parseFloat(car.fuel_charge_per_liter) || 0)
+      } else if (car.additional_details?.fuel_charge_per_liter !== undefined) {
+        // Fallback to additional_details if not in root
+        setFuelChargePerLiter(parseFloat(car.additional_details.fuel_charge_per_liter) || 0)
+      }
+      
+      // Extract price_per_km if exists
+      if (car.additional_details?.price_per_km !== undefined) {
+        setPricePerKm(parseFloat(car.additional_details.price_per_km) || 0)
+      }
+      
       setExistingImageUrl(car.car_image_url || '')
       setImageFileName(car.car_image_url || '')
     } catch (err) {
@@ -522,6 +563,24 @@ function AdminCarEdit() {
         throw new Error('Please select a car image')
       }
 
+      // Validate new price fields
+      if (km <= 0) {
+        throw new Error('Please enter a valid distance (KM)')
+      }
+
+      if (km > 300) {
+        if (pricePerKm <= 0) {
+          throw new Error('Please enter a valid price per KM')
+        }
+      } else {
+        if (pricePerDay <= 0) {
+          throw new Error('Please enter a valid price per day')
+        }
+        if (fuelChargePerLiter <= 0) {
+          throw new Error('Please enter a valid fuel charge per liter')
+        }
+      }
+
       const formDataToSend = new FormData()
       
       formDataToSend.append('car_name', formData.car_name.trim())
@@ -537,11 +596,22 @@ function AdminCarEdit() {
         })
       }
       
-      formData.price_details.forEach((priceDetail, index) => {
-        formDataToSend.append(`price_details[${index}][price_type]`, priceDetail.price_type)
-        formDataToSend.append(`price_details[${index}][min_hours]`, priceDetail.min_hours.toString())
-        formDataToSend.append(`price_details[${index}][price]`, (priceDetail.price || 0).toString())
-      })
+      // Price details array format (new structure)
+      // First entry: price_type = 'km', price = km value
+      formDataToSend.append('price_details[0][price_type]', 'km')
+      formDataToSend.append('price_details[0][price]', km.toFixed(2))
+      
+      // Second entry: price_type = 'day', price = price per day value
+      formDataToSend.append('price_details[1][price_type]', 'day')
+      formDataToSend.append('price_details[1][price]', pricePerDay.toFixed(2))
+      
+      // Always send fuel_charge_per_liter
+      formDataToSend.append('fuel_charge_per_liter', fuelChargePerLiter.toFixed(2))
+      
+      // If km > 300, also send price_per_km
+      if (km > 300 && pricePerKm > 0) {
+        formDataToSend.append('price_per_km', pricePerKm.toFixed(2))
+      }
       
       formData.discount_price_details.forEach((discountPrice, index) => {
         formDataToSend.append(`discount_price_details[${index}][price_type]`, discountPrice.price_type)
@@ -881,8 +951,90 @@ function AdminCarEdit() {
             </div>
           </div>
 
-          {/* Price Details Section */}
+          {/* New Price Details Section */}
           <div className="form-section">
+            <h2 className="section-title">Price Details</h2>
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="km">Distance (KM) <span className="required">*</span></label>
+                <input
+                  type="number"
+                  id="km"
+                  name="km"
+                  value={km}
+                  onChange={(e) => setKm(parseFloat(e.target.value) || 0)}
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="Enter distance in kilometers"
+                />
+                <small className="form-help">
+                  Enter the distance in kilometers to determine pricing structure
+                </small>
+              </div>
+
+              {km > 300 ? (
+                // Price per km (when km > 300)
+                <div className="form-group">
+                  <label htmlFor="price_per_km">Price Per KM (₹) <span className="required">*</span></label>
+                  <input
+                    type="number"
+                    id="price_per_km"
+                    name="price_per_km"
+                    value={pricePerKm}
+                    onChange={(e) => setPricePerKm(parseFloat(e.target.value) || 0)}
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="Enter price per kilometer"
+                  />
+                  <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
+                    Pricing Mode: Per Kilometer (Distance is above 300 KM)
+                  </small>
+                </div>
+              ) : (
+                // Price per day + fuel charge (when km <= 300)
+                <>
+                  <div className="form-group">
+                    <label htmlFor="price_per_day">Price Per Day Rent (₹) <span className="required">*</span></label>
+                    <input
+                      type="number"
+                      id="price_per_day"
+                      name="price_per_day"
+                      value={pricePerDay}
+                      onChange={(e) => setPricePerDay(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="Enter price per day"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="fuel_charge_per_liter">Fuel Charge Per Liter (₹) <span className="required">*</span></label>
+                    <input
+                      type="number"
+                      id="fuel_charge_per_liter"
+                      name="fuel_charge_per_liter"
+                      value={fuelChargePerLiter}
+                      onChange={(e) => setFuelChargePerLiter(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="Enter fuel charge per liter"
+                    />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
+                      Pricing Mode: Per Day Rent + Fuel Charge (Distance is 300 KM or below)
+                    </small>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Old Price Details Section - HIDDEN */}
+          <div className="form-section" style={{ display: 'none' }}>
             <h2 className="section-title">Price Details</h2>
             <div className="price-details-grid">
               {formData.price_details.map((priceDetail, index) => {
@@ -913,8 +1065,7 @@ function AdminCarEdit() {
                         type="number"
                         value={priceDetail.min_hours}
                         onChange={(e) => handlePriceDetailChange(index, 'min_hours', e.target.value)}
-                        min="1"
-                        required
+                        min="0"
                       />
                     </div>
                     <div className="form-group">
@@ -925,7 +1076,6 @@ function AdminCarEdit() {
                         onChange={(e) => handlePriceDetailChange(index, 'price', e.target.value)}
                         min="0"
                         step="0.01"
-                        required
                       />
                     </div>
                   </div>
@@ -934,8 +1084,8 @@ function AdminCarEdit() {
             </div>
           </div>
 
-          {/* Discount Price Details Section */}
-          <div className="form-section">
+          {/* Discount Price Details Section - HIDDEN */}
+          <div className="form-section" style={{ display: 'none' }}>
             <h2 className="section-title">Discount Price Details (Optional)</h2>
             <div className="price-details-grid">
               {formData.discount_price_details.map((discountPrice, index) => {

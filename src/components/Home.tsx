@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
+import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import './Home.css'
 
 function Home() {
@@ -124,27 +126,7 @@ function Home() {
   }
 
   return (
-    <div className="home-container">
-      {/* Top Bar - Utility Header */}
-      <div className="top-bar">
-        <div className="top-bar-content">
-          <div className="top-bar-left">
-            <span>Have any questions?</span>
-            <span className="contact-info">+61 383 766 284</span>
-            <span className="contact-info">noreply@envato.com</span>
-          </div>
-          <div className="top-bar-right">
-            <a href="#" className="social-icon">f</a>
-            <a href="#" className="social-icon">g+</a>
-            <a href="#" className="social-icon">t</a>
-            <a href="#" className="social-icon">v</a>
-            <a href="#" className="social-icon">d</a>
-            <a href="#" className="social-icon">in</a>
-            <a href="#" className="social-icon">p</a>
-          </div>
-        </div>
-      </div>
-
+    <div className="home-container" style={{ backgroundImage: `url(${meenakshiImage})` }}>
       {/* Main Navigation Bar */}
       <header className="main-header">
         <div className="header-content">
@@ -156,7 +138,6 @@ function Home() {
             <Link to="/" className="nav-link">Home</Link>
             <a href="#" className="nav-link">Who we are</a>
             <Link to="/cars" className="nav-link">Cars</Link>
-            <a href="#" className="nav-link">Special offer</a>
             <a href="#" className="nav-link">Contact us</a>
           </nav>
           <div className="search-icon">🔍</div>
@@ -220,20 +201,16 @@ function Home() {
           </div>
         </div>
         <div className="hero-content">
-          <div className="hero-left">
-            <div className="car-image-container">
-              <div className="car-image-wrapper">
+          <div className="hero-right" style={{ backgroundImage: `url(${trivaluvarImage})` }}>
+            <div className="hero-offer">
+              <div className="trivallur-statue-container">
                 <img 
-                  src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop" 
-                  alt="Luxury Car" 
-                  className="car-image"
+                  src={trivaluvarImage}
+                  alt="Thiruvalluvar Statue" 
+                  className="trivallur-statue-image"
                 />
               </div>
-            </div>
-          </div>
-          <div className="hero-right">
-            <div className="hero-offer">
-              <h2 className="offer-title">Rent a car from $99/day</h2>
+              <h2 className="offer-title">Are you looking for a great trip?</h2>
               <div className="offer-features">
                 <div className="feature-item">
                   <span className="feature-icon">📍</span>
@@ -254,10 +231,10 @@ function Home() {
       </section>
 
       {/* Car Listings Gallery - Slider */}
-      <section className="car-gallery">
+      <section className="car-gallery" >
         <div className="gallery-header">
-          <h2 className="gallery-title">Our Fleet</h2>
-          <p className="gallery-subtitle">Choose from our premium collection</p>
+          <h2 className="gallery-title">Popular Destinations</h2>
+          <p className="gallery-subtitle">Explore top destinations with comfort, safety, and unforgettable travel experiences</p>
         </div>
         <div className="car-slider-container">
           <button className="slider-btn slider-btn-prev" onClick={prevSlide} aria-label="Previous slide">
