@@ -309,7 +309,7 @@ function Home() {
               </div>
             </div>
 
-            <button
+            {/* <button
               type="button"
               className="home-mobile-menu-btn"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
@@ -317,7 +317,7 @@ function Home() {
               onClick={() => setMobileMenuOpen((v) => !v)}
             >
               <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true"></i>
-            </button>
+            </button> */}
           </div>
           <nav className="main-nav mobile-view-hide">
             <Link to="/" className="nav-link">
@@ -1117,6 +1117,26 @@ function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile bottom menu (like app tab bar) */}
+      <nav className="home-bottom-nav" aria-label="Mobile bottom navigation">
+        <Link to="/" className="home-bottom-nav__item" aria-label="Home" aria-current="page">
+          <i className="fas fa-home" aria-hidden="true"></i>
+          <span>Home</span>
+        </Link>
+        <Link to="/booking" className="home-bottom-nav__item" aria-label="Booking">
+          <i className="fas fa-list" aria-hidden="true"></i>
+          <span>Bookings</span>
+        </Link>
+        <Link to="/enquiry" className="home-bottom-nav__item" aria-label="Help">
+          <i className="fas fa-question-circle" aria-hidden="true"></i>
+          <span>Help</span>
+        </Link>
+        <Link to="/admin" className="home-bottom-nav__item" aria-label="Account">
+          <i className="fas fa-user" aria-hidden="true"></i>
+          <span>Account</span>
+        </Link>
+      </nav>
     </div>
   )
 }
