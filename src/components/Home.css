@@ -261,6 +261,62 @@ body, html {
   gap: 15px;
 }
 
+.enquire-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, var(--madurai-saffron) 100%);
+  box-shadow: 0 4px 10px rgba(196, 30, 58, 0.2);
+  border: none;
+  transition: all 0.3s;
+}
+
+.enquire-cta:hover {
+  background: linear-gradient(135deg, var(--madurai-saffron) 0%, var(--madurai-temple-red) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(196, 30, 58, 0.3);
+}
+
+.header-sub-bar {
+  margin-top: 12px;
+  border-top: 1px solid rgba(196, 30, 58, 0.10);
+  padding: 10px 0 0;
+}
+
+.header-sub-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.header-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.header-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--madurai-temple-red);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.header-email i {
+  color: var(--madurai-saffron);
+}
+
 .phone-number {
   display: flex;
   align-items: center;
@@ -268,6 +324,18 @@ body, html {
   color: var(--madurai-temple-red);
   font-weight: 600;
   font-size: 14px;
+}
+
+.phone-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.phone-email {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b5a52;
 }
 
 .phone-number i {
@@ -518,9 +586,10 @@ body, html {
   cursor: pointer;
 }
 
-.book-now-btn {
+/* Home only: Enquire Us + Book Now — green default, red on hover */
+.home-container .book-now-btn {
   padding: 14px 30px;
-  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, var(--madurai-saffron) 100%);
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -530,7 +599,7 @@ body, html {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4), 0 0 0 2px var(--madurai-gold);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.45), 0 0 0 2px rgba(187, 247, 208, 0.95);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
@@ -539,9 +608,10 @@ body, html {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  text-decoration: none;
 }
 
-.book-now-btn:disabled {
+.home-container .book-now-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
@@ -560,7 +630,7 @@ body, html {
   to { transform: rotate(360deg); }
 }
 
-.book-now-btn::before {
+.home-container .book-now-btn::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -573,20 +643,20 @@ body, html {
   transition: width 0.6s, height 0.6s;
 }
 
-.book-now-btn:hover::before {
+.home-container .book-now-btn:hover::before {
   width: 300px;
   height: 300px;
 }
 
-.book-now-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--madurai-saffron) 0%, var(--madurai-temple-red) 100%);
+.home-container .book-now-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #991b1b 0%, var(--madurai-temple-red) 100%);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 25px rgba(196, 30, 58, 0.5), 0 0 0 3px var(--madurai-gold);
+  box-shadow: 0 10px 25px rgba(185, 28, 28, 0.55), 0 0 0 3px rgba(254, 202, 202, 0.9);
 }
 
-.book-now-btn:active {
+.home-container .book-now-btn:active {
   transform: translateY(-1px) scale(1);
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+  box-shadow: 0 4px 10px rgba(185, 28, 28, 0.45);
 }
 
 /* Hero Section */
@@ -978,6 +1048,387 @@ body, html {
   background: linear-gradient(135deg, var(--madurai-saffron) 0%, var(--madurai-temple-red) 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(196, 30, 58, 0.3);
+}
+
+/* Car fleet v2 — transparent tariff (reference layout, Madurai theme) */
+.car-fleet-v2 {
+  padding: 56px 20px 64px;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(180deg, #f4f1eb 0%, var(--madurai-cream) 45%, #fffaf3 100%);
+  border-top: 3px solid var(--madurai-saffron);
+}
+
+.tariff-v2-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 20px;
+}
+
+.tariff-v2-trust {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--madurai-temple-red);
+  background: rgba(196, 30, 58, 0.08);
+  border: 1px solid rgba(196, 30, 58, 0.2);
+  margin-bottom: 14px;
+}
+
+.tariff-v2-trust i {
+  color: var(--madurai-gold);
+  font-size: 0.85rem;
+}
+
+.tariff-v2-title {
+  margin: 0 0 10px;
+  font-size: clamp(1.55rem, 3.5vw, 2.1rem);
+  font-weight: 800;
+  color: var(--madurai-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.tariff-v2-sub {
+  margin: 0;
+  font-size: 1rem;
+  color: #5c534c;
+  line-height: 1.5;
+}
+
+.tariff-v2-tamil {
+  margin-top: 10px;
+  display: block;
+}
+
+.tariff-v2-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto 28px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+  border: 1px solid rgba(255, 107, 53, 0.35);
+  box-shadow: 0 6px 18px rgba(44, 24, 16, 0.06);
+}
+
+.tariff-v2-notice__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: #6b4423;
+  min-width: 0;
+}
+
+.tariff-v2-notice__left i {
+  color: var(--madurai-saffron);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.tariff-v2-notice__left strong {
+  color: var(--madurai-temple-red);
+}
+
+.tariff-v2-notice__right {
+  font-size: 0.82rem;
+  color: #7a6f66;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tariff-v2-toggle {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 auto 32px;
+  max-width: 560px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid rgba(196, 30, 58, 0.15);
+  box-shadow: 0 4px 16px rgba(44, 24, 16, 0.06);
+}
+
+.tariff-v2-toggle__btn {
+  flex: 1;
+  min-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--madurai-dark);
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tariff-v2-toggle__btn i {
+  font-size: 0.9rem;
+  color: var(--madurai-saffron);
+}
+
+.tariff-v2-toggle__btn.is-active {
+  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, #9b1530 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(196, 30, 58, 0.35);
+}
+
+.tariff-v2-toggle__btn.is-active i {
+  color: var(--madurai-gold);
+}
+
+.tariff-v2-toggle__btn:not(.is-active):hover {
+  background: rgba(196, 30, 58, 0.06);
+}
+
+.tariff-v2-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.tariff-v2-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 18px 18px;
+  border: 1px solid rgba(196, 30, 58, 0.12);
+  box-shadow: 0 12px 32px rgba(44, 24, 16, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.tariff-v2-card__media {
+  height: 170px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f4f6fb;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  margin-bottom: 14px;
+}
+
+.tariff-v2-card__media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  display: block;
+}
+
+.tariff-v2-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(196, 30, 58, 0.12);
+  border-color: rgba(255, 107, 53, 0.45);
+}
+
+.tariff-v2-card__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.tariff-v2-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(196, 30, 58, 0.1), rgba(255, 107, 53, 0.15));
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  color: var(--madurai-temple-red);
+  font-size: 1.15rem;
+  overflow: hidden;
+}
+
+.tariff-v2-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tariff-v2-card__name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--madurai-temple-red);
+  line-height: 1.25;
+}
+
+.tariff-v2-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tariff-v2-card__seats {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6b5a52;
+}
+
+.tariff-v2-card__hero {
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.tariff-v2-card__hero-price {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 800;
+  color: var(--madurai-dark);
+}
+
+.tariff-v2-card__hero-unit {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b5a52;
+  margin-left: 4px;
+}
+
+.tariff-v2-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.tariff-v2-pill--muted {
+  background: #f0eeeb;
+  color: #4a4540;
+  border: 1px solid #e5e2dc;
+}
+
+.tariff-v2-pill--muted i {
+  color: var(--madurai-saffron);
+}
+
+.tariff-v2-pill--accent {
+  background: rgba(34, 197, 94, 0.12);
+  color: #14532d;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.tariff-v2-pill--accent i {
+  color: #16a34a;
+}
+
+.tariff-v2-card__divider {
+  height: 0;
+  margin: 4px 0 12px;
+  border-top: 2px dotted rgba(196, 30, 58, 0.22);
+}
+
+.tariff-v2-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  margin-bottom: 12px;
+}
+
+.tariff-v2-card__row-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: #4a4540;
+  min-width: 0;
+}
+
+.tariff-v2-card__row-ico {
+  color: var(--madurai-temple-red);
+  font-size: 0.85rem;
+}
+
+.tariff-v2-card__row-value {
+  font-weight: 800;
+  color: var(--madurai-dark);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tariff-v2-batta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6b4423;
+  background: linear-gradient(135deg, #fff9e6, #ffefc4);
+  border: 1px solid rgba(255, 107, 53, 0.25);
+  margin-bottom: 8px;
+}
+
+.tariff-v2-batta i {
+  color: var(--madurai-saffron);
+}
+
+.tariff-v2-card__fineprint {
+  margin: 0 0 16px;
+  font-size: 0.72rem;
+  color: #8a827a;
+  font-weight: 600;
+}
+
+.tariff-v2-card__book {
+  width: 100%;
+  margin-top: auto;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.tariff-v2-card__book:hover {
+  background: linear-gradient(135deg, #991b1b 0%, var(--madurai-temple-red) 100%);
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.45);
+  transform: translateY(-1px);
+}
+
+.tariff-v2-card__book i {
+  font-size: 0.75rem;
 }
 
 /* Car Gallery - Slider - Madurai Style */
@@ -1975,6 +2426,20 @@ body, html {
   .category-grid {
     grid-template-columns: 1fr;
   }
+
+  .tariff-v2-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tariff-v2-toggle__btn {
+    min-width: 100%;
+    border-radius: 12px;
+  }
+
+  .tariff-v2-notice {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   
   .destination-grid {
     grid-template-columns: 1fr;
@@ -2083,7 +2548,7 @@ body, html {
     gap: 15px;
   }
 
-  .book-now-btn {
+  .home-container .book-now-btn {
     width: 100%;
     padding: 16px;
   }

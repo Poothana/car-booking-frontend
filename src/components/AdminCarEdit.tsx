@@ -23,6 +23,18 @@ interface PriceDetail {
   price: number
 }
 
+/** Two rows: `below 250km` (day) + `above 250km` (km) */
+type TariffRangeType = 'below 250km' | 'above 250km'
+type TariffPriceType = 'day' | 'km'
+
+interface TariffPriceDetailRow {
+  range_type: TariffRangeType
+  price_type: TariffPriceType
+  price: number
+  fuel_charge: number
+  driver_betta: number
+}
+
 interface DiscountPriceDetail {
   price_type: string
   price: number
@@ -59,11 +71,28 @@ function AdminCarEdit() {
   const [useDirectFileUpload, setUseDirectFileUpload] = useState(false)
   const [existingImageUrl, setExistingImageUrl] = useState<string>('')
 
-  // New price logic fields
-  const [km, setKm] = useState<number>(0)
-  const [pricePerKm, setPricePerKm] = useState<number>(0)
-  const [pricePerDay, setPricePerDay] = useState<number>(0)
-  const [fuelChargePerLiter, setFuelChargePerLiter] = useState<number>(0)
+  /** Two rows: below 250km (day) + above 250km (km) */
+  const [tariffPrices, setTariffPrices] = useState<TariffPriceDetailRow[]>([
+    { range_type: 'below 250km', price_type: 'day', price: 0, fuel_charge: 0, driver_betta: 0 },
+    { range_type: 'above 250km', price_type: 'km', price: 0, fuel_charge: 0, driver_betta: 0 }
+  ])
+
+  const updateTariffRow = <K extends keyof TariffPriceDetailRow>(
+    index: number,
+    key: K,
+    value: TariffPriceDetailRow[K]
+  ) => {
+    setTariffPrices(prev => {
+      const next = [...prev]
+      next[index] = { ...next[index], [key]: value }
+      return next
+    })
+  }
+
+  const updateTariffNumber = (index: number, key: 'price' | 'fuel_charge' | 'driver_betta', raw: string) => {
+    const n = parseFloat(raw) || 0
+    updateTariffRow(index, key, n)
+  }
 
   const [formData, setFormData] = useState<CarFormData>({
     car_name: '',
@@ -344,38 +373,36 @@ function AdminCarEdit() {
         ]
       })
       
-      // Extract new price fields from price_details array
+      // Extract tariff prices from price_details array
       if (car.price_details && Array.isArray(car.price_details)) {
-        const kmPrice = car.price_details.find((pd: any) => pd.price_type === 'km')
-        const dayPrice = car.price_details.find((pd: any) => pd.price_type === 'day')
-        
-        if (kmPrice) {
-          setKm(parseFloat(kmPrice.price) || 0)
-          // Extract fuel_charge_per_liter from price_details item if available
-          if (kmPrice.fuel_charge_per_liter !== undefined) {
-            setFuelChargePerLiter(parseFloat(kmPrice.fuel_charge_per_liter) || 0)
-          }
+        const rows = car.price_details as any[]
+
+        const getRange = (r: any): TariffRangeType | null => {
+          const v = String(r?.range_type || '').trim().toLowerCase()
+          if (v === 'below 250km' || v === 'below_250km') return 'below 250km'
+          if (v === 'above 250km' || v === 'above_250km') return 'above 250km'
+          return null
         }
-        if (dayPrice) {
-          setPricePerDay(parseFloat(dayPrice.price) || 0)
-          // Extract fuel_charge_per_liter from price_details item if available (fallback)
-          if (dayPrice.fuel_charge_per_liter !== undefined && !kmPrice?.fuel_charge_per_liter) {
-            setFuelChargePerLiter(parseFloat(dayPrice.fuel_charge_per_liter) || 0)
-          }
-        }
-      }
-      
-      // Extract fuel_charge_per_liter from root level of API response (highest priority)
-      if (car.fuel_charge_per_liter !== undefined) {
-        setFuelChargePerLiter(parseFloat(car.fuel_charge_per_liter) || 0)
-      } else if (car.additional_details?.fuel_charge_per_liter !== undefined) {
-        // Fallback to additional_details if not in root
-        setFuelChargePerLiter(parseFloat(car.additional_details.fuel_charge_per_liter) || 0)
-      }
-      
-      // Extract price_per_km if exists
-      if (car.additional_details?.price_per_km !== undefined) {
-        setPricePerKm(parseFloat(car.additional_details.price_per_km) || 0)
+
+        const below = rows.find(r => getRange(r) === 'below 250km' && r.price_type === 'day') || rows.find(r => r.price_type === 'day')
+        const above = rows.find(r => getRange(r) === 'above 250km' && r.price_type === 'km') || rows.find(r => r.price_type === 'km')
+
+        setTariffPrices([
+          {
+            range_type: 'below 250km',
+            price_type: 'day',
+            price: parseFloat(below?.price) || 0,
+            fuel_charge: parseFloat(below?.fuel_charge) || 0,
+            driver_betta: parseFloat(below?.driver_betta) || 0,
+          },
+          {
+            range_type: 'above 250km',
+            price_type: 'km',
+            price: parseFloat(above?.price) || 0,
+            fuel_charge: parseFloat(above?.fuel_charge) || 0,
+            driver_betta: parseFloat(above?.driver_betta) || 0,
+          },
+        ])
       }
       
       setExistingImageUrl(car.car_image_url || '')
@@ -401,6 +428,11 @@ function AdminCarEdit() {
       setFormData(prev => ({
         ...prev,
         [name]: parseInt(value) || 5
+      }))
+    } else if (name === 'car_category') {
+      setFormData(prev => ({
+        ...prev,
+        car_category: parseInt(value, 10) || 0
       }))
     } else {
       setFormData(prev => ({
@@ -563,21 +595,20 @@ function AdminCarEdit() {
         throw new Error('Please select a car image')
       }
 
-      // Validate new price fields
-      if (km <= 0) {
-        throw new Error('Please enter a valid distance (KM)')
+      const labels: Record<TariffRangeType, string> = {
+        'below 250km': 'Below 250 km',
+        'above 250km': 'Above 250 km'
       }
-
-      if (km > 300) {
-        if (pricePerKm <= 0) {
-          throw new Error('Please enter a valid price per KM')
+      for (const row of tariffPrices) {
+        const prefix = labels[row.range_type]
+        if (row.price <= 0) {
+          throw new Error(`${prefix}: enter a valid ${row.price_type === 'day' ? 'rent per day' : 'rate per km'} (₹)`)
         }
-      } else {
-        if (pricePerDay <= 0) {
-          throw new Error('Please enter a valid price per day')
+        if (row.fuel_charge <= 0) {
+          throw new Error(`${prefix}: enter a valid fuel charge (₹)`)
         }
-        if (fuelChargePerLiter <= 0) {
-          throw new Error('Please enter a valid fuel charge per liter')
+        if (row.driver_betta <= 0) {
+          throw new Error(`${prefix}: enter a valid driver betta (₹)`)
         }
       }
 
@@ -596,22 +627,15 @@ function AdminCarEdit() {
         })
       }
       
-      // Price details array format (new structure)
-      // First entry: price_type = 'km', price = km value
-      formDataToSend.append('price_details[0][price_type]', 'km')
-      formDataToSend.append('price_details[0][price]', km.toFixed(2))
-      
-      // Second entry: price_type = 'day', price = price per day value
-      formDataToSend.append('price_details[1][price_type]', 'day')
-      formDataToSend.append('price_details[1][price]', pricePerDay.toFixed(2))
-      
-      // Always send fuel_charge_per_liter
-      formDataToSend.append('fuel_charge_per_liter', fuelChargePerLiter.toFixed(2))
-      
-      // If km > 300, also send price_per_km
-      if (km > 300 && pricePerKm > 0) {
-        formDataToSend.append('price_per_km', pricePerKm.toFixed(2))
-      }
+      tariffPrices.forEach((row, i) => {
+        const minHours = row.range_type === 'below 250km' ? 24 : 0
+        formDataToSend.append(`price_details[${i}][range_type]`, row.range_type)
+        formDataToSend.append(`price_details[${i}][price_type]`, row.price_type)
+        formDataToSend.append(`price_details[${i}][min_hours]`, String(minHours))
+        formDataToSend.append(`price_details[${i}][price]`, row.price.toFixed(2))
+        formDataToSend.append(`price_details[${i}][fuel_charge]`, row.fuel_charge.toFixed(2))
+        formDataToSend.append(`price_details[${i}][driver_betta]`, row.driver_betta.toFixed(2))
+      })
       
       formData.discount_price_details.forEach((discountPrice, index) => {
         formDataToSend.append(`discount_price_details[${index}][price_type]`, discountPrice.price_type)
@@ -951,86 +975,85 @@ function AdminCarEdit() {
             </div>
           </div>
 
-          {/* New Price Details Section */}
+          {/* Price details — structured rows: range_type, price_type, price, fuel_charge, driver_betta */}
           <div className="form-section">
             <h2 className="section-title">Price Details</h2>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="km">Distance (KM) <span className="required">*</span></label>
-                <input
-                  type="number"
-                  id="km"
-                  name="km"
-                  value={km}
-                  onChange={(e) => setKm(parseFloat(e.target.value) || 0)}
-                  min="0"
-                  step="0.01"
-                  required
-                  placeholder="Enter distance in kilometers"
-                />
-                <small className="form-help">
-                  Enter the distance in kilometers to determine pricing structure
-                </small>
-              </div>
+            <p className="pricing-intro">
+              Each row: <code>range_type</code> (<code>below 250km</code> / <code>above 250km</code>),{' '}
+              <code>price_type</code> (day or km), <code>price</code>, <code>fuel_charge</code>,{' '}
+              <code>driver_betta</code>. All amounts in ₹.
+            </p>
+            <div className="pricing-blocks">
+              {tariffPrices.map((row, index) => (
+                <div key={row.range_type} className="pricing-block">
+                  <div className="pricing-block__meta">
+                    <span className="pricing-badge" title="Stored enum value">
+                      {row.range_type}
+                    </span>
+                    <span className="pricing-badge pricing-badge--muted">price_type: {row.price_type}</span>
+                  </div>
+                  <h3 className="pricing-block__title">
+                    <i
+                      className={row.range_type === 'below 250km' ? 'fas fa-map-marker-alt' : 'fas fa-road'}
+                      aria-hidden="true"
+                    ></i>
+                    {row.range_type === 'below 250km' ? 'Below 250 km' : 'Above 250 km'}
+                  </h3>
 
-              {km > 300 ? (
-                // Price per km (when km > 300)
-                <div className="form-group">
-                  <label htmlFor="price_per_km">Price Per KM (₹) <span className="required">*</span></label>
-                  <input
-                    type="number"
-                    id="price_per_km"
-                    name="price_per_km"
-                    value={pricePerKm}
-                    onChange={(e) => setPricePerKm(parseFloat(e.target.value) || 0)}
-                    min="0"
-                    step="0.01"
-                    required
-                    placeholder="Enter price per kilometer"
-                  />
-                  <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
-                    Pricing Mode: Per Kilometer (Distance is above 300 KM)
-                  </small>
+                  <div className="form-group">
+                    <label htmlFor={`tariff-${index}-price`}>
+                      {row.price_type === 'day' ? 'Rent per day (₹)' : 'Rate per km (₹)'} <span className="required">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id={`tariff-${index}-price`}
+                      value={row.price || ''}
+                      onChange={(e) => updateTariffNumber(index, 'price', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder={row.price_type === 'day' ? 'e.g. 1300' : 'e.g. 11'}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor={`tariff-${index}-fuel`}>
+                      Fuel charge (₹) <span className="required">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id={`tariff-${index}-fuel`}
+                      value={row.fuel_charge || ''}
+                      onChange={(e) => updateTariffNumber(index, 'fuel_charge', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="Per km"
+                    />
+                    <small className="form-help">Stored as fuel charge (per km).</small>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor={`tariff-${index}-driver`}>
+                      Driver betta (₹) <span className="required">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id={`tariff-${index}-driver`}
+                      value={row.driver_betta || ''}
+                      onChange={(e) => updateTariffNumber(index, 'driver_betta', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="e.g. 300"
+                    />
+                  </div>
                 </div>
-              ) : (
-                // Price per day + fuel charge (when km <= 300)
-                <>
-                  <div className="form-group">
-                    <label htmlFor="price_per_day">Price Per Day Rent (₹) <span className="required">*</span></label>
-                    <input
-                      type="number"
-                      id="price_per_day"
-                      name="price_per_day"
-                      value={pricePerDay}
-                      onChange={(e) => setPricePerDay(parseFloat(e.target.value) || 0)}
-                      min="0"
-                      step="0.01"
-                      required
-                      placeholder="Enter price per day"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="fuel_charge_per_liter">Fuel Charge Per Liter (₹) <span className="required">*</span></label>
-                    <input
-                      type="number"
-                      id="fuel_charge_per_liter"
-                      name="fuel_charge_per_liter"
-                      value={fuelChargePerLiter}
-                      onChange={(e) => setFuelChargePerLiter(parseFloat(e.target.value) || 0)}
-                      min="0"
-                      step="0.01"
-                      required
-                      placeholder="Enter fuel charge per liter"
-                    />
-                  </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <small className="form-help" style={{ color: '#007bff', fontWeight: '600' }}>
-                      Pricing Mode: Per Day Rent + Fuel Charge (Distance is 300 KM or below)
-                    </small>
-                  </div>
-                </>
-              )}
+              ))}
             </div>
+            <small className="form-help pricing-mapping-note">
+              API: <code>price_details[]</code> with{' '}
+              <code>range_type</code>, <code>price_type</code>, <code>price</code>, <code>fuel_charge</code>,{' '}
+              <code>driver_betta</code>.
+            </small>
           </div>
 
           {/* Old Price Details Section - HIDDEN */}

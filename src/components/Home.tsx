@@ -1,12 +1,78 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
-import car1 from '../assets/images/cars/car1.jpeg'
-import car2 from '../assets/images/cars/car2.jpeg'
-import car3 from '../assets/images/cars/car3.jpeg'
-import car4 from '../assets/images/cars/car4.jpeg'
 import './Home.css'
+
+type HireMode = 'local' | 'outstation'
+
+interface ApiPriceDetail {
+  range_type?: string | null
+  price_type: string
+  price: string | number
+  fuel_charge?: string | number | null
+  driver_betta?: string | number | null
+}
+
+interface ApiCategory {
+  id: number
+  name: string
+}
+
+interface ApiCar {
+  id: number
+  car_name: string
+  car_model: string
+  car_image_url: string
+  is_active: boolean
+  category?: ApiCategory
+  price_details?: ApiPriceDetail[]
+  additional_details?: {
+    no_of_seats?: number
+  }
+}
+
+type FleetIcon = 'fa-car' | 'fa-car-side' | 'fa-shuttle-van' | 'fa-bus'
+
+interface FleetTariffCard {
+  id: string
+  name: string
+  icon: FleetIcon
+  imageUrl?: string
+  seats?: number
+  rentPerDay: number
+  fuelPerKm: number
+  abovePerKm: number
+  driverBatta: number
+}
+
+const getBackendImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return ''
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl
+  const backendBaseUrl = import.meta.env.DEV ? 'http://127.0.0.1:8000' : window.location.origin
+  const cleanImagePath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl
+  return `${backendBaseUrl}/storage/cars/${cleanImagePath}`
+}
+
+const parseNumber = (v: unknown): number => {
+  const n = typeof v === 'string' ? parseFloat(v) : typeof v === 'number' ? v : NaN
+  return Number.isFinite(n) ? n : 0
+}
+
+const normRange = (v: unknown): 'below 250km' | 'above 250km' | null => {
+  const s = String(v || '').trim().toLowerCase()
+  if (s === 'below 250km' || s === 'below_250km') return 'below 250km'
+  if (s === 'above 250km' || s === 'above_250km') return 'above 250km'
+  return null
+}
+
+const pickIcon = (categoryName: string): FleetIcon => {
+  const s = categoryName.toLowerCase()
+  if (s.includes('tempo') || s.includes('traveller') || s.includes('traveler') || s.includes('van')) return 'fa-bus'
+  if (s.includes('suv') || s.includes('muv') || s.includes('pickup') || s.includes('tavera')) return 'fa-shuttle-van'
+  if (s.includes('sedan')) return 'fa-car-side'
+  return 'fa-car'
+}
 
 // Tamil Nadu cities for autocomplete
 const tamilNaduCities = [
@@ -25,6 +91,7 @@ interface FormErrors {
 
 function Home() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [pickupLocation, setPickupLocation] = useState('')
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
@@ -41,6 +108,9 @@ function Home() {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false)
   const [showDropSuggestions, setShowDropSuggestions] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [fleetHireMode, setFleetHireMode] = useState<HireMode>('local')
+  const [fleetCards, setFleetCards] = useState<FleetTariffCard[]>([])
+  const [fleetLoading, setFleetLoading] = useState(false)
   const pickupRef = useRef<HTMLDivElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
 
@@ -104,68 +174,11 @@ function Home() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Validate form
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {
-      pickupLocation: '',
-      dropLocation: '',
-      journeyStartDate: '',
-      journeyEndDate: ''
-    }
-
-    let isValid = true
-
-    if (!pickupLocation.trim()) {
-      newErrors.pickupLocation = 'Pickup location is required'
-      isValid = false
-    }
-
-    if (!dropLocation.trim()) {
-      newErrors.dropLocation = 'Drop location is required'
-      isValid = false
-    }
-
-    if (!journeyStartDate) {
-      newErrors.journeyStartDate = 'Journey start date is required'
-      isValid = false
-    }
-
-    if (!journeyEndDate) {
-      newErrors.journeyEndDate = 'Journey end date is required'
-      isValid = false
-    } else if (journeyStartDate && new Date(journeyEndDate) < new Date(journeyStartDate)) {
-      newErrors.journeyEndDate = 'End date must be after start date'
-      isValid = false
-    }
-
-    setErrors(newErrors)
-    return isValid
-  }
-
   const handleBookNow = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
-      // Scroll to first error
-      const firstErrorField = document.querySelector('.filter-input.error, .filter-field:has(.error-message)')
-      firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      return
-    }
-    
     setIsNavigating(true)
-    
-    // Small delay for better UX
     setTimeout(() => {
-      navigate('/cars', {
-        state: {
-          journeyDetails: {
-            pickup_location: pickupLocation.trim(),
-            drop_location: dropLocation.trim(),
-            journey_from_date: journeyStartDate,
-            journey_end_date: journeyEndDate
-          }
-        }
-      })
+      navigate('/enquiry')
     }, 300)
   }
 
@@ -184,6 +197,68 @@ function Home() {
 
     return () => clearInterval(interval)
   }, [])
+
+  // Fetch car fleet from backend (stored cars + tariff rows)
+  useEffect(() => {
+    const fetchFleet = async () => {
+      try {
+        setFleetLoading(true)
+        const apiUrl = import.meta.env.DEV ? '/api/cars/list' : 'http://127.0.0.1:8000/api/cars/list'
+        const res = await fetch(apiUrl)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const json = await res.json()
+        const cars: ApiCar[] = json?.data || []
+
+        const cards: FleetTariffCard[] = cars
+          .filter(c => c && (c.is_active === undefined || c.is_active === true))
+          .map((car) => {
+            const rows = Array.isArray(car.price_details) ? car.price_details : []
+            const below = rows.find(r => normRange(r.range_type) === 'below 250km' && r.price_type === 'day') || rows.find(r => r.price_type === 'day')
+            const above = rows.find(r => normRange(r.range_type) === 'above 250km' && r.price_type === 'km') || rows.find(r => r.price_type === 'km')
+
+            const rentPerDay = parseNumber(below?.price)
+            const fuelPerKm = parseNumber(below?.fuel_charge)
+            const abovePerKm = parseNumber(above?.price)
+            const driverBatta = parseNumber(below?.driver_betta)
+            const catName = car.category?.name || car.car_name || 'Car'
+
+            return {
+              id: String(car.id),
+              name: car.category?.name ? `${car.category.name}` : car.car_name,
+              icon: pickIcon(catName),
+              imageUrl: getBackendImageUrl(car.car_image_url || ''),
+              seats: car.additional_details?.no_of_seats,
+              rentPerDay,
+              fuelPerKm,
+              abovePerKm,
+              driverBatta,
+            }
+          })
+          // keep only those having some tariff data
+          .filter(c => c.rentPerDay > 0 || c.abovePerKm > 0)
+
+        setFleetCards(cards)
+      } catch (e) {
+        console.error('Fleet fetch failed:', e)
+        setFleetCards([])
+      } finally {
+        setFleetLoading(false)
+      }
+    }
+
+    fetchFleet()
+  }, [])
+
+  // If we land on a hash route like "/#car-fleet", scroll to the section.
+  useEffect(() => {
+    if (!location.hash) return
+    const id = location.hash.replace('#', '')
+    const el = document.getElementById(id)
+    if (el) {
+      // Delay helps if images/layout are still settling.
+      requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    }
+  }, [location.hash])
 
   const goToTestimonial = (index: number) => {
     setCurrentTestimonial(index)
@@ -211,9 +286,9 @@ function Home() {
             <a href="#services" className="nav-link">
               <i className="fas fa-concierge-bell"></i> Services
             </a>
-            <Link to="/cars" className="nav-link">
-              <i className="fas fa-car"></i> Cars
-            </Link>
+            <a href="#car-fleet" className="nav-link">
+              <i className="fas fa-car"></i> Car Fleet
+            </a>
             <a href="#why-choose" className="nav-link">
               <i className="fas fa-question-circle"></i> About
             </a>
@@ -221,13 +296,18 @@ function Home() {
           <div className="nav-cta">
             <div className="phone-number">
               <i className="fas fa-phone-alt"></i>
-              <span>+91 452 123 4567</span>
+              <div className="phone-text">
+                <span>+91 452 123 4567</span>
+                <span className="phone-email">poothanapuvi@gmail.com</span>
+              </div>
             </div>
-            <div className="search-icon">
-              <i className="fas fa-search"></i>
-            </div>
+
+            <Link to="/enquiry" className="book-now-btn" aria-label="Go to enquiry page">
+              Enquire Us
+            </Link>
           </div>
         </div>
+
       </header>
 
       {/* Hero Section */}
@@ -250,7 +330,7 @@ function Home() {
                     onFocus={() => pickupLocation.length > 0 && setShowPickupSuggestions(true)}
                     className={`filter-input ${errors.pickupLocation ? 'error' : ''}`}
                     aria-invalid={!!errors.pickupLocation}
-                    aria-required="true"
+                    // aria-required="true"
                     aria-describedby={errors.pickupLocation ? 'pickup-error' : undefined}
                     autoComplete="off"
                   />
@@ -289,7 +369,7 @@ function Home() {
                     onFocus={() => dropLocation.length > 0 && setShowDropSuggestions(true)}
                     className={`filter-input ${errors.dropLocation ? 'error' : ''}`}
                     aria-invalid={!!errors.dropLocation}
-                    aria-required="true"
+                    // aria-required="true"
                     aria-describedby={errors.dropLocation ? 'drop-error' : undefined}
                     autoComplete="off"
                   />
@@ -329,7 +409,7 @@ function Home() {
                   className={`filter-input ${errors.journeyStartDate ? 'error' : ''}`}
                   min={new Date().toISOString().split('T')[0]}
                   aria-invalid={!!errors.journeyStartDate}
-                  aria-required="true"
+                  // aria-required="true"
                   aria-describedby={errors.journeyStartDate ? 'start-date-error' : undefined}
                 />
                 {errors.journeyStartDate && (
@@ -353,7 +433,7 @@ function Home() {
                   className={`filter-input ${errors.journeyEndDate ? 'error' : ''}`}
                   min={journeyStartDate || new Date().toISOString().split('T')[0]}
                   aria-invalid={!!errors.journeyEndDate}
-                  aria-required="true"
+                  // aria-required="true"
                   aria-describedby={errors.journeyEndDate ? 'end-date-error' : undefined}
                 />
                 {errors.journeyEndDate && (
@@ -366,7 +446,7 @@ function Home() {
                 type="submit" 
                 className="book-now-btn"
                 disabled={isNavigating}
-                aria-label="Book your car rental now"
+                aria-label="Go to enquiry page"
               >
                 {isNavigating ? (
                   <>
@@ -501,113 +581,158 @@ function Home() {
         </div>
       </section>
 
-      {/* Car Categories Section */}
-      <section className="car-categories">
+      {/* Car Fleet — transparent tariff (reference layout, Madurai theme) */}
+      <section id="car-fleet" className="car-fleet-v2">
         <div className="container">
-            <div className="section-title">
-            <h2>
-              <i className="fas fa-car"></i> Our Car Fleet
-            </h2>
-            <div className="tamil">எங்கள் கார் பட்டாளம்</div>
-            <p>Perfect vehicles for travelers exploring Tamil Nadu - comfortable, reliable, and ready for your journey</p>
+          <header className="tariff-v2-header">
+            <div className="tariff-v2-trust">
+              <i className="fas fa-gem" aria-hidden="true"></i>
+              No hidden costs
+            </div>
+            <h2 className="tariff-v2-title">Transparent tariff packages</h2>
+            <p className="tariff-v2-sub">
+              Outstation &amp; Local hire · Rates indicative, confirm at booking
+            </p>
+            <div className="tamil tariff-v2-tamil">எங்கள் கார் பட்டாளம்</div>
+          </header>
+
+          <div className="tariff-v2-notice" role="note">
+            <div className="tariff-v2-notice__left">
+              <i className="fas fa-exclamation-circle" aria-hidden="true"></i>
+              <span>
+                <strong>Extra as applicable:</strong> Tollgate · Parking · Hills Charges
+              </span>
+            </div>
+            <span className="tariff-v2-notice__right">Pay directly or as per invoice</span>
           </div>
-          
-          <div className="category-grid">
-            <div className="category-card">
-              <div className="category-img">
-                <img src={car1} alt="Economy Car" loading="lazy" />
+
+          <div className="tariff-v2-toggle" role="group" aria-label="Hire type">
+            <button
+              type="button"
+              className={`tariff-v2-toggle__btn ${fleetHireMode === 'local' ? 'is-active' : ''}`}
+              onClick={() => setFleetHireMode('local')}
+              aria-pressed={fleetHireMode === 'local'}
+            >
+              <i className="fas fa-map-marker-alt" aria-hidden="true"></i>
+              Local hire (Below 250 km/day)
+            </button>
+            <button
+              type="button"
+              className={`tariff-v2-toggle__btn ${fleetHireMode === 'outstation' ? 'is-active' : ''}`}
+              onClick={() => setFleetHireMode('outstation')}
+              aria-pressed={fleetHireMode === 'outstation'}
+            >
+              <i className="fas fa-route" aria-hidden="true"></i>
+              Outstation (Above 250 km/day)
+            </button>
+          </div>
+
+          <div className="tariff-v2-grid">
+            {fleetLoading ? (
+              <div className="tariff-v2-notice" role="status" aria-live="polite">
+                <div className="tariff-v2-notice__left">
+                  <i className="fas fa-spinner" aria-hidden="true"></i>
+                  <span>Loading fleet…</span>
+                </div>
               </div>
-              <div className="category-info">
-                <h3>Economy Cars</h3>
-                <div className="category-features">
-                  <div className="feature">
-                    <i className="fas fa-user"></i> 4 People
+            ) : fleetCards.length === 0 ? (
+              <div className="tariff-v2-notice" role="note">
+                <div className="tariff-v2-notice__left">
+                  <i className="fas fa-info-circle" aria-hidden="true"></i>
+                  <span>No cars available right now.</span>
+                </div>
+                <span className="tariff-v2-notice__right">Please check back soon</span>
+              </div>
+            ) : (
+              fleetCards.map((pkg) => (
+              <article key={pkg.id} className="tariff-v2-card">
+                {pkg.imageUrl ? (
+                  <div className="tariff-v2-card__media" aria-hidden="true">
+                    <img
+                      src={pkg.imageUrl}
+                      alt=""
+                      className="tariff-v2-card__media-img"
+                      loading="lazy"
+                      onError={(e) => {
+                        ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
                   </div>
-                  <div className="feature">
-                    <i className="fas fa-suitcase"></i> 2 Bags
+                ) : null}
+                <div className="tariff-v2-card__top">
+                  <div className="tariff-v2-card__icon" aria-hidden="true">
+                    <i className={`fas ${pkg.icon}`}></i>
                   </div>
-                  <div className="feature">
-                    <i className="fas fa-snowflake"></i> AC
+                  <div className="tariff-v2-card__heading">
+                    <h3 className="tariff-v2-card__name">{pkg.name}</h3>
+                    {pkg.seats ? (
+                      <div className="tariff-v2-card__seats">{pkg.seats} Seater</div>
+                    ) : null}
                   </div>
                 </div>
-                <p>Perfect for city travel and short trips. Comfortable and ideal for travelers exploring Madurai.</p>
-                <button className="book-btn" onClick={() => navigate('/cars')}>
-                  Book Now
-                </button>
-              </div>
-            </div>
-            
-            <div className="category-card">
-              <div className="category-img">
-                <img src={car2} alt="SUV" loading="lazy" />
-              </div>
-              <div className="category-info">
-                <h3>SUV & MUV</h3>
-                <div className="category-features">
-                  <div className="feature">
-                    <i className="fas fa-user"></i> 7 People
+
+                {fleetHireMode === 'local' ? (
+                  <>
+                    <div className="tariff-v2-card__hero">
+                      <span className="tariff-v2-card__hero-price">₹{pkg.rentPerDay.toLocaleString('en-IN')}</span>
+                      <span className="tariff-v2-card__hero-unit">/ day</span>
+                    </div>
+                    <div className="tariff-v2-pill tariff-v2-pill--muted">
+                      <i className="fas fa-gas-pump" aria-hidden="true"></i>
+                      Fuel charge: ₹{pkg.fuelPerKm} per km
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="tariff-v2-card__hero">
+                      <span className="tariff-v2-card__hero-price">₹{pkg.abovePerKm}</span>
+                      <span className="tariff-v2-card__hero-unit">/ km</span>
+                    </div>
+                    <div className="tariff-v2-pill tariff-v2-pill--accent">
+                      <i className="fas fa-check-circle" aria-hidden="true"></i>
+                      Includes fuel + per-day km rate
+                    </div>
+                  </>
+                )}
+
+                <div className="tariff-v2-card__divider" />
+
+                {fleetHireMode === 'local' ? (
+                  <div className="tariff-v2-card__row">
+                    <span className="tariff-v2-card__row-label">
+                      <i className="fas fa-level-up-alt tariff-v2-card__row-ico" aria-hidden="true"></i>
+                      Above 250 km
+                    </span>
+                    <span className="tariff-v2-card__row-value">₹{pkg.abovePerKm}/km</span>
                   </div>
-                  <div className="feature">
-                    <i className="fas fa-suitcase"></i> 5 Bags
+                ) : (
+                  <div className="tariff-v2-card__row">
+                    <span className="tariff-v2-card__row-label">
+                      <i className="fas fa-map-marker-alt tariff-v2-card__row-ico" aria-hidden="true"></i>
+                      Local (below 250 km)
+                    </span>
+                    <span className="tariff-v2-card__row-value">
+                      ₹{pkg.rentPerDay.toLocaleString('en-IN')} + ₹{pkg.fuelPerKm}/km
+                    </span>
                   </div>
-                  <div className="feature">
-                    <i className="fas fa-snowflake"></i> AC
-                  </div>
+                )}
+
+                <div className="tariff-v2-batta">
+                  <i className="fas fa-user-tie" aria-hidden="true"></i>
+                  Driver batta: ₹{pkg.driverBatta.toLocaleString('en-IN')}
                 </div>
-                <p>Ideal for family trips and hill station visits. Perfect for travelers with luggage and groups.</p>
-                <button className="book-btn" onClick={() => navigate('/cars')}>
-                  Book Now
+                <p className="tariff-v2-card__fineprint">+ Toll, Parking, Hills extra</p>
+
+                <button
+                  type="button"
+                  className="tariff-v2-card__book"
+                  onClick={() => navigate('/enquiry')}
+                >
+                  Book now <i className="fas fa-arrow-right" aria-hidden="true"></i>
                 </button>
-              </div>
-            </div>
-            
-            <div className="category-card">
-              <div className="category-img">
-                <img src={car3} alt="Luxury Car" loading="lazy" />
-              </div>
-              <div className="category-info">
-                <h3>Luxury Cars</h3>
-                <div className="category-features">
-                  <div className="feature">
-                    <i className="fas fa-user"></i> 4 People
-                  </div>
-                  <div className="feature">
-                    <i className="fas fa-suitcase"></i> 3 Bags
-                  </div>
-                  <div className="feature">
-                    <i className="fas fa-snowflake"></i> AC
-                  </div>
-                </div>
-                <p>For business travelers and special occasions. Premium comfort and style for discerning travelers.</p>
-                <button className="book-btn" onClick={() => navigate('/cars')}>
-                  Book Now
-                </button>
-              </div>
-            </div>
-            
-            <div className="category-card">
-              <div className="category-img">
-                <img src={car4} alt="Tempo Traveler" loading="lazy" />
-              </div>
-              <div className="category-info">
-                <h3>Tempo Travelers</h3>
-                <div className="category-features">
-                  <div className="feature">
-                    <i className="fas fa-user"></i> 12 People
-                  </div>
-                  <div className="feature">
-                    <i className="fas fa-suitcase"></i> 8 Bags
-                  </div>
-                  <div className="feature">
-                    <i className="fas fa-snowflake"></i> AC
-                  </div>
-                </div>
-                <p>Perfect for large groups, pilgrimages, and group tours. Spacious and comfortable for extended journeys.</p>
-                <button className="book-btn" onClick={() => navigate('/cars')}>
-                  Book Now
-                </button>
-              </div>
-            </div>
+              </article>
+              ))
+            )}
           </div>
         </div>
       </section>

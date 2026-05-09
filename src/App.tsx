@@ -5,6 +5,7 @@ import AdminCar from './components/AdminCar'
 import AdminCarList from './components/AdminCarList'
 import AdminCarEdit from './components/AdminCarEdit'
 import BookingForm from './components/BookingForm'
+import Enquiry from './components/Enquiry'
 import './App.css'
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/cars" element={<CarsList />} />
         <Route path="/booking" element={<BookingForm />} />
+        <Route path="/enquiry" element={<Enquiry />} />
         <Route path="/admin/car" element={<AdminCar />} />
         <Route path="/admin/car/list" element={<AdminCarList />} />
         <Route path="/admin/car/edit/:id" element={<AdminCarEdit />} />

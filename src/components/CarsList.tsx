@@ -411,9 +411,10 @@ function CarsList() {
             <nav className="main-nav">
               <Link to="/" className="nav-link">Home</Link>
               <a href="#" className="nav-link">Who we are</a>
-              <Link to="/cars" className="nav-link active">Cars</Link>
+              <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
               <a href="#" className="nav-link">Special offer</a>
               <a href="#" className="nav-link">Contact us</a>
+              <Link to="/enquiry" className="nav-link">Enquire Us</Link>
             </nav>
           </div>
         </header>
@@ -437,9 +438,10 @@ function CarsList() {
             <nav className="main-nav">
               <Link to="/" className="nav-link">Home</Link>
               <a href="#" className="nav-link">Who we are</a>
-              <Link to="/cars" className="nav-link active">Cars</Link>
+              <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
               <a href="#" className="nav-link">Special offer</a>
               <a href="#" className="nav-link">Contact us</a>
+              <Link to="/enquiry" className="nav-link">Enquire Us</Link>
             </nav>
           </div>
         </header>
@@ -469,9 +471,10 @@ function CarsList() {
           <nav className="main-nav">
             <Link to="/" className="nav-link">Home</Link>
             <a href="#" className="nav-link">Who we are</a>
-            <Link to="/cars" className="nav-link active">Cars</Link>
+            <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
             <a href="#" className="nav-link">Special offer</a>
             <a href="#" className="nav-link">Contact us</a>
+            <Link to="/enquiry" className="nav-link">Enquire Us</Link>
           </nav>
         </div>
       </header>

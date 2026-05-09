@@ -7,6 +7,14 @@ interface ApiCategory {
   name: string
 }
 
+interface ApiPriceDetail {
+  range_type?: string | null
+  price_type: string
+  price: string | number
+  fuel_charge?: string | number | null
+  driver_betta?: string | number | null
+}
+
 interface ApiCar {
   id: number
   car_name: string
@@ -15,6 +23,7 @@ interface ApiCar {
   car_category: number
   is_active: boolean
   category: ApiCategory
+  price_details?: ApiPriceDetail[]
 }
 
 interface ApiResponse {
@@ -61,8 +70,8 @@ function AdminCarList() {
       setLoading(true)
       setError(null)
       const apiUrl = import.meta.env.DEV 
-        ? '/api/cars/list' 
-        : 'http://127.0.0.1:8000/api/cars/list'
+        ? '/api/cars/list?include_inactive=1' 
+        : 'http://127.0.0.1:8000/api/cars/list?include_inactive=1'
       
       const response = await fetch(apiUrl)
       
@@ -118,35 +127,32 @@ function AdminCarList() {
     }
   }
 
-  const toggleActiveStatus = async (carId: number, currentStatus: boolean) => {
-    try {
-      const apiUrl = import.meta.env.DEV 
-        ? `/api/admin/car/${carId}/toggle-active` 
-        : `http://127.0.0.1:8000/api/admin/car/${carId}/toggle-active`
-      
-      const response = await fetch(apiUrl, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ is_active: !currentStatus }),
-      })
+  const parseNumber = (v: unknown): number | null => {
+    if (v === null || v === undefined) return null
+    const n = typeof v === 'string' ? parseFloat(v) : typeof v === 'number' ? v : NaN
+    return Number.isFinite(n) ? n : null
+  }
 
-      const data = await response.json()
+  const pickTariff = (car: ApiCar) => {
+    const rows = Array.isArray(car.price_details) ? car.price_details : []
 
-      if (response.ok && data.success) {
-        // Update car status in list
-        setCars(prevCars =>
-          prevCars.map(car =>
-            car.id === carId ? { ...car, is_active: !currentStatus } : car
-          )
-        )
-      } else {
-        throw new Error(data.message || 'Failed to update car status')
-      }
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update car status')
-      console.error('Error updating car status:', err)
+    const below =
+      rows.find(r => (r.range_type || '').toLowerCase() === 'below 250km' && r.price_type === 'day') ||
+      rows.find(r => (r.range_type || '').toLowerCase() === 'below_250km' && r.price_type === 'day') ||
+      rows.find(r => r.price_type === 'day') ||
+      null
+
+    const above =
+      rows.find(r => (r.range_type || '').toLowerCase() === 'above 250km' && r.price_type === 'km') ||
+      rows.find(r => (r.range_type || '').toLowerCase() === 'above_250km' && r.price_type === 'km') ||
+      rows.find(r => r.price_type === 'km') ||
+      null
+
+    return {
+      dayPrice: below ? parseNumber(below.price) : null,
+      kmRate: above ? parseNumber(above.price) : null,
+      fuelCharge: below ? parseNumber(below.fuel_charge) : null,
+      driverBetta: below ? parseNumber(below.driver_betta) : null,
     }
   }
 
@@ -221,6 +227,7 @@ function AdminCarList() {
         <div className="cars-grid">
           {cars.map((car) => {
             const imageUrl = getBackendImageUrl(car.car_image_url)
+            const tariff = pickTariff(car)
             return (
               <div key={car.id} className="admin-car-card">
                 <div className="car-card-image">
@@ -238,21 +245,49 @@ function AdminCarList() {
                   </div>
                 </div>
                 <div className="car-card-content">
-                  <h3 className="car-card-name">{car.car_name}</h3>
-                  <p className="car-card-model">{car.car_model}</p>
-                  <p className="car-card-category">Category: {car.category?.name || 'N/A'}</p>
+                  <div className="car-card-top">
+                    <div className="car-card-mini-title">{car.category?.name || 'Car'}</div>
+                    <div className="car-card-name">{car.car_name}</div>
+                  </div>
+
+                  <div className="car-card-price">
+                    <span className="price-amount">
+                      {tariff.dayPrice !== null ? `₹${tariff.dayPrice.toLocaleString()}` : '—'}
+                    </span>
+                    <span className="price-suffix">/ day</span>
+                  </div>
+
+                  <div className="car-card-meta">
+                    <div className="meta-row">
+                      <span className="meta-label">Fuel charge</span>
+                      <span className="meta-value">
+                        {tariff.fuelCharge !== null ? `₹${tariff.fuelCharge}/km` : '—'}
+                      </span>
+                    </div>
+                    <div className="meta-row">
+                      <span className="meta-label">Above 250 km</span>
+                      <span className="meta-value">
+                        {tariff.kmRate !== null ? `₹${tariff.kmRate}/km` : '—'}
+                      </span>
+                    </div>
+                    <div className="meta-row">
+                      <span className="meta-label">Driver betta</span>
+                      <span className="meta-value">
+                        {tariff.driverBetta !== null ? `₹${tariff.driverBetta}` : '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="car-card-sub">
+                    {car.car_model ? car.car_model : ' '}
+                  </div>
+
                   <div className="car-card-actions">
                     <button
                       onClick={() => handleEdit(car.id)}
                       className="btn-edit"
                     >
                       Edit
-                    </button>
-                    <button
-                      onClick={() => toggleActiveStatus(car.id, car.is_active)}
-                      className={`btn-toggle ${car.is_active ? 'btn-deactivate' : 'btn-activate'}`}
-                    >
-                      {car.is_active ? 'Deactivate' : 'Activate'}
                     </button>
                     <button
                       onClick={() => handleDelete(car.id, car.car_name)}
