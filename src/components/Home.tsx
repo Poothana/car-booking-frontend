@@ -95,6 +95,7 @@ function Home() {
   const [siteName, setSiteName] = useState('CarRental')
   const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
   const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [pickupLocation, setPickupLocation] = useState('')
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
@@ -282,6 +283,11 @@ function Home() {
     }
   }, [location.hash])
 
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname, location.hash])
+
   const goToTestimonial = (index: number) => {
     setCurrentTestimonial(index)
   }
@@ -292,16 +298,28 @@ function Home() {
       {/* Main Navigation Bar */}
       <header className="main-header">
         <div className="header-content">
-          <div className="logo-section">
-            <div className="logo-icon">
-              <i className="fas fa-car"></i>
+          <div className="home-header-top">
+            <div className="logo-section">
+              <div className="logo-icon">
+                <i className="fas fa-car"></i>
+              </div>
+              <div className="logo-text">
+                <span className="logo-title">{siteName}</span>
+                {/* <span className="tamil">கார் வாடகை</span> */}
+              </div>
             </div>
-            <div className="logo-text">
-              <span className="logo-title">{siteName}</span>
-              <span className="tamil">கார் வாடகை</span>
-            </div>
+
+            <button
+              type="button"
+              className="home-mobile-menu-btn"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true"></i>
+            </button>
           </div>
-          <nav className="main-nav">
+          <nav className="main-nav mobile-view-hide">
             <Link to="/" className="nav-link">
               <i className="fas fa-home"></i> Home
             </Link>
@@ -324,7 +342,7 @@ function Home() {
               </div>
             </div>
 
-            <Link to="/enquiry" className="book-now-btn" aria-label="Go to enquiry page">
+            <Link to="/enquiry" className="book-now-btn mobile-view-hide" aria-label="Go to enquiry page">
               Enquire Us
             </Link>
 
@@ -334,10 +352,29 @@ function Home() {
           </div>
         </div>
 
+        {mobileMenuOpen ? (
+          <>
+            <div className="home-mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />
+            <nav className="home-mobile-menu" aria-label="Mobile menu">
+              <Link to="/" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
+                Home
+              </Link>
+              <a href="#services" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
+                Services
+              </a>
+              <a href="#car-fleet" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
+                Car Fleet
+              </a>
+              <a href="#why-choose" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
+                About
+              </a>
+            </nav>
+          </>
+        ) : null}
       </header>
 
       {/* Hero Section */}
-      <section id="main-content" className="hero-section">
+      <section id="main-content" className="hero-section ">
         {/* Filter Search Section - Positioned above hero content */}
         <div className="filter-section">
           <div className="filter-container">

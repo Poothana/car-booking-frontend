@@ -178,8 +178,36 @@
 }
 
 @media (max-width: 900px) {
+  .header-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
   .main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+  }
+  .nav-cta {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .book-now-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+  }
+}
+
+@media (max-width: 520px) {
+  .phone-number {
     display: none;
+  }
+  .nav-cta {
+    justify-content: flex-end;
   }
 }
 

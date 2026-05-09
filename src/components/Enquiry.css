@@ -187,6 +187,43 @@
   gap: 12px;
 }
 
+@media (max-width: 900px) {
+  .enquiry-page {
+    padding: 100px 14px 50px;
+  }
+  .enquiry-back {
+    position: static;
+    margin: 14px auto 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .enquiry-top-inner {
+    text-align: left;
+  }
+  .enquiry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .enquiry-form-row {
+    grid-template-columns: 1fr;
+  }
+  .enquiry-panel--left,
+  .enquiry-panel--right {
+    padding: 14px;
+  }
+  .enquiry-form-header {
+    margin: -14px -14px 12px;
+    padding: 14px;
+  }
+  .enquiry-submit {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .enquiry-field input,
 .enquiry-field textarea {
   width: 100%;

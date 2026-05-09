@@ -20,12 +20,11 @@
   font-weight: 500;
 }
 
-* {
-  overflow-x: hidden;
-}
+/* Avoid global overflow-x hidden (breaks tables/scroll on other pages) */
 
 body, html {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   width: 100%;
   font-family: var(--english-font);
@@ -165,6 +164,48 @@ body, html {
   align-items: center;
 }
 
+.home-header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.home-header-top .logo-section {
+  min-width: 0;
+}
+
+.home-header-top .logo-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 48vw;
+}
+
+.home-mobile-menu-btn {
+  display: none;
+  border: 1px solid rgba(196, 30, 58, 0.25);
+  background: #fff;
+  color: var(--madurai-temple-red);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(196, 30, 58, 0.10);
+}
+
+.home-mobile-menu-btn:active {
+  transform: translateY(1px);
+}
+
+.home-mobile-menu-overlay {
+  display: none;
+}
+
+.home-mobile-menu {
+  display: none;
+}
+
 .logo-section {
   display: flex;
   align-items: center;
@@ -229,6 +270,125 @@ body, html {
   display: flex;
   gap: 30px;
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .header-content {
+    padding: 0 14px;
+    gap: 12px;
+  }
+  .main-nav {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 700px) {
+  .mobile-view-hide {
+    display: none !important;
+  }
+
+  .main-header {
+    padding: 12px 0;
+  }
+  .header-content {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .home-header-top {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .logo-title {
+    font-size: 20px;
+  }
+  .logo-icon {
+    font-size: 26px;
+  }
+  .nav-cta {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .phone-number {
+    font-size: 12px;
+  }
+  .book-now-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+  }
+
+  /* Hide Enquire Us CTA on mobile */
+  .nav-cta .book-now-btn {
+    display: none;
+  }
+
+  /* Mobile menu */
+  .home-mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    order: 3;
+  }
+
+  .main-nav {
+    display: none;
+  }
+
+  /* Put logo on the left, menu button on the right */
+  .logo-section {
+    order: 1;
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .nav-cta {
+    order: 4;
+    flex-basis: 100%;
+  }
+
+  .home-mobile-menu-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 998;
+  }
+
+  .home-mobile-menu {
+    display: grid;
+    gap: 6px;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: 76px;
+    z-index: 999;
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px;
+    border: 1px solid rgba(196, 30, 58, 0.18);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  }
+
+  .home-mobile-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    color: #111;
+    background: linear-gradient(135deg, rgba(255, 248, 231, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
+    border: 1px solid rgba(196, 30, 58, 0.10);
+  }
+
+  .home-mobile-menu__link:active {
+    transform: translateY(1px);
+  }
 }
 
 .nav-link {

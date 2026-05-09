@@ -38,7 +38,7 @@ export default function Header({ showEnquiryCta = true }: HeaderProps) {
           </div>
           <div className="logo-text">
             <span className="logo-title">{siteName}</span>
-            <span className="tamil">கார் வாடகை</span>
+            {/* <span className="tamil">கார் வாடகை</span> */}
           </div>
         </div>
 

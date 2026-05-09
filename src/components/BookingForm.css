@@ -176,6 +176,39 @@
   border-top: 1px solid #e0e0e0;
 }
 
+@media (max-width: 768px) {
+  .booking-form-container {
+    padding: 14px;
+  }
+  .booking-form-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .car-summary-card {
+    flex-direction: column;
+  }
+  .car-summary-image {
+    width: 100%;
+    height: 180px;
+  }
+  .booking-form {
+    padding: 18px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+  }
+}
+
 .cancel-button,
 .submit-button {
   padding: 12px 30px;
