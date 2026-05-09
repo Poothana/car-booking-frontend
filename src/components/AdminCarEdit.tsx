@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import './AdminCar.css'
+import AdminTopNav from './AdminTopNav'
 
 interface Category {
   id: number
@@ -702,20 +703,7 @@ function AdminCarEdit() {
   if (loadingData) {
     return (
       <div className="admin-car-container">
-        <header className="admin-nav">
-          <div className="nav-content">
-            <Link to="/" className="logo-link">
-              <div className="logo-circle">Be</div>
-              <span className="logo-text">CarRental</span>
-            </Link>
-            <nav className="main-nav">
-              <Link to="/" className="nav-link">Home</Link>
-              <Link to="/cars" className="nav-link">Cars</Link>
-              <Link to="/admin/car/list" className="nav-link">Admin Cars</Link>
-              <Link to="/admin/car" className="nav-link">Add Car</Link>
-            </nav>
-          </div>
-        </header>
+        <AdminTopNav active="cars" showAddCar />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
           Loading car data...
         </div>
@@ -725,20 +713,7 @@ function AdminCarEdit() {
 
   return (
     <div className="admin-car-container">
-      <header className="admin-nav">
-        <div className="nav-content">
-          <Link to="/" className="logo-link">
-            <div className="logo-circle">Be</div>
-            <span className="logo-text">CarRental</span>
-          </Link>
-          <nav className="main-nav">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/cars" className="nav-link">Cars</Link>
-            <Link to="/admin/car/list" className="nav-link active">Admin Cars</Link>
-            <Link to="/admin/car" className="nav-link">Add Car</Link>
-          </nav>
-        </div>
-      </header>
+      <AdminTopNav active="cars" showAddCar />
 
       <div className="admin-car-content">
         <div className="admin-header">

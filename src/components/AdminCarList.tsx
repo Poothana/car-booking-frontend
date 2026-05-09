@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './AdminCarList.css'
+import AdminTopNav from './AdminTopNav'
 
 interface ApiCategory {
   id: number
@@ -159,20 +160,7 @@ function AdminCarList() {
   if (loading) {
     return (
       <div className="admin-car-list-container">
-        <header className="admin-nav">
-          <div className="nav-content">
-            <Link to="/" className="logo-link">
-              <div className="logo-circle">Be</div>
-              <span className="logo-text">CarRental</span>
-            </Link>
-            <nav className="main-nav">
-              <Link to="/" className="nav-link">Home</Link>
-              <Link to="/cars" className="nav-link">Cars</Link>
-              <Link to="/admin/car/list" className="nav-link active">Admin Cars</Link>
-              <Link to="/admin/car" className="nav-link">Add Car</Link>
-            </nav>
-          </div>
-        </header>
+        <AdminTopNav active="cars" showAddCar />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
           Loading cars...
         </div>
@@ -183,20 +171,7 @@ function AdminCarList() {
   return (
     <div className="admin-car-list-container">
       {/* Navigation Header */}
-      <header className="admin-nav">
-        <div className="nav-content">
-          <Link to="/" className="logo-link">
-            <div className="logo-circle">Be</div>
-            <span className="logo-text">CarRental</span>
-          </Link>
-          <nav className="main-nav">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/cars" className="nav-link">Cars</Link>
-            <Link to="/admin/car/list" className="nav-link active">Admin Cars</Link>
-            <Link to="/admin/car" className="nav-link">Add Car</Link>
-          </nav>
-        </div>
-      </header>
+      <AdminTopNav active="cars" showAddCar />
 
       <div className="admin-car-list-content">
         <div className="admin-header">

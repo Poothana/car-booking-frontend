@@ -92,6 +92,9 @@ interface FormErrors {
 function Home() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [siteName, setSiteName] = useState('CarRental')
+  const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
+  const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
   const [pickupLocation, setPickupLocation] = useState('')
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
@@ -249,6 +252,25 @@ function Home() {
     fetchFleet()
   }, [])
 
+  // Fetch basic site settings for header/footer
+  useEffect(() => {
+    const fetchBasic = async () => {
+      try {
+        const apiUrl = import.meta.env.DEV ? '/api/settings/basic' : 'http://127.0.0.1:8000/api/settings/basic'
+        const res = await fetch(apiUrl)
+        if (!res.ok) return
+        const json = await res.json()
+        const data = json?.data || {}
+        if (data.site_name) setSiteName(String(data.site_name))
+        if (data.support_phone) setSupportPhone(String(data.support_phone))
+        if (data.support_email) setSupportEmail(String(data.support_email))
+      } catch {
+        // ignore
+      }
+    }
+    fetchBasic()
+  }, [])
+
   // If we land on a hash route like "/#car-fleet", scroll to the section.
   useEffect(() => {
     if (!location.hash) return
@@ -275,7 +297,7 @@ function Home() {
               <i className="fas fa-car"></i>
             </div>
             <div className="logo-text">
-              <span className="logo-title">CarRental</span>
+              <span className="logo-title">{siteName}</span>
               <span className="tamil">கார் வாடகை</span>
             </div>
           </div>
@@ -297,14 +319,18 @@ function Home() {
             <div className="phone-number">
               <i className="fas fa-phone-alt"></i>
               <div className="phone-text">
-                <span>+91 452 123 4567</span>
-                <span className="phone-email">poothanapuvi@gmail.com</span>
+                <span>{supportPhone}</span>
+                <span className="phone-email">{supportEmail}</span>
               </div>
             </div>
 
             <Link to="/enquiry" className="book-now-btn" aria-label="Go to enquiry page">
               Enquire Us
             </Link>
+
+            {/* <Link to="/admin" className="book-now-btn admin-login-btn" aria-label="Go to admin login page">
+              Admin Login
+            </Link> */}
           </div>
         </div>
 

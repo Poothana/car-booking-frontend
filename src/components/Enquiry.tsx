@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from './Header'
 import './Enquiry.css'
@@ -11,6 +11,8 @@ function enquiryApiUrl(): string {
 
 function Enquiry() {
   const navigate = useNavigate()
+  const [supportPhone, setSupportPhone] = useState('+91 63800 63873')
+  const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string>('')
@@ -110,6 +112,26 @@ function Enquiry() {
     }
   }
 
+  useEffect(() => {
+    const fetchBasic = async () => {
+      try {
+        const apiUrl = import.meta.env.DEV ? '/api/settings/basic' : 'http://127.0.0.1:8000/api/settings/basic'
+        const res = await fetch(apiUrl)
+        if (!res.ok) return
+        const json = await res.json()
+        const data = json?.data || {}
+        if (data.support_phone) setSupportPhone(String(data.support_phone))
+        if (data.support_email) setSupportEmail(String(data.support_email))
+      } catch {
+        // ignore
+      }
+    }
+    fetchBasic()
+  }, [])
+
+  const telHref = `tel:${supportPhone.replace(/\\D/g, '')}`
+  const mailHref = `mailto:${supportEmail}`
+
   return (
     <>
       <Header showEnquiryCta={false} />
@@ -146,8 +168,8 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Phone Number</div>
                   <div className="enquiry-card-text">
-                    <a className="enquiry-link" href="tel:6380063873">
-                      +91 63800 63873
+                    <a className="enquiry-link" href={telHref}>
+                      {supportPhone}
                     </a>
                   </div>
                 </div>
@@ -160,8 +182,8 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Email</div>
                   <div className="enquiry-card-text">
-                    <a className="enquiry-link" href="mailto:poothanapuvi@gmail.com">
-                      poothanapuvi@gmail.com
+                    <a className="enquiry-link" href={mailHref}>
+                      {supportEmail}
                     </a>
                   </div>
                 </div>
