@@ -23,6 +23,10 @@ export default function AdminLayout() {
             <i className="fas fa-car" aria-hidden="true"></i>
             Cars
           </NavLink>
+          <NavLink to="/admin/enquiry/list" className={({ isActive }) => `admin-sidebar__link ${isActive ? 'is-active' : ''}`}>
+            <i className="fas fa-envelope" aria-hidden="true"></i>
+            Enquiry List
+          </NavLink>
           <NavLink to="/admin/setting" className={({ isActive }) => `admin-sidebar__link ${isActive ? 'is-active' : ''}`}>
             <i className="fas fa-cog" aria-hidden="true"></i>
             Settings

@@ -8,6 +8,8 @@ import AdminSetting from './components/AdminSetting'
 import AdminLogin from './components/AdminLogin'
 import AdminProtectedRoute from './components/AdminProtectedRoute'
 import AdminLayout from './components/AdminLayout'
+import AdminEnquiryList from './components/AdminEnquiryList'
+import AdminEnquiryEdit from './components/AdminEnquiryEdit'
 import BookingForm from './components/BookingForm'
 import Enquiry from './components/Enquiry'
 import './App.css'
@@ -27,6 +29,8 @@ function App() {
             <Route path="/admin/car/list" element={<AdminCarList />} />
             <Route path="/admin/car/edit/:id" element={<AdminCarEdit />} />
             <Route path="/admin/setting" element={<AdminSetting />} />
+            <Route path="/admin/enquiry/list" element={<AdminEnquiryList />} />
+            <Route path="/admin/enquiry/edit/:id" element={<AdminEnquiryEdit />} />
           </Route>
         </Route>
       </Routes>

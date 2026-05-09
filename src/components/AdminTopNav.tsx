@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import './AdminCar.css'
 
 type Props = {
   /** Which admin section is active */
-  active: 'cars' | 'settings'
+  active: 'cars' | 'enquiries' | 'settings'
   /** Show "Add Car" shortcut */
   showAddCar?: boolean
 }
@@ -42,6 +43,7 @@ export default function AdminTopNav({ active, showAddCar = false }: Props) {
         <nav className="main-nav">
           <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Home</NavLink>
           <NavLink to="/admin/car/list" className={`nav-link ${active === 'cars' ? 'active' : ''}`}>Admin Cars</NavLink>
+          <NavLink to="/admin/enquiry/list" className={`nav-link ${active === 'enquiries' ? 'active' : ''}`}>Enquiries</NavLink>
           <NavLink to="/admin/setting" className={`nav-link ${active === 'settings' ? 'active' : ''}`}>Settings</NavLink>
           {showAddCar ? (
             <NavLink to="/admin/car" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Add Car</NavLink>
