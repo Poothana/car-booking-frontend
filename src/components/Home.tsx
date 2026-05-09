@@ -100,6 +100,7 @@ function Home() {
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
   const [journeyEndDate, setJourneyEndDate] = useState('')
+  const [tripType, setTripType] = useState<'oneway' | 'round'>('round')
   const [errors, setErrors] = useState<FormErrors>({
     pickupLocation: '',
     dropLocation: '',
@@ -305,7 +306,7 @@ function Home() {
               </div>
               <div className="logo-text">
                 <span className="logo-title">{siteName}</span>
-                {/* <span className="tamil">கார் வாடகை</span> */}
+                {/* <span className= "web-view-hide mobile-support-mail"></span> */}
               </div>
             </div>
 
@@ -378,8 +379,14 @@ function Home() {
         {/* Filter Search Section - Positioned above hero content */}
         <div className="filter-section">
           <div className="filter-container">
-            <form className="filter-form" onSubmit={handleBookNow} noValidate>
-              <div className="filter-field" ref={pickupRef}>
+            <div className="home-mobile-book-card">
+              <div className="home-mobile-book-card__top">
+                
+              </div>
+
+
+              <form className="filter-form" onSubmit={handleBookNow} noValidate>
+              <div className="filter-field mobile-view-hide" ref={pickupRef}>
                 <label htmlFor="pickup">
                   Pickup Location <span className="required-asterisk">*</span>
                 </label>
@@ -418,7 +425,7 @@ function Home() {
                   </span>
                 )}
               </div>
-              <div className="filter-field" ref={dropRef}>
+              <div className="filter-field mobile-view-hide" ref={dropRef}>
                 <label htmlFor="drop">
                   Drop Location <span className="required-asterisk">*</span>
                 </label>
@@ -481,30 +488,32 @@ function Home() {
                   </span>
                 )}
               </div>
-              <div className="filter-field">
-                <label htmlFor="journey_end_date">
-                  Journey End Date <span className="required-asterisk">*</span>
-                </label>
-                <input
-                  type="date"
-                  id="journey_end_date"
-                  value={journeyEndDate}
-                  onChange={(e) => {
-                    setJourneyEndDate(e.target.value)
-                    setErrors(prev => ({ ...prev, journeyEndDate: '' }))
-                  }}
-                  className={`filter-input ${errors.journeyEndDate ? 'error' : ''}`}
-                  min={journeyStartDate || new Date().toISOString().split('T')[0]}
-                  aria-invalid={!!errors.journeyEndDate}
-                  // aria-required="true"
-                  aria-describedby={errors.journeyEndDate ? 'end-date-error' : undefined}
-                />
-                {errors.journeyEndDate && (
-                  <span id="end-date-error" className="error-message" role="alert">
-                    {errors.journeyEndDate}
-                  </span>
-                )}
-              </div>
+              {tripType === 'round' ? (
+                <div className="filter-field">
+                  <label htmlFor="journey_end_date">
+                    Journey End Date <span className="required-asterisk">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="journey_end_date"
+                    value={journeyEndDate}
+                    onChange={(e) => {
+                      setJourneyEndDate(e.target.value)
+                      setErrors(prev => ({ ...prev, journeyEndDate: '' }))
+                    }}
+                    className={`filter-input ${errors.journeyEndDate ? 'error' : ''}`}
+                    min={journeyStartDate || new Date().toISOString().split('T')[0]}
+                    aria-invalid={!!errors.journeyEndDate}
+                    // aria-required="true"
+                    aria-describedby={errors.journeyEndDate ? 'end-date-error' : undefined}
+                  />
+                  {errors.journeyEndDate && (
+                    <span id="end-date-error" className="error-message" role="alert">
+                      {errors.journeyEndDate}
+                    </span>
+                  )}
+                </div>
+              ) : null}
               <button 
                 type="submit" 
                 className="book-now-btn"
@@ -520,7 +529,8 @@ function Home() {
                   'Book Now'
                 )}
               </button>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
         <div className="hero-content">
@@ -1025,112 +1035,19 @@ function Home() {
       </div>
 
 
-      {/* Footer */}
-      <footer className="main-footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-column">
-              <h3>CarRental</h3>
-              <div className="tamil">கார் வாடகை</div>
-              <p>Your trusted partner for car rentals across Tamil Nadu. Experience comfort, reliability, and excellent service with our premium fleet.</p>
-              <div className="social-links">
-                <a href="#" aria-label="Facebook">
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" aria-label="Twitter">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" aria-label="Instagram">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="#" aria-label="WhatsApp">
-                  <i className="fab fa-whatsapp"></i>
-                </a>
-              </div>
-            </div>
-            
-            <div className="footer-column">
-              <h3>Quick Links</h3>
-              <ul className="footer-links">
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/cars">Our Cars</Link></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#why-choose">About Us</a></li>
-                <li><a href="#destinations">Destinations</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-column">
-              <h3>Car Types</h3>
-              <ul className="footer-links">
-                <li><a href="#">Economy Cars</a></li>
-                <li><a href="#">Sedans</a></li>
-                <li><a href="#">SUVs & MUVs</a></li>
-                <li><a href="#">Luxury Cars</a></li>
-                <li><a href="#">Tempo Travelers</a></li>
-                <li><a href="#">Traveler Packages</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-column">
-              <h3>Contact Info</h3>
-              <div className="contact-info">
-                <div className="contact-item">
-                  <i className="fas fa-map-marker-alt"></i>
-                  <div>
-                    <strong>Address:</strong><br />
-                    123 Anna Salai,<br />
-                    Near Meenakshi Temple,<br />
-                    Madurai - 625020
-                  </div>
-                </div>
-                <div className="contact-item">
-                  <i className="fas fa-phone-alt"></i>
-                  <div>
-                    <strong>Phone:</strong><br />
-                    +91 452 123 4567<br />
-                    +91 98765 43210
-                  </div>
-                </div>
-                <div className="contact-item">
-                  <i className="fas fa-envelope"></i>
-                  <div>
-                    <strong>Email:</strong><br />
-                    info@carrental.com<br />
-                    support@carrental.com
-                  </div>
-                </div>
-                <div className="contact-item">
-                  <i className="fas fa-clock"></i>
-                  <div>
-                    <strong>Available:</strong><br />
-                    24/7 Service
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="copyright">
-            <p>&copy; {new Date().getFullYear()} CarRental. All rights reserved.</p>
-            <div className="tamil">கார் வாடகை. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.</div>
-          </div>
-        </div>
-      </footer>
-
       {/* Mobile bottom menu (like app tab bar) */}
       <nav className="home-bottom-nav" aria-label="Mobile bottom navigation">
         <Link to="/" className="home-bottom-nav__item" aria-label="Home" aria-current="page">
           <i className="fas fa-home" aria-hidden="true"></i>
           <span>Home</span>
         </Link>
-        <Link to="/booking" className="home-bottom-nav__item" aria-label="Booking">
+        <Link to="#Services" className="home-bottom-nav__item" aria-label="Booking">
           <i className="fas fa-list" aria-hidden="true"></i>
-          <span>Bookings</span>
+          <span>Services</span>
         </Link>
-        <Link to="/enquiry" className="home-bottom-nav__item" aria-label="Help">
+        <Link to="#Car Fleet" className="home-bottom-nav__item" aria-label="Help">
           <i className="fas fa-question-circle" aria-hidden="true"></i>
-          <span>Help</span>
+          <span>Car Fleet</span>
         </Link>
         <Link to="/admin" className="home-bottom-nav__item" aria-label="Account">
           <i className="fas fa-user" aria-hidden="true"></i>
