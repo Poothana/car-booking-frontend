@@ -5,9 +5,11 @@ import './Header.css'
 
 type HeaderProps = {
   showEnquiryCta?: boolean
+  /** When false, Enquire Us stays on desktop but is hidden in the header on narrow (mobile) viewports. */
+  showEnquiryCtaOnMobile?: boolean
 }
 
-export default function Header({ showEnquiryCta = true }: HeaderProps) {
+export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile = true }: HeaderProps) {
   const [siteName, setSiteName] = useState('CarRental')
   const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
   const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
@@ -30,8 +32,13 @@ export default function Header({ showEnquiryCta = true }: HeaderProps) {
     fetchBasic()
   }, [])
 
+  const headerClass =
+    showEnquiryCta && showEnquiryCtaOnMobile === false
+      ? 'main-header main-header--hide-enquiry-mobile'
+      : 'main-header'
+
   return (
-    <header className="main-header">
+    <header className={headerClass}>
       <div className="header-content">
         <Link to="/" className="logo-section logo-section--mark" aria-label={`${siteName} — Home`}>
           <SiteLogo alt={siteName} />
@@ -50,6 +57,12 @@ export default function Header({ showEnquiryCta = true }: HeaderProps) {
           <a href="/#why-choose" className="nav-link">
             <i className="fas fa-question-circle"></i> About
           </a>
+          <Link to="/tamil-nadu-map" className="nav-link">
+            <i className="fas fa-map-marked-alt"></i> TN Map
+          </Link>
+          <Link to="/popular-destinations" className="nav-link">
+            <i className="fas fa-mountain"></i> Destinations
+          </Link>
         </nav>
 
         <div className="nav-cta">

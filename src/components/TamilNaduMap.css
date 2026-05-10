@@ -1,0 +1,139 @@
+:root {
+  --madurai-saffron: #ff6b35;
+  --madurai-temple-red: #c41e3a;
+  --madurai-cream: #fff8e7;
+  --madurai-dark: #2c1810;
+}
+
+.tamil-nadu-map-page {
+  background: linear-gradient(135deg, #ffffff 0%, var(--madurai-cream) 100%);
+  color: var(--madurai-dark);
+  min-height: 100vh;
+  padding: 130px 16px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tamil-nadu-map-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(680px 260px at 12% 8%, rgba(255, 107, 53, 0.12), transparent 58%),
+    radial-gradient(620px 240px at 88% 18%, rgba(196, 30, 58, 0.1), transparent 52%),
+    radial-gradient(760px 300px at 50% 92%, rgba(255, 215, 0, 0.08), transparent 58%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tamil-nadu-map-top-inner {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto 20px;
+  text-align: center;
+  z-index: 1;
+}
+
+.tamil-nadu-map-kicker {
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #777;
+  margin: 0 0 8px;
+}
+
+.tamil-nadu-map-title {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 800;
+  margin: 0;
+  color: #111;
+}
+
+.tamil-nadu-map-subtitle {
+  margin: 8px 0 0;
+  font-size: 1.05rem;
+  color: var(--madurai-saffron);
+  font-weight: 600;
+}
+
+.tamil-nadu-map-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: transparent;
+  border: 1px solid #e7e7e7;
+  color: #111;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.tamil-nadu-map-back:hover {
+  border-color: var(--madurai-saffron);
+  color: var(--madurai-saffron);
+}
+
+.tamil-nadu-map-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.tamil-nadu-map-lead {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #444;
+  text-align: center;
+}
+
+.tamil-nadu-map-frame {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 30, 58, 0.15);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+  background: #e2e8f0;
+  aspect-ratio: 16 / 10;
+  min-height: 280px;
+}
+
+.tamil-nadu-map-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  border: 0;
+}
+
+.tamil-nadu-map-attrib {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.tamil-nadu-map-attrib a {
+  color: var(--madurai-temple-red);
+  font-weight: 600;
+}
+
+.tamil-nadu-map-attrib a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .tamil-nadu-map-back {
+    position: static;
+    display: block;
+    margin: 16px auto 0;
+    width: fit-content;
+  }
+
+  .tamil-nadu-map-top-inner {
+    padding-top: 8px;
+  }
+}

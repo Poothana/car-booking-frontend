@@ -217,3 +217,9 @@
   }
 }
 
+@media (max-width: 699px) {
+  .main-header.main-header--hide-enquiry-mobile .book-now-btn {
+    display: none !important;
+  }
+}
+

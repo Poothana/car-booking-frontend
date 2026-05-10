@@ -74,8 +74,11 @@
     padding-top: var(--mobile-topbar-h);
   }
 
-  /* Enquiry uses fixed Header — extra page padding */
-  .enquiry-page {
+  /* Fixed Header + mobile contact strip */
+  .enquiry-page,
+  .tamil-nadu-map-page,
+  .popular-destinations-page,
+  .popular-destination-detail-page {
     padding-top: calc(110px + var(--mobile-topbar-h));
   }
 }

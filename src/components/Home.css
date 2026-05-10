@@ -59,11 +59,6 @@ body, html {
   position: relative;
 }
 
-/* Bottom mobile nav (hidden on desktop) */
-.home-bottom-nav {
-  display: none;
-}
-
 /* Mobile booking card wrapper (desktop keeps existing layout) */
 .home-mobile-book-card {
   display: contents;
@@ -572,54 +567,6 @@ body, html {
 
   .home-mobile-menu__link:active {
     transform: translateY(1px);
-  }
-  /* Make room for bottom nav */
-  .home-container {
-    padding-bottom: 74px;
-  }
-
-  .home-bottom-nav {
-    display: flex;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1001;
-    background: #fff;
-    border-top: 1px solid rgba(15, 23, 42, 0.10);
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-    justify-content: space-around;
-    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.10);
-  }
-
-  .home-bottom-nav__item {
-    flex: 1;
-    min-width: 0;
-    display: grid;
-    justify-items: center;
-    gap: 4px;
-    text-decoration: none;
-    color: #64748b;
-    font-weight: 700;
-    font-size: 11px;
-    padding: 6px 0;
-  }
-
-  .home-bottom-nav__item i {
-    font-size: 18px;
-    color: #64748b;
-  }
-
-  .home-bottom-nav__item:active {
-    transform: translateY(1px);
-  }
-
-  /* highlight current page (Home) */
-  .home-bottom-nav__item[aria-current='page'] {
-    color: var(--madurai-temple-red);
-  }
-  .home-bottom-nav__item[aria-current='page'] i {
-    color: var(--madurai-temple-red);
   }
 }
 
@@ -2125,6 +2072,37 @@ body, html {
   transition: all 0.3s;
 }
 
+.destination-card--link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.destination-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.destinations-view-all {
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.destinations-view-all a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--madurai-temple-red);
+  text-decoration: none;
+}
+
+.destinations-view-all a:hover {
+  text-decoration: underline;
+}
+
 .destination-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(196, 30, 58, 0.2);
@@ -2165,9 +2143,14 @@ body, html {
 }
 
 .destination-overlay p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   opacity: 0.9;
   margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Footer */

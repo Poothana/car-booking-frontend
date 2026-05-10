@@ -12,7 +12,11 @@ import AdminEnquiryList from './components/AdminEnquiryList'
 import AdminEnquiryEdit from './components/AdminEnquiryEdit'
 import BookingForm from './components/BookingForm'
 import Enquiry from './components/Enquiry'
+import TamilNaduMap from './components/TamilNaduMap'
+import PopularDestinations from './components/PopularDestinations'
+import PopularDestinationDetail from './components/PopularDestinationDetail'
 import MobileContactTopBar from './components/MobileContactTopBar'
+import MobileFooterNav from './components/MobileFooterNav'
 import './App.css'
 
 function App() {
@@ -24,6 +28,9 @@ function App() {
         <Route path="/cars" element={<CarsList />} />
         <Route path="/booking" element={<BookingForm />} />
         <Route path="/enquiry" element={<Enquiry />} />
+        <Route path="/tamil-nadu-map" element={<TamilNaduMap />} />
+        <Route path="/popular-destinations" element={<PopularDestinations />} />
+        <Route path="/popular-destinations/:slug" element={<PopularDestinationDetail />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route element={<AdminProtectedRoute />}>
           <Route element={<AdminLayout />}>
@@ -36,6 +43,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
+      <MobileFooterNav />
     </BrowserRouter>
   )
 }

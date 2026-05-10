@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import SiteLogo from './SiteLogo'
+import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import './Home.css'
 
 type HireMode = 'local' | 'outstation'
@@ -327,6 +328,12 @@ function Home() {
             <a href="#why-choose" className="nav-link">
               <i className="fas fa-question-circle"></i> About
             </a>
+            <Link to="/tamil-nadu-map" className="nav-link">
+              <i className="fas fa-map-marked-alt"></i> TN Map
+            </Link>
+            <Link to="/popular-destinations" className="nav-link">
+              <i className="fas fa-mountain"></i> Destinations
+            </Link>
           </nav>
           <div className="nav-cta">
             <div className="phone-number">
@@ -363,6 +370,16 @@ function Home() {
               <a href="#why-choose" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
                 About
               </a>
+              <Link to="/tamil-nadu-map" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
+                TN Map
+              </Link>
+              <Link
+                to="/popular-destinations"
+                className="home-mobile-menu__link"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Destinations
+              </Link>
             </nav>
           </>
         ) : null}
@@ -965,53 +982,38 @@ function Home() {
         </div>
       </section>
 
-      {/* Popular Destinations Section */}
-      <section className="destinations">
+      {/* Popular Destinations Section — cards link to detail pages */}
+      <section className="destinations" id="popular-destinations">
         <div className="container">
           <div className="section-title">
             <h2>
               <i className="fas fa-map-marked-alt"></i> Popular Destinations
             </h2>
             <div className="tamil">பிரபலமான இடங்கள்</div>
-            <p>Explore Tamil Nadu's most beautiful places with our rental cars</p>
+            <p>Explore Tamil Nadu&apos;s most beautiful places with MathiCabs Tours &amp; Travels</p>
+            <p className="destinations-view-all">
+              <Link to="/popular-destinations">View all destinations &amp; details →</Link>
+            </p>
           </div>
-          
+
           <div className="destination-grid">
-            <div className="destination-card">
-              <img src="https://images.unsplash.com/photo-1595599512947-92c571860ca8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Chennai" loading="lazy" />
-              <div className="destination-overlay">
-                <h3>Chennai</h3>
-                <div className="tamil">சென்னை</div>
-                <p>Marina Beach, Kapaleeshwarar Temple</p>
-              </div>
-            </div>
-            
-            <div className="destination-card">
-              <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Madurai" loading="lazy" />
-              <div className="destination-overlay">
-                <h3>Madurai</h3>
-                <div className="tamil">மதுரை</div>
-                <p>Meenakshi Temple, Thirumalai Nayakkar Palace</p>
-              </div>
-            </div>
-            
-            <div className="destination-card">
-              <img src="https://images.unsplash.com/photo-1622279452202-5b847faf7033?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Ooty" loading="lazy" />
-              <div className="destination-overlay">
-                <h3>Ooty</h3>
-                <div className="tamil">ஊட்டி</div>
-                <p>Nilgiri Mountains, Botanical Gardens</p>
-              </div>
-            </div>
-            
-            <div className="destination-card">
-              <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Kanyakumari" loading="lazy" />
-              <div className="destination-overlay">
-                <h3>Kanyakumari</h3>
-                <div className="tamil">கன்னியாகுமரி</div>
-                <p>Sunrise Point, Vivekananda Rock</p>
-              </div>
-            </div>
+            {POPULAR_DESTINATIONS.map(d => (
+              <Link
+                key={d.slug}
+                to={`/popular-destinations/${d.slug}`}
+                className="destination-card destination-card--link"
+              >
+                <img src={d.image} alt={d.imageAlt} loading="lazy" />
+                <div className="destination-overlay">
+                  <div className="destination-card-icon" aria-hidden="true">
+                    {d.icon}
+                  </div>
+                  <h3>{d.name}</h3>
+                  <div className="tamil">{d.tamilName}</div>
+                  <p>{d.excerpt}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -1037,25 +1039,6 @@ function Home() {
       </div>
 
 
-      {/* Mobile bottom menu (like app tab bar) */}
-      <nav className="home-bottom-nav" aria-label="Mobile bottom navigation">
-        <Link to="/" className="home-bottom-nav__item" aria-label="Home" aria-current="page">
-          <i className="fas fa-home" aria-hidden="true"></i>
-          <span>Home</span>
-        </Link>
-        <Link to="#Services" className="home-bottom-nav__item" aria-label="Booking">
-          <i className="fas fa-list" aria-hidden="true"></i>
-          <span>Services</span>
-        </Link>
-        <Link to="#Car Fleet" className="home-bottom-nav__item" aria-label="Help">
-          <i className="fas fa-question-circle" aria-hidden="true"></i>
-          <span>Car Fleet</span>
-        </Link>
-        <Link to="/admin" className="home-bottom-nav__item" aria-label="Account">
-          <i className="fas fa-user" aria-hidden="true"></i>
-          <span>Account</span>
-        </Link>
-      </nav>
     </div>
   )
 }
