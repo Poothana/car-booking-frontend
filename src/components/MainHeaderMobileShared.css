@@ -1,0 +1,134 @@
+/**
+ * Shared mobile header shell + pill shortcuts for any `header.main-header`
+ * (Enquiry / Header.tsx, Home, etc.). Import after page-specific header CSS.
+ */
+
+.header-mobile-quick {
+  display: none;
+}
+
+.header-mobile-quick__btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--madurai-temple-red, #c41e3a);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(196, 30, 58, 0.22);
+  text-decoration: none;
+  font-size: 17px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.15s;
+}
+
+@media (max-width: 699px) {
+  header.main-header.main-header--hide-enquiry-mobile .book-now-btn {
+    display: none !important;
+  }
+
+  header.main-header {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    padding: 10px 0 12px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 16px rgba(15, 23, 42, 0.06);
+  }
+
+  header.main-header .header-content {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+    box-sizing: border-box;
+  }
+
+  header.main-header .logo-section,
+  header.main-header .home-header-top {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: auto;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+
+  header.main-header .main-nav {
+    display: none !important;
+  }
+
+  header.main-header .nav-cta {
+    display: none !important;
+  }
+
+  header.main-header .header-mobile-quick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex: 0 0 auto;
+    padding: 4px 6px;
+    background: #eef0f3;
+    border-radius: 9999px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .header-mobile-quick__sep {
+    width: 1px;
+    height: 22px;
+    background: rgba(15, 23, 42, 0.12);
+    flex-shrink: 0;
+    border-radius: 1px;
+  }
+
+  header.main-header .header-mobile-quick .header-mobile-quick__btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 16px;
+    color: var(--madurai-temple-red, #c41e3a);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  header.main-header .header-mobile-quick .header-mobile-quick__btn:hover {
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--madurai-saffron, #ff6b35);
+    border: none;
+  }
+
+  header.main-header .header-mobile-quick .header-mobile-quick__btn:active {
+    transform: scale(0.94);
+  }
+
+  header.main-header .header-mobile-quick .header-mobile-quick__btn.is-active {
+    background: #ffffff;
+    color: var(--madurai-temple-red, #c41e3a);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+    border: none;
+  }
+}
+
+@media (min-width: 700px) {
+  .header-mobile-quick {
+    display: none !important;
+  }
+}

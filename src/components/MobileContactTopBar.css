@@ -63,8 +63,7 @@
     top: var(--mobile-topbar-h);
   }
 
-  /* Pages without a fixed nav: clear the bar */
-  .cars-list-container,
+  /* Pages without a fixed nav: clear the bar (cars list uses shared Header + its own padding) */
   .booking-form-container,
   .admin-login,
   .admin-car-container,

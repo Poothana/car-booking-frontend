@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
-import SiteLogo from './SiteLogo'
+import Header from './Header'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import './Home.css'
 
@@ -94,10 +94,6 @@ interface FormErrors {
 function Home() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [siteName, setSiteName] = useState('CarRental')
-  const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
-  const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [pickupLocation, setPickupLocation] = useState('')
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
@@ -255,25 +251,6 @@ function Home() {
     fetchFleet()
   }, [])
 
-  // Fetch basic site settings for header/footer
-  useEffect(() => {
-    const fetchBasic = async () => {
-      try {
-        const apiUrl = import.meta.env.DEV ? '/api/settings/basic' : 'http://127.0.0.1:8000/api/settings/basic'
-        const res = await fetch(apiUrl)
-        if (!res.ok) return
-        const json = await res.json()
-        const data = json?.data || {}
-        if (data.site_name) setSiteName(String(data.site_name))
-        if (data.support_phone) setSupportPhone(String(data.support_phone))
-        if (data.support_email) setSupportEmail(String(data.support_email))
-      } catch {
-        // ignore
-      }
-    }
-    fetchBasic()
-  }, [])
-
   // If we land on a hash route like "/#car-fleet", scroll to the section.
   useEffect(() => {
     if (!location.hash) return
@@ -285,11 +262,6 @@ function Home() {
     }
   }, [location.hash])
 
-  // Close mobile menu on navigation
-  useEffect(() => {
-    setMobileMenuOpen(false)
-  }, [location.pathname, location.hash])
-
   const goToTestimonial = (index: number) => {
     setCurrentTestimonial(index)
   }
@@ -297,93 +269,7 @@ function Home() {
   return (
     <div className="home-container" style={{ backgroundImage: `url(${meenakshiImage})` }}>
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      {/* Main Navigation Bar */}
-      <header className="main-header">
-        <div className="header-content">
-          <div className="home-header-top">
-            <Link to="/" className="logo-section logo-section--mark" aria-label={`${siteName} — Home`}>
-              <SiteLogo alt={siteName} />
-            </Link>
-
-            {/* <button
-              type="button"
-              className="home-mobile-menu-btn"
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen((v) => !v)}
-            >
-              <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true"></i>
-            </button> */}
-          </div>
-          <nav className="main-nav">
-            <Link to="/" className="nav-link">
-              <i className="fas fa-home"></i> Home
-            </Link>
-            <a href="#services" className="nav-link">
-              <i className="fas fa-concierge-bell"></i> Services
-            </a>
-            <a href="#car-fleet" className="nav-link">
-              <i className="fas fa-car"></i> Car Fleet
-            </a>
-            <a href="#why-choose" className="nav-link">
-              <i className="fas fa-question-circle"></i> About
-            </a>
-            <Link to="/tamil-nadu-map" className="nav-link">
-              <i className="fas fa-map-marked-alt"></i> TN Map
-            </Link>
-            <Link to="/popular-destinations" className="nav-link">
-              <i className="fas fa-mountain"></i> Destinations
-            </Link>
-          </nav>
-          <div className="nav-cta">
-            <div className="phone-number">
-              <i className="fas fa-phone-alt"></i>
-              <div className="phone-text">
-                <span>{supportPhone}</span>
-                <span className="phone-email">{supportEmail}</span>
-              </div>
-            </div>
-
-            <Link to="/enquiry" className="book-now-btn hide-on-mobile" aria-label="Go to enquiry page">
-              Enquire Us
-            </Link>
-
-            {/* <Link to="/admin" className="book-now-btn admin-login-btn" aria-label="Go to admin login page">
-              Admin Login
-            </Link> */}
-          </div>
-        </div>
-
-        {mobileMenuOpen ? (
-          <>
-            <div className="home-mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />
-            <nav className="home-mobile-menu" aria-label="Mobile menu">
-              <Link to="/" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
-                Home
-              </Link>
-              <a href="#services" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
-                Services
-              </a>
-              <a href="#car-fleet" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
-                Car Fleet
-              </a>
-              <a href="#why-choose" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
-                About
-              </a>
-              <Link to="/tamil-nadu-map" className="home-mobile-menu__link" onClick={() => setMobileMenuOpen(false)}>
-                TN Map
-              </Link>
-              <Link
-                to="/popular-destinations"
-                className="home-mobile-menu__link"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Destinations
-              </Link>
-            </nav>
-          </>
-        ) : null}
-      </header>
+      <Header showEnquiryCta={false} />
 
       {/* Hero Section */}
       <section id="main-content" className="hero-section ">

@@ -26,6 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .logo-section {
@@ -214,12 +215,6 @@
   }
   .nav-cta {
     justify-content: flex-end;
-  }
-}
-
-@media (max-width: 699px) {
-  .main-header.main-header--hide-enquiry-mobile .book-now-btn {
-    display: none !important;
   }
 }
 

@@ -3,68 +3,14 @@
   margin: 0 auto;
   background-color: #f5f7fa;
   min-height: 100vh;
+  /* Fixed `Header` (same as enquiry / other pages) */
+  padding-top: 88px;
 }
 
-/* Navigation Header */
-.cars-list-nav {
-  background: white;
-  padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.nav-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  background-color: #007bff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.logo-text {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-}
-
-.cars-list-nav .main-nav {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.cars-list-nav .nav-link {
-  color: #333;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.cars-list-nav .nav-link:hover,
-.cars-list-nav .nav-link.active {
-  color: #007bff;
+@media (max-width: 699px) {
+  .cars-list-container {
+    padding-top: calc(var(--mobile-topbar-h, 40px) + 58px);
+  }
 }
 
 .cars-list-header {

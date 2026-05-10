@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import SiteLogo from './SiteLogo'
+import { useNavigate, useLocation } from 'react-router-dom'
+import Header from './Header'
 import './CarsList.css'
 
 interface ApiCategory {
@@ -403,21 +403,7 @@ function CarsList() {
   if (loading) {
     return (
       <div className="cars-list-container">
-        <header className="cars-list-nav">
-          <div className="nav-content">
-            <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
-              <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
-            </Link>
-            <nav className="main-nav">
-              <Link to="/" className="nav-link">Home</Link>
-              <a href="#" className="nav-link">Who we are</a>
-              <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
-              <a href="#" className="nav-link">Special offer</a>
-              <a href="#" className="nav-link">Contact us</a>
-              <Link to="/enquiry" className="nav-link">Enquire Us</Link>
-            </nav>
-          </div>
-        </header>
+        <Header />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
           Loading cars...
         </div>
@@ -429,21 +415,7 @@ function CarsList() {
   if (error) {
     return (
       <div className="cars-list-container">
-        <header className="cars-list-nav">
-          <div className="nav-content">
-            <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
-              <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
-            </Link>
-            <nav className="main-nav">
-              <Link to="/" className="nav-link">Home</Link>
-              <a href="#" className="nav-link">Who we are</a>
-              <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
-              <a href="#" className="nav-link">Special offer</a>
-              <a href="#" className="nav-link">Contact us</a>
-              <Link to="/enquiry" className="nav-link">Enquire Us</Link>
-            </nav>
-          </div>
-        </header>
+        <Header />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px', color: '#ff4444' }}>
           Error: {error}
           <br />
@@ -460,22 +432,7 @@ function CarsList() {
 
   return (
     <div className="cars-list-container">
-      {/* Navigation Header */}
-      <header className="cars-list-nav">
-        <div className="nav-content">
-          <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
-            <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
-          </Link>
-          <nav className="main-nav">
-            <Link to="/" className="nav-link">Home</Link>
-            <a href="#" className="nav-link">Who we are</a>
-            <Link to="/#car-fleet" className="nav-link">Car Fleet</Link>
-            <a href="#" className="nav-link">Special offer</a>
-            <a href="#" className="nav-link">Contact us</a>
-            <Link to="/enquiry" className="nav-link">Enquire Us</Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <div className="cars-list-header">
         <h1>Cars from New Delhi to Mumbai</h1>

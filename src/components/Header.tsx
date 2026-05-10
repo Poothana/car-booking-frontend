@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SiteLogo from './SiteLogo'
+import MobileHeaderQuickLinks from './MobileHeaderQuickLinks'
 import './Header.css'
+import './MainHeaderMobileShared.css'
 
 type HeaderProps = {
   showEnquiryCta?: boolean
@@ -80,6 +82,8 @@ export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile =
             </Link>
           )}
         </div>
+
+        <MobileHeaderQuickLinks />
       </div>
     </header>
   )
