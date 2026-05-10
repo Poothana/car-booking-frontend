@@ -317,9 +317,8 @@ body, html {
     display: none !important;
   }
 
-  .filter-section{
-    margin: -10px auto 30px auto !important; 
-
+  .filter-section {
+    display: none !important;
   }
 
   /* Mobile booking card UI (uses existing form fields) */
@@ -2294,7 +2293,9 @@ body, html {
   z-index: 1000;
 }
 
-.whatsapp-float, .call-float {
+.enquire-float,
+.whatsapp-float,
+.call-float {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -2308,6 +2309,17 @@ body, html {
   color: white;
 }
 
+.enquire-float {
+  background: #25D366;
+  font-size: 24px;
+}
+
+.enquire-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, var(--madurai-saffron), var(--madurai-temple-red));
+}
+
 .whatsapp-float {
   background-color: #25D366;
 }
@@ -2316,7 +2328,8 @@ body, html {
   background: linear-gradient(135deg, var(--madurai-temple-red), var(--madurai-saffron));
 }
 
-.whatsapp-float:hover, .call-float:hover {
+.whatsapp-float:hover,
+.call-float:hover {
   transform: scale(1.1);
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
 }
@@ -2861,10 +2874,16 @@ body, html {
     right: 15px;
   }
   
-  .whatsapp-float, .call-float {
+  .enquire-float,
+  .whatsapp-float,
+  .call-float {
     width: 50px;
     height: 50px;
     font-size: 24px;
+  }
+
+  .enquire-float {
+    font-size: 20px;
   }
   
   .testimonial-item {
@@ -2924,21 +2943,6 @@ body, html {
 
   .sidebar-elements {
     display: none;
-  }
-
-  .filter-section {
-    padding: 20px 15px;
-    margin: -30px auto 30px auto;
-  }
-
-  .filter-form {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .home-container .book-now-btn {
-    width: 100%;
-    padding: 16px;
   }
 
   .hero-section {

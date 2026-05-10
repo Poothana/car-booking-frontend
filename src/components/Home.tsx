@@ -369,7 +369,7 @@ function Home() {
                   </span>
                 )}
               </div>
-              <div className="filter-field">
+              <div className="filter-field mobile-view-hide">
                 <label htmlFor="journey_start_date">
                   Journey Start Date <span className="required-asterisk">*</span>
                 </label>
@@ -393,7 +393,7 @@ function Home() {
                   </span>
                 )}
               </div>
-              <div className="filter-field">
+              <div className="filter-field mobile-view-hide">
                 <label htmlFor="journey_end_date">
                   Journey End Date <span className="required-asterisk">*</span>
                 </label>
@@ -419,7 +419,7 @@ function Home() {
               </div>
               <button 
                 type="submit" 
-                className="book-now-btn"
+                className="book-now-btn mobile-view-hide"
                 disabled={isNavigating}
                 aria-label="Go to enquiry page"
               >
@@ -904,8 +904,11 @@ function Home() {
         </div>
       </section>
 
-      {/* WhatsApp & Call Floating Buttons */}
+      {/* Enquire + WhatsApp & Call floating actions */}
       <div className="float-buttons">
+        <Link to="/enquiry" className="enquire-float" aria-label="Enquire us">
+          <i className="fas fa-envelope-open-text" aria-hidden="true" />
+        </Link>
         <a 
           href="https://wa.me/9194521234567?text=Hello%20CarRental%20I%20need%20information%20about%20car%20rental" 
           className="whatsapp-float" 
