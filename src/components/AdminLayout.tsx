@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import SiteLogo from './SiteLogo'
 import './AdminLayout.css'
 import { setAdminAuthed } from './AdminProtectedRoute'
 
@@ -13,8 +14,8 @@ export default function AdminLayout() {
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="Admin sidebar">
-        <Link to="/" className="admin-sidebar__brand">
-          <span className="admin-sidebar__badge">Be</span>
+        <Link to="/" className="admin-sidebar__brand" aria-label="Mathi Cabs — Home">
+          <SiteLogo alt="Mathi Cabs" className="site-logo-img--sidebar" />
           <span className="admin-sidebar__text">Admin</span>
         </Link>
 

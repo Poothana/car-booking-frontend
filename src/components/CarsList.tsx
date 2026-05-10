@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import SiteLogo from './SiteLogo'
 import './CarsList.css'
 
 interface ApiCategory {
@@ -404,9 +405,8 @@ function CarsList() {
       <div className="cars-list-container">
         <header className="cars-list-nav">
           <div className="nav-content">
-            <Link to="/" className="logo-link">
-              <div className="logo-circle">Be</div>
-              <span className="logo-text">CarRental</span>
+            <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
+              <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
             </Link>
             <nav className="main-nav">
               <Link to="/" className="nav-link">Home</Link>
@@ -431,9 +431,8 @@ function CarsList() {
       <div className="cars-list-container">
         <header className="cars-list-nav">
           <div className="nav-content">
-            <Link to="/" className="logo-link">
-              <div className="logo-circle">Be</div>
-              <span className="logo-text">CarRental</span>
+            <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
+              <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
             </Link>
             <nav className="main-nav">
               <Link to="/" className="nav-link">Home</Link>
@@ -464,9 +463,8 @@ function CarsList() {
       {/* Navigation Header */}
       <header className="cars-list-nav">
         <div className="nav-content">
-          <Link to="/" className="logo-link">
-            <div className="logo-circle">Be</div>
-            <span className="logo-text">CarRental</span>
+          <Link to="/" className="logo-link" aria-label="Mathi Cabs — Home">
+            <SiteLogo alt="Mathi Cabs" className="site-logo-img--compact" />
           </Link>
           <nav className="main-nav">
             <Link to="/" className="nav-link">Home</Link>

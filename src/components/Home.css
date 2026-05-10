@@ -222,6 +222,12 @@ body, html {
   gap: 10px;
 }
 
+.logo-section--mark {
+  text-decoration: none;
+  color: inherit;
+  gap: 0;
+}
+
 .logo-icon {
   color: var(--madurai-temple-red);
   font-size: 32px;
@@ -294,7 +300,8 @@ body, html {
   }
 }
 
-@media (max-width: 900px) {
+/* Mobile + tablet (show bottom menu up to 1140px) */
+@media (max-width: 1140px) {
 
   .mobile-support-mail{
     font-size: 12px;
@@ -307,6 +314,11 @@ body, html {
   .home-mobile-menu-btn,
   .home-mobile-menu-overlay,
   .home-mobile-menu {
+    display: none !important;
+  }
+
+  /* Also hide the top nav links (menu should be only below) */
+  .main-nav {
     display: none !important;
   }
 
@@ -340,6 +352,8 @@ body, html {
     align-items: center;
     gap: 10px;
     min-width: 0;
+    text-decoration: none;
+    color: inherit;
   }
 
   .home-mobile-book-card__badge {
@@ -485,9 +499,15 @@ body, html {
     letter-spacing: 0.4px;
   }
 
-  /* Hide Enquire Us CTA on mobile */
+  /* Tablet: show Enquire Us. Mobile: hide it (rule below). */
   .nav-cta .book-now-btn {
-    display: none;
+    display: inline-flex;
+  }
+
+  @media (max-width: 699px) {
+    .hide-on-mobile {
+      display: none !important;
+    }
   }
 
   /* Mobile menu */
@@ -2952,6 +2972,17 @@ body, html {
 
   .car-image-container {
     padding: 10px;
+  }
+}
+
+/* Home-only: skip link + hero spacing under global mobile top bar (see MobileContactTopBar.css) */
+@media (max-width: 699px) {
+  .home-container .skip-link:focus {
+    top: var(--mobile-topbar-h);
+  }
+
+  .home-container .hero-section {
+    padding-top: 128px;
   }
 }
 

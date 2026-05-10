@@ -34,6 +34,12 @@
   gap: 10px;
 }
 
+.logo-section--mark {
+  text-decoration: none;
+  color: inherit;
+  gap: 0;
+}
+
 .logo-icon {
   color: var(--madurai-temple-red);
   font-size: 32px;

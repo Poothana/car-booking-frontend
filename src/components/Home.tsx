@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
+import SiteLogo from './SiteLogo'
 import './Home.css'
 
 type HireMode = 'local' | 'outstation'
@@ -100,7 +101,6 @@ function Home() {
   const [dropLocation, setDropLocation] = useState('')
   const [journeyStartDate, setJourneyStartDate] = useState('')
   const [journeyEndDate, setJourneyEndDate] = useState('')
-  const [tripType, setTripType] = useState<'oneway' | 'round'>('round')
   const [errors, setErrors] = useState<FormErrors>({
     pickupLocation: '',
     dropLocation: '',
@@ -300,15 +300,9 @@ function Home() {
       <header className="main-header">
         <div className="header-content">
           <div className="home-header-top">
-            <div className="logo-section">
-              <div className="logo-icon">
-                <i className="fas fa-car"></i>
-              </div>
-              <div className="logo-text">
-                <span className="logo-title">{siteName}</span>
-                {/* <span className= "web-view-hide mobile-support-mail"></span> */}
-              </div>
-            </div>
+            <Link to="/" className="logo-section logo-section--mark" aria-label={`${siteName} — Home`}>
+              <SiteLogo alt={siteName} />
+            </Link>
 
             {/* <button
               type="button"
@@ -320,7 +314,7 @@ function Home() {
               <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true"></i>
             </button> */}
           </div>
-          <nav className="main-nav mobile-view-hide">
+          <nav className="main-nav">
             <Link to="/" className="nav-link">
               <i className="fas fa-home"></i> Home
             </Link>
@@ -343,7 +337,7 @@ function Home() {
               </div>
             </div>
 
-            <Link to="/enquiry" className="book-now-btn mobile-view-hide" aria-label="Go to enquiry page">
+            <Link to="/enquiry" className="book-now-btn hide-on-mobile" aria-label="Go to enquiry page">
               Enquire Us
             </Link>
 
@@ -379,10 +373,18 @@ function Home() {
         {/* Filter Search Section - Positioned above hero content */}
         <div className="filter-section">
           <div className="filter-container">
+
             <div className="home-mobile-book-card">
-              <div className="home-mobile-book-card__top">
-                
-              </div>
+
+              {/* <div className="home-mobile-book-card__top">
+                <Link to="/" className="home-mobile-book-card__brand" aria-label={`${siteName} — Home`}>
+                  <SiteLogo alt={siteName} className="site-logo-img--compact" />
+                </Link>
+                <Link to="/enquiry" className="home-mobile-book-card__help" aria-label="Help">
+                  <i className="fas fa-headset" aria-hidden="true" />
+                  Help
+                </Link>
+              </div> */}
 
 
               <form className="filter-form" onSubmit={handleBookNow} noValidate>
@@ -488,32 +490,30 @@ function Home() {
                   </span>
                 )}
               </div>
-              {tripType === 'round' ? (
-                <div className="filter-field">
-                  <label htmlFor="journey_end_date">
-                    Journey End Date <span className="required-asterisk">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="journey_end_date"
-                    value={journeyEndDate}
-                    onChange={(e) => {
-                      setJourneyEndDate(e.target.value)
-                      setErrors(prev => ({ ...prev, journeyEndDate: '' }))
-                    }}
-                    className={`filter-input ${errors.journeyEndDate ? 'error' : ''}`}
-                    min={journeyStartDate || new Date().toISOString().split('T')[0]}
-                    aria-invalid={!!errors.journeyEndDate}
-                    // aria-required="true"
-                    aria-describedby={errors.journeyEndDate ? 'end-date-error' : undefined}
-                  />
-                  {errors.journeyEndDate && (
-                    <span id="end-date-error" className="error-message" role="alert">
-                      {errors.journeyEndDate}
-                    </span>
-                  )}
-                </div>
-              ) : null}
+              <div className="filter-field">
+                <label htmlFor="journey_end_date">
+                  Journey End Date <span className="required-asterisk">*</span>
+                </label>
+                <input
+                  type="date"
+                  id="journey_end_date"
+                  value={journeyEndDate}
+                  onChange={(e) => {
+                    setJourneyEndDate(e.target.value)
+                    setErrors(prev => ({ ...prev, journeyEndDate: '' }))
+                  }}
+                  className={`filter-input ${errors.journeyEndDate ? 'error' : ''}`}
+                  min={journeyStartDate || new Date().toISOString().split('T')[0]}
+                  aria-invalid={!!errors.journeyEndDate}
+                  // aria-required="true"
+                  aria-describedby={errors.journeyEndDate ? 'end-date-error' : undefined}
+                />
+                {errors.journeyEndDate && (
+                  <span id="end-date-error" className="error-message" role="alert">
+                    {errors.journeyEndDate}
+                  </span>
+                )}
+              </div>
               <button 
                 type="submit" 
                 className="book-now-btn"
@@ -595,61 +595,6 @@ function Home() {
               <i className="fas fa-award"></i>
             </div>
             <div className="highlight-text">Award Winning</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="services" id="services">
-        <div className="container">
-          <div className="section-title">
-            <h2>
-              <i className="fas fa-concierge-bell"></i> Our Services
-            </h2>
-            <div className="tamil">எங்கள் சேவைகள்</div>
-            <p>Comprehensive car rental services for every type of journey</p>
-          </div>
-          
-          <div className="services-grid">
-            <div className="service-item">
-              <div className="service-icon">
-                <i className="fas fa-user-tie"></i>
-              </div>
-              <h3>Chauffeur Service</h3>
-              <p>Professional drivers for business meetings, events, or leisure. Hourly, daily, or weekly packages available.</p>
-            </div>
-            
-            <div className="service-item">
-              <div className="service-icon">
-                <i className="fas fa-plane"></i>
-              </div>
-              <h3>Airport Transfers</h3>
-              <p>Reliable airport pickups and drops. Flight tracking, meet & greet service, and fixed pricing.</p>
-            </div>
-            
-            <div className="service-item">
-              <div className="service-icon">
-                <i className="fas fa-route"></i>
-              </div>
-              <h3>Outstation Trips</h3>
-              <p>Long-distance trips with flexible itineraries. Multiple city tours, hill station visits, and pilgrimage tours.</p>
-            </div>
-            
-            <div className="service-item">
-              <div className="service-icon">
-                <i className="fas fa-briefcase"></i>
-              </div>
-              <h3>Corporate Rentals</h3>
-              <p>Special packages for businesses with multiple vehicles, billing preferences, and priority support.</p>
-            </div>
-            
-            <div className="service-item">
-              <div className="service-icon">
-                <i className="fas fa-ring"></i>
-              </div>
-              <h3>Wedding & Events</h3>
-              <p>Decorated cars for weddings and special events. Multiple car packages with professional drivers.</p>
-            </div>
           </div>
         </div>
       </section>
@@ -809,6 +754,63 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* Services Section */}
+      <section className="services" id="services">
+        <div className="container">
+          <div className="section-title">
+            <h2>
+              <i className="fas fa-concierge-bell"></i> Our Services
+            </h2>
+            <div className="tamil">எங்கள் சேவைகள்</div>
+            <p>Comprehensive car rental services for every type of journey</p>
+          </div>
+          
+          <div className="services-grid">
+            <div className="service-item">
+              <div className="service-icon">
+                <i className="fas fa-user-tie"></i>
+              </div>
+              <h3>Chauffeur Service</h3>
+              <p>Professional drivers for business meetings, events, or leisure. Hourly, daily, or weekly packages available.</p>
+            </div>
+            
+            <div className="service-item">
+              <div className="service-icon">
+                <i className="fas fa-plane"></i>
+              </div>
+              <h3>Airport Transfers</h3>
+              <p>Reliable airport pickups and drops. Flight tracking, meet & greet service, and fixed pricing.</p>
+            </div>
+            
+            <div className="service-item">
+              <div className="service-icon">
+                <i className="fas fa-route"></i>
+              </div>
+              <h3>Outstation Trips</h3>
+              <p>Long-distance trips with flexible itineraries. Multiple city tours, hill station visits, and pilgrimage tours.</p>
+            </div>
+            
+            <div className="service-item">
+              <div className="service-icon">
+                <i className="fas fa-briefcase"></i>
+              </div>
+              <h3>Corporate Rentals</h3>
+              <p>Special packages for businesses with multiple vehicles, billing preferences, and priority support.</p>
+            </div>
+            
+            <div className="service-item">
+              <div className="service-icon">
+                <i className="fas fa-ring"></i>
+              </div>
+              <h3>Wedding & Events</h3>
+              <p>Decorated cars for weddings and special events. Multiple car packages with professional drivers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
 
       {/* Why Choose Us Section */}
       <section className="why-choose" id="why-choose">

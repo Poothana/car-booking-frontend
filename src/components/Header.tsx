@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import SiteLogo from './SiteLogo'
 import './Header.css'
 
 type HeaderProps = {
@@ -32,15 +33,9 @@ export default function Header({ showEnquiryCta = true }: HeaderProps) {
   return (
     <header className="main-header">
       <div className="header-content">
-        <div className="logo-section">
-          <div className="logo-icon">
-            <i className="fas fa-car"></i>
-          </div>
-          <div className="logo-text">
-            <span className="logo-title">{siteName}</span>
-            {/* <span className="tamil">கார் வாடகை</span> */}
-          </div>
-        </div>
+        <Link to="/" className="logo-section logo-section--mark" aria-label={`${siteName} — Home`}>
+          <SiteLogo alt={siteName} />
+        </Link>
 
         <nav className="main-nav">
           <Link to="/" className="nav-link">

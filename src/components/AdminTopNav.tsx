@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import SiteLogo from './SiteLogo'
 import './AdminCar.css'
 
 type Props = {
@@ -35,9 +36,8 @@ export default function AdminTopNav({ active, showAddCar = false }: Props) {
   return (
     <header className="admin-nav">
       <div className="nav-content">
-        <Link to="/" className="logo-link">
-          <div className="logo-circle">Be</div>
-          <span className="logo-text">{siteName}</span>
+        <Link to="/" className="logo-link" aria-label={`${siteName} — Home`}>
+          <SiteLogo alt={siteName} className="site-logo-img--compact" />
         </Link>
 
         <nav className="main-nav">

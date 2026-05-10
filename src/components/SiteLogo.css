@@ -1,0 +1,17 @@
+.site-logo-img {
+  height: 42px;
+  width: auto;
+  max-width: min(200px, 42vw);
+  object-fit: contain;
+  display: block;
+}
+
+.site-logo-img--compact {
+  height: 32px;
+  max-width: 140px;
+}
+
+.site-logo-img--sidebar {
+  height: 28px;
+  max-width: 120px;
+}

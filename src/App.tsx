@@ -12,11 +12,13 @@ import AdminEnquiryList from './components/AdminEnquiryList'
 import AdminEnquiryEdit from './components/AdminEnquiryEdit'
 import BookingForm from './components/BookingForm'
 import Enquiry from './components/Enquiry'
+import MobileContactTopBar from './components/MobileContactTopBar'
 import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <MobileContactTopBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/cars" element={<CarsList />} />

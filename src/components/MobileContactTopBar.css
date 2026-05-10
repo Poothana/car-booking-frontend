@@ -1,0 +1,81 @@
+:root {
+  --mobile-topbar-h: 40px;
+}
+
+.mobile-contact-topbar {
+  display: none;
+}
+
+@media (max-width: 699px) {
+  .mobile-contact-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+    height: var(--mobile-topbar-h);
+    min-height: var(--mobile-topbar-h);
+    max-height: var(--mobile-topbar-h);
+    padding: 0 10px;
+    background: #22313d;
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .mobile-contact-topbar__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 0;
+    color: #fef08a;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-contact-topbar__link--email {
+    color: #fde68a;
+    justify-content: flex-end;
+  }
+
+  .mobile-contact-topbar__link i {
+    flex-shrink: 0;
+    font-size: 10px;
+    opacity: 0.95;
+  }
+
+  /* Fixed site headers sit flush under the bar */
+  header.main-header {
+    top: var(--mobile-topbar-h);
+  }
+
+  header.admin-nav {
+    top: var(--mobile-topbar-h);
+  }
+
+  /* Pages without a fixed nav: clear the bar */
+  .cars-list-container,
+  .booking-form-container,
+  .admin-login,
+  .admin-car-container,
+  .admin-car-list-container,
+  .admin-enquiry-container,
+  .admin-enquiry-edit-container {
+    padding-top: var(--mobile-topbar-h);
+  }
+
+  /* Enquiry uses fixed Header — extra page padding */
+  .enquiry-page {
+    padding-top: calc(110px + var(--mobile-topbar-h));
+  }
+}
