@@ -1,5 +1,7 @@
 :root {
   --mobile-topbar-h: 40px;
+  /* Distance from viewport top to bottom of the contact strip (notch + strip row) */
+  --mobile-topbar-stack: var(--mobile-topbar-h);
 }
 
 .mobile-contact-topbar {
@@ -7,6 +9,10 @@
 }
 
 @media (max-width: 699px) {
+  :root {
+    --mobile-topbar-stack: calc(var(--mobile-topbar-h) + env(safe-area-inset-top, 0px));
+  }
+
   .mobile-contact-topbar {
     display: flex;
     align-items: center;
@@ -19,10 +25,10 @@
     right: 0;
     z-index: 1000;
     box-sizing: border-box;
-    height: var(--mobile-topbar-h);
-    min-height: var(--mobile-topbar-h);
-    max-height: var(--mobile-topbar-h);
-    padding: 0 10px;
+    padding: env(safe-area-inset-top, 0px) 10px 0;
+    min-height: var(--mobile-topbar-stack);
+    height: auto;
+    max-height: none;
     background: #22313d;
     color: #e2e8f0;
     font-size: 11px;
@@ -56,11 +62,11 @@
 
   /* Fixed site headers sit flush under the bar */
   header.main-header {
-    top: var(--mobile-topbar-h);
+    top: var(--mobile-topbar-stack);
   }
 
   header.admin-nav {
-    top: var(--mobile-topbar-h);
+    top: var(--mobile-topbar-stack);
   }
 
   /* Pages without a fixed nav: clear the bar (cars list uses shared Header + its own padding) */
@@ -70,7 +76,7 @@
   .admin-car-list-container,
   .admin-enquiry-container,
   .admin-enquiry-edit-container {
-    padding-top: var(--mobile-topbar-h);
+    padding-top: var(--mobile-topbar-stack);
   }
 
   /* Fixed Header + mobile contact strip */
@@ -78,6 +84,6 @@
   .tamil-nadu-map-page,
   .popular-destinations-page,
   .popular-destination-detail-page {
-    padding-top: calc(110px + var(--mobile-topbar-h));
+    padding-top: calc(110px + var(--mobile-topbar-stack));
   }
 }

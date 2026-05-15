@@ -9,7 +9,7 @@
 
 @media (max-width: 699px) {
   .cars-list-container {
-    padding-top: calc(var(--mobile-topbar-h, 40px) + 58px);
+    padding-top: calc(var(--mobile-topbar-stack, var(--mobile-topbar-h, 40px)) + 58px);
   }
 }
 
