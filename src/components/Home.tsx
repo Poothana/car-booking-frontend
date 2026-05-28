@@ -4,6 +4,7 @@ import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avi
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import Header from './Header'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
+import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './Home.css'
 
 type HireMode = 'local' | 'outstation'
@@ -46,14 +47,6 @@ interface FleetTariffCard {
   fuelPerKm: number
   abovePerKm: number
   driverBatta: number
-}
-
-const getBackendImageUrl = (imageUrl: string): string => {
-  if (!imageUrl) return ''
-  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl
-  const backendBaseUrl = import.meta.env.DEV ? 'http://127.0.0.1:8000' : window.location.origin
-  const cleanImagePath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl
-  return `${backendBaseUrl}/storage/cars/${cleanImagePath}`
 }
 
 const parseNumber = (v: unknown): number => {
@@ -205,7 +198,7 @@ function Home() {
     const fetchFleet = async () => {
       try {
         setFleetLoading(true)
-        const apiUrl = import.meta.env.DEV ? '/api/cars/list' : 'http://127.0.0.1:8000/api/cars/list'
+        const apiUrl = resolveApiUrl('/api/cars/list')
         const res = await fetch(apiUrl)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const json = await res.json()
@@ -228,7 +221,7 @@ function Home() {
               id: String(car.id),
               name: car.category?.name ? `${car.category.name}` : car.car_name,
               icon: pickIcon(catName),
-              imageUrl: getBackendImageUrl(car.car_image_url || ''),
+              imageUrl: resolveStorageCarsUrl(car.car_image_url || ''),
               seats: car.additional_details?.no_of_seats,
               rentPerDay,
               fuelPerKm,

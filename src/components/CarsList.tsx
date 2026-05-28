@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Header from './Header'
+import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './CarsList.css'
 
 interface ApiCategory {
@@ -121,26 +122,14 @@ function CarsList() {
       return imageUrl
     }
     
-    // If it's just a filename, construct the backend storage URL
-    // Backend serves images at /storage/cars/
-    const backendBaseUrl = import.meta.env.DEV 
-      ? 'http://localhost:8000' 
-      : window.location.origin
-    
-    // Remove leading slash if present to avoid double slashes
-    const cleanImagePath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl
-    
-    // Construct URL: http://localhost:8000/storage/cars/{filename}
-    return `${backendBaseUrl}/storage/cars/${cleanImagePath}`
+    return resolveStorageCarsUrl(imageUrl)
   }
 
   // Fetch amenities from API
   useEffect(() => {
     const fetchAmenities = async () => {
       try {
-        const apiUrl = import.meta.env.DEV 
-          ? '/api/amenities' 
-          : 'http://127.0.0.1:8000/api/amenities'
+        const apiUrl = resolveApiUrl('/api/amenities')
         
         const response = await fetch(apiUrl)
         if (response.ok) {
@@ -170,9 +159,7 @@ function CarsList() {
         setError(null)
         
         // Build API URL with query parameters if journey details are available
-        let apiUrl = import.meta.env.DEV 
-          ? '/api/cars/list' 
-          : 'http://127.0.0.1:8000/api/cars/list'
+        let apiUrl = resolveApiUrl('/api/cars/list')
         
         // Add query parameters if journey details exist
         const queryParams = new URLSearchParams()
