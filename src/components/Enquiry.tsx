@@ -1,5 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  BUSINESS,
+  emailMailtoHref,
+  phoneTelHref,
+  PUBLIC_WEBSITE,
+  SITE_URL,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+} from '../lib/siteConfig'
 import './Enquiry.css'
 
 /** Same-origin `/api` is proxied to Laravel in dev (see vite.config.ts). Override with VITE_API_URL if needed. */
@@ -10,8 +19,6 @@ function enquiryApiUrl(): string {
 
 function Enquiry() {
   const navigate = useNavigate()
-  const [supportPhone, setSupportPhone] = useState('+91 63800 63873')
-  const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string>('')
@@ -111,26 +118,6 @@ function Enquiry() {
     }
   }
 
-  useEffect(() => {
-    const fetchBasic = async () => {
-      try {
-        const apiUrl = import.meta.env.DEV ? '/api/settings/basic' : 'http://127.0.0.1:8000/api/settings/basic'
-        const res = await fetch(apiUrl)
-        if (!res.ok) return
-        const json = await res.json()
-        const data = json?.data || {}
-        if (data.support_phone) setSupportPhone(String(data.support_phone))
-        if (data.support_email) setSupportEmail(String(data.support_email))
-      } catch {
-        // ignore
-      }
-    }
-    fetchBasic()
-  }, [])
-
-  const telHref = `tel:${supportPhone.replace(/\\D/g, '')}`
-  const mailHref = `mailto:${supportEmail}`
-
   return (
     <>
       <div className="enquiry-page">
@@ -154,7 +141,7 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Address</div>
                   <div className="enquiry-card-text">
-                    Madurai, Tamil Nadu
+                    {BUSINESS.addressLine}
                   </div>
                 </div>
               </div>
@@ -166,8 +153,8 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Phone Number</div>
                   <div className="enquiry-card-text">
-                    <a className="enquiry-link" href={telHref}>
-                      {supportPhone}
+                    <a className="enquiry-link" href={phoneTelHref()}>
+                      {SUPPORT_PHONE}
                     </a>
                   </div>
                 </div>
@@ -180,8 +167,8 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Email</div>
                   <div className="enquiry-card-text">
-                    <a className="enquiry-link" href={mailHref}>
-                      {supportEmail}
+                    <a className="enquiry-link" href={emailMailtoHref()}>
+                      {SUPPORT_EMAIL}
                     </a>
                   </div>
                 </div>
@@ -194,8 +181,8 @@ function Enquiry() {
                 <div className="enquiry-card-body">
                   <div className="enquiry-card-title">Website</div>
                   <div className="enquiry-card-text">
-                    <a className="enquiry-link" href="#" onClick={(e) => e.preventDefault()}>
-                      www.maduraitravels.com
+                    <a className="enquiry-link" href={SITE_URL} target="_blank" rel="noopener noreferrer">
+                      {PUBLIC_WEBSITE}
                     </a>
                   </div>
                 </div>

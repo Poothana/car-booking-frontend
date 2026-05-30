@@ -1,6 +1,6 @@
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { getSeoLandingPage, SEO_LANDING_PAGES } from '../data/seoLandingPages'
-import { BUSINESS } from '../lib/siteConfig'
+import { BUSINESS, phoneTelHref } from '../lib/siteConfig'
 import './SeoLandingPage.css'
 
 export default function SeoLandingPage() {
@@ -35,7 +35,7 @@ export default function SeoLandingPage() {
             <div className="seo-cta-row">
               <Link to="/booking" className="seo-btn seo-btn--primary">Book Now</Link>
               <Link to="/enquiry" className="seo-btn seo-btn--secondary">Get a Quote</Link>
-              <a href={`tel:${BUSINESS.phone.replace(/\s/g, '')}`} className="seo-btn seo-btn--call">
+              <a href={phoneTelHref()} className="seo-btn seo-btn--call">
                 <i className="fas fa-phone-alt" aria-hidden="true" /> Call {BUSINESS.phone}
               </a>
             </div>

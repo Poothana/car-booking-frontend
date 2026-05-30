@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import SiteLogo from './SiteLogo'
+import { SITE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE } from '../lib/siteConfig'
 import './AdminCar.css'
 
 type Props = {
@@ -11,33 +11,11 @@ type Props = {
 }
 
 export default function AdminTopNav({ active, showAddCar = false }: Props) {
-  const [siteName, setSiteName] = useState('CarRental')
-  const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
-  const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
-
-  useEffect(() => {
-    const fetchBasic = async () => {
-      try {
-        const apiUrl = import.meta.env.DEV ? '/api/settings/basic' : 'http://127.0.0.1:8000/api/settings/basic'
-        const res = await fetch(apiUrl)
-        if (!res.ok) return
-        const json = await res.json()
-        const data = json?.data || {}
-        if (data.site_name) setSiteName(String(data.site_name))
-        if (data.support_phone) setSupportPhone(String(data.support_phone))
-        if (data.support_email) setSupportEmail(String(data.support_email))
-      } catch {
-        // ignore
-      }
-    }
-    fetchBasic()
-  }, [])
-
   return (
     <header className="admin-nav">
       <div className="nav-content">
-        <Link to="/" className="logo-link" aria-label={`${siteName} — Home`}>
-          <SiteLogo alt={siteName} className="site-logo-img--compact" />
+        <Link to="/" className="logo-link" aria-label={`${SITE_NAME} — Home`}>
+          <SiteLogo alt={SITE_NAME} className="site-logo-img--compact" />
         </Link>
 
         <nav className="main-nav">
@@ -54,8 +32,8 @@ export default function AdminTopNav({ active, showAddCar = false }: Props) {
           <div className="phone-number">
             <i className="fas fa-phone-alt"></i>
             <div className="phone-text">
-              <span>{supportPhone}</span>
-              <span className="phone-email">{supportEmail}</span>
+              <span>{SUPPORT_PHONE}</span>
+              <span className="phone-email">{SUPPORT_EMAIL}</span>
             </div>
           </div>
         </div>
@@ -63,4 +41,3 @@ export default function AdminTopNav({ active, showAddCar = false }: Props) {
     </header>
   )
 }
-

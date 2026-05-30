@@ -4,6 +4,7 @@ import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avi
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
+import { phoneTelHref, whatsappHref } from '../lib/siteConfig'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './Home.css'
 
@@ -915,7 +916,7 @@ function Home() {
           <i className="fas fa-envelope-open-text" aria-hidden="true" />
         </Link>
         <a 
-          href="https://wa.me/9194521234567?text=Hello%20CarRental%20I%20need%20information%20about%20car%20rental" 
+          href={whatsappHref()} 
           className="whatsapp-float" 
           target="_blank"
           rel="noopener noreferrer"
@@ -924,7 +925,7 @@ function Home() {
           <i className="fab fa-whatsapp"></i>
         </a>
         <a 
-          href="tel:+914521234567" 
+          href={phoneTelHref()} 
           className="call-float"
           aria-label="Call us"
         >

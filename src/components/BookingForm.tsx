@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { emailMailtoHref, phoneTelHref, SUPPORT_EMAIL, SUPPORT_PHONE } from '../lib/siteConfig'
 import './BookingForm.css'
 
 interface LocationState {
@@ -402,11 +403,11 @@ function BookingForm() {
               <p className="contact-heading">For Other Enquiry Contact:</p>
               <p className="contact-info">
                 <span className="contact-label">Phone:</span>
-                <a href="tel:6380063873" className="contact-link">6380063873</a>
+                <a href={phoneTelHref()} className="contact-link">{SUPPORT_PHONE}</a>
               </p>
               <p className="contact-info">
                 <span className="contact-label">Email:</span>
-                <a href="mailto:poothanapuvi@gmail.com" className="contact-link">poothanapuvi@gmail.com</a>
+                <a href={emailMailtoHref()} className="contact-link">{SUPPORT_EMAIL}</a>
               </p>
             </div>
             <button 
@@ -617,11 +618,11 @@ function BookingForm() {
               <p className="contact-heading">For Other Enquiry Contact:</p>
               <p className="contact-info">
                 <span className="contact-label">Phone:</span>
-                <a href="tel:6380063873" className="contact-link">6380063873</a>
+                <a href={phoneTelHref()} className="contact-link">{SUPPORT_PHONE}</a>
               </p>
               <p className="contact-info">
                 <span className="contact-label">Email:</span>
-                <a href="mailto:poothanapuvi@gmail.com" className="contact-link">poothanapuvi@gmail.com</a>
+                <a href={emailMailtoHref()} className="contact-link">{SUPPORT_EMAIL}</a>
               </p>
             </div>
             <button 

@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 import SeoHead, { buildServiceSchema } from './SeoHead'
 import { getDestinationBySlug } from '../data/popularDestinations'
 import { getSeoLandingPage } from '../data/seoLandingPages'
+import { buildLocalBusinessSchema, buildWebSiteSchema } from '../lib/siteConfig'
 
 const STATIC_SEO: Record<string, {
   title: string
@@ -16,48 +17,7 @@ const STATIC_SEO: Record<string, {
       'Mathi Cabs is a trusted Madurai tours and travels company. Book affordable cabs, outstation taxis, airport transfers & Tamil Nadu tour packages. 24/7 service.',
     keywords:
       'Madurai tours and travels, Madurai cabs, car rental Madurai, taxi service Madurai, outstation cabs Madurai, Mathi Cabs',
-    schema: [
-      {
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        name: 'Mathi Cabs Tours and Travels',
-        image: 'https://mathicabs.in/logo.png',
-        url: 'https://mathicabs.in',
-        telephone: '+91-452-123-4567',
-        email: 'poothanapuvi@gmail.com',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Near Meenakshi Temple',
-          addressLocality: 'Madurai',
-          addressRegion: 'Tamil Nadu',
-          postalCode: '625001',
-          addressCountry: 'IN',
-        },
-        geo: { '@type': 'GeoCoordinates', latitude: 9.9252, longitude: 78.1198 },
-        openingHoursSpecification: {
-          '@type': 'OpeningHoursSpecification',
-          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-          opens: '00:00',
-          closes: '23:59',
-        },
-        priceRange: '$$',
-        serviceType: ['Car Rental', 'Taxi Service', 'Tours and Travels', 'Outstation Cabs', 'Airport Transfer'],
-      },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Mathi Cabs',
-        url: 'https://mathicabs.in',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: 'https://mathicabs.in/cars?search={search_term_string}',
-          },
-          'query-input': 'required name=search_term_string',
-        },
-      },
-    ],
+    schema: [buildLocalBusinessSchema(), buildWebSiteSchema()],
   },
   '/cars': {
     title: 'Madurai Cabs & Car Rental — View Fleet & Tariff | Mathi Cabs',
