@@ -1,5 +1,4 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
-import Header from './Header'
 import { getDestinationBySlug } from '../data/popularDestinations'
 import './PopularDestinations.css'
 
@@ -13,7 +12,6 @@ export default function PopularDestinationDetail() {
 
   return (
     <>
-      <Header showEnquiryCtaOnMobile={false} />
       <article className="popular-destination-detail-page">
         <div className="pd-inner">
           <Link to="/popular-destinations" className="pd-detail-back">
@@ -28,7 +26,7 @@ export default function PopularDestinationDetail() {
             <div className="pd-detail-icon" aria-hidden="true">
               {dest.icon}
             </div>
-            <h1>{dest.name}</h1>
+            <h1>Madurai to {dest.name} — Cab &amp; Tour Package</h1>
             <p className="tamil">{dest.tamilName}</p>
           </header>
 

@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Allow: /cars
+Allow: /booking
+Allow: /enquiry
+Allow: /tamil-nadu-map
+Allow: /popular-destinations
+Allow: /popular-destinations/
+Allow: /madurai-tours-and-travels
+Allow: /madurai-cabs
+Allow: /madurai-taxi-service
+Allow: /madurai-airport-taxi
+Allow: /madurai-car-rental
+Allow: /madurai-to-rameswaram-taxi
+Allow: /madurai-to-kodaikanal-cab
+Allow: /madurai-to-ooty-cab
+Allow: /madurai-local-sightseeing
+Allow: /outstation-cabs-from-madurai
+
+# Block admin and private areas
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://mathicabs.in/sitemap.xml

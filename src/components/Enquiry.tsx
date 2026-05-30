@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from './Header'
 import './Enquiry.css'
 
 /** Same-origin `/api` is proxied to Laravel in dev (see vite.config.ts). Override with VITE_API_URL if needed. */
@@ -134,7 +133,6 @@ function Enquiry() {
 
   return (
     <>
-      <Header showEnquiryCta={false} />
       <div className="enquiry-page">
         <div className="enquiry-top">
           <div className="enquiry-top-inner">

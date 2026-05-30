@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import SiteLogo from './SiteLogo'
 import MobileHeaderQuickLinks from './MobileHeaderQuickLinks'
 import './Header.css'
 import './MainHeaderMobileShared.css'
 
-type HeaderProps = {
-  showEnquiryCta?: boolean
-  /** When false, Enquire Us stays on desktop but is hidden in the header on narrow (mobile) viewports. */
-  showEnquiryCtaOnMobile?: boolean
-}
-
-export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile = true }: HeaderProps) {
+export default function Header() {
+  const { pathname } = useLocation()
   const [siteName, setSiteName] = useState('CarRental')
   const [supportPhone, setSupportPhone] = useState('+91 452 123 4567')
   const [supportEmail, setSupportEmail] = useState('poothanapuvi@gmail.com')
+
+  const showEnquiryCta = pathname !== '/enquiry'
+  const headerClass = showEnquiryCta
+    ? 'main-header main-header--hide-enquiry-mobile'
+    : 'main-header'
 
   useEffect(() => {
     const fetchBasic = async () => {
@@ -34,11 +34,6 @@ export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile =
     fetchBasic()
   }, [])
 
-  const headerClass =
-    showEnquiryCta && showEnquiryCtaOnMobile === false
-      ? 'main-header main-header--hide-enquiry-mobile'
-      : 'main-header'
-
   return (
     <header className={headerClass}>
       <div className="header-content">
@@ -46,7 +41,7 @@ export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile =
           <SiteLogo alt={siteName} />
         </Link>
 
-        <nav className="main-nav">
+        <nav className="main-nav" aria-label="Main navigation">
           <Link to="/" className="nav-link">
             <i className="fas fa-home"></i> Home
           </Link>
@@ -77,7 +72,7 @@ export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile =
           </div>
 
           {showEnquiryCta && (
-            <Link to="/enquiry" className="book-now-btn" aria-label="Go to enquiry page">
+            <Link to="/enquiry" className="header-enquire-btn" aria-label="Go to enquiry page">
               Enquire Us
             </Link>
           )}
@@ -88,4 +83,3 @@ export default function Header({ showEnquiryCta = true, showEnquiryCtaOnMobile =
     </header>
   )
 }
-

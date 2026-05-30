@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import Header from './Header'
 import './TamilNaduMap.css'
 
 /** OpenStreetMap embed: Tamil Nadu approximate bounds (west, south, east, north). */
@@ -14,7 +13,6 @@ export default function TamilNaduMap() {
 
   return (
     <>
-      <Header showEnquiryCta={false} />
       <main className="tamil-nadu-map-page">
         <div className="tamil-nadu-map-top">
           <div className="tamil-nadu-map-top-inner">

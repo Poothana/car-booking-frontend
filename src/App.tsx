@@ -15,22 +15,31 @@ import Enquiry from './components/Enquiry'
 import TamilNaduMap from './components/TamilNaduMap'
 import PopularDestinations from './components/PopularDestinations'
 import PopularDestinationDetail from './components/PopularDestinationDetail'
+import SeoLandingPage from './components/SeoLandingPage'
+import PublicLayout from './components/PublicLayout'
+import RouteSeo from './components/RouteSeo'
 import MobileContactTopBar from './components/MobileContactTopBar'
-import MobileFooterNav from './components/MobileFooterNav'
+import { SEO_LANDING_PAGES } from './data/seoLandingPages'
 import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <RouteSeo />
       <MobileContactTopBar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/cars" element={<CarsList />} />
-        <Route path="/booking" element={<BookingForm />} />
-        <Route path="/enquiry" element={<Enquiry />} />
-        <Route path="/tamil-nadu-map" element={<TamilNaduMap />} />
-        <Route path="/popular-destinations" element={<PopularDestinations />} />
-        <Route path="/popular-destinations/:slug" element={<PopularDestinationDetail />} />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/cars" element={<CarsList />} />
+          <Route path="/booking" element={<BookingForm />} />
+          <Route path="/enquiry" element={<Enquiry />} />
+          <Route path="/tamil-nadu-map" element={<TamilNaduMap />} />
+          <Route path="/popular-destinations" element={<PopularDestinations />} />
+          <Route path="/popular-destinations/:slug" element={<PopularDestinationDetail />} />
+          {SEO_LANDING_PAGES.map((page) => (
+            <Route key={page.slug} path={`/${page.slug}`} element={<SeoLandingPage />} />
+          ))}
+        </Route>
         <Route path="/admin" element={<AdminLogin />} />
         <Route element={<AdminProtectedRoute />}>
           <Route element={<AdminLayout />}>
@@ -43,7 +52,6 @@ function App() {
           </Route>
         </Route>
       </Routes>
-      <MobileFooterNav />
     </BrowserRouter>
   )
 }

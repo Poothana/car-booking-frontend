@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import Header from './Header'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './CarsList.css'
 
@@ -390,7 +389,6 @@ function CarsList() {
   if (loading) {
     return (
       <div className="cars-list-container">
-        <Header />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
           Loading cars...
         </div>
@@ -402,7 +400,6 @@ function CarsList() {
   if (error) {
     return (
       <div className="cars-list-container">
-        <Header />
         <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px', color: '#ff4444' }}>
           Error: {error}
           <br />
@@ -419,11 +416,10 @@ function CarsList() {
 
   return (
     <div className="cars-list-container">
-      <Header />
 
       <div className="cars-list-header">
-        <h1>Cars from New Delhi to Mumbai</h1>
-        <p className="subtitle">Select your preferred car for rental</p>
+        <h1>Madurai Cabs &amp; Car Rental — Select Your Vehicle</h1>
+        <p className="subtitle">Transparent tariff · Professional drivers · Book online 24/7</p>
       </div>
 
       {/* Date Carousel */}

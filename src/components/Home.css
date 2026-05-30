@@ -147,173 +147,13 @@ body, html {
   color: white;
 }
 
-/* Main Navigation Bar - Madurai Style */
-.main-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-  background: linear-gradient(135deg, #ffffff 0%, var(--madurai-cream) 100%);
-  padding: 15px 0;
-  box-shadow: 0 4px 15px rgba(196, 30, 58, 0.15);
-  border-bottom: 3px solid var(--madurai-saffron);
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.home-header-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.home-header-top .logo-section {
-  min-width: 0;
-}
-
-.home-header-top .logo-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 48vw;
-}
-
-.home-mobile-menu-btn {
-  display: none;
-  border: 1px solid rgba(196, 30, 58, 0.25);
-  background: #fff;
-  color: var(--madurai-temple-red);
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(196, 30, 58, 0.10);
-}
-
-.home-mobile-menu-btn:active {
-  transform: translateY(1px);
-}
-
-.home-mobile-menu-overlay {
-  display: none;
-}
-
-.home-mobile-menu {
-  display: none;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-section--mark {
-  text-decoration: none;
-  color: inherit;
-  gap: 0;
-}
-
-.logo-icon {
-  color: var(--madurai-temple-red);
-  font-size: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.logo-title {
-  font-size: 24px;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, var(--madurai-saffron) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.logo-text .tamil {
-  font-size: 12px;
-  color: var(--madurai-saffron);
-  font-weight: 500;
-  margin-top: 0;
-}
-
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, var(--madurai-saffron) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  box-shadow: 0 4px 10px rgba(196, 30, 58, 0.3);
-  border: 2px solid var(--madurai-gold);
-}
-
-.logo-text {
-  font-size: 24px;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--madurai-temple-red) 0%, var(--madurai-saffron) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.main-nav {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-@media (max-width: 1024px) {
-  .header-content {
-    padding: 0 14px;
-    gap: 12px;
-  }
-  .main-nav {
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-/* Mobile + tablet (show bottom menu up to 1140px) */
+/* Mobile + tablet home booking card */
 @media (max-width: 1140px) {
-
-  .mobile-support-mail{
+  .mobile-support-mail {
     font-size: 12px;
   }
+
   .mobile-view-hide {
-    display: none !important;
-  }
-
-  /* Menu only below (bottom nav): hide top menu button + side menu */
-  .home-mobile-menu-btn,
-  .home-mobile-menu-overlay,
-  .home-mobile-menu {
-    display: none !important;
-  }
-
-  /* Also hide the top nav links (menu should be only below) */
-  .main-nav {
     display: none !important;
   }
 
@@ -438,172 +278,14 @@ body, html {
     border-radius: 18px;
   }
 
-  .main-header {
-    padding: 12px 0;
-  }
-  .header-content {
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  .home-header-top {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .logo-title {
-    /* Base for mobile; refined by width below */
-    font-size: 13px !important;
-  }
-
-  /* Small phone (< 360px wide): 22–24px */
-  @media (max-width: 359px) {
-    .logo-title {
-      font-size: 13px !important;
-    }
-  }
-
-  /* Standard phone (360–400px): 24–26px */
-  @media (min-width: 360px) and (max-width: 399px) {
-    .logo-title {
-      font-size: 13px !important;
-    }
-  }
-
-  /* Large phone (400px+): 26–28px */
-  @media (min-width: 400px) {
-    .logo-title {
-      font-size: 20px;
-    }
-  }
-  .logo-icon {
-    font-size: 26px;
-  }
-  .nav-cta {
-    width: 100%;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  /* Phone + email: desktop only */
-  .phone-number {
-    display: none;
-  }
-  .book-now-btn {
-    padding: 10px 14px;
-    font-size: 13px;
-    letter-spacing: 0.4px;
-  }
-
-  /* Tablet: show Enquire Us. Mobile: hide it (rule below). */
-  .nav-cta .book-now-btn {
-    display: inline-flex;
-  }
-
   @media (max-width: 699px) {
     .hide-on-mobile {
       display: none !important;
     }
   }
-
-  /* Mobile menu */
-  .home-mobile-menu-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    order: 3;
-  }
-
-  .main-nav {
-    display: none;
-  }
-
-  /* Put logo on the left, menu button on the right */
-  .logo-section {
-    order: 1;
-    flex: 1;
-    justify-content: flex-start;
-  }
-
-  .nav-cta {
-    order: 4;
-    flex-basis: 100%;
-  }
-
-  .home-mobile-menu-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: 998;
-  }
-
-  .home-mobile-menu {
-    display: grid;
-    gap: 6px;
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    top: 76px;
-    z-index: 999;
-    background: #fff;
-    border-radius: 16px;
-    padding: 10px;
-    border: 1px solid rgba(196, 30, 58, 0.18);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-  }
-
-  .home-mobile-menu__link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 12px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    color: #111;
-    background: linear-gradient(135deg, rgba(255, 248, 231, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
-    border: 1px solid rgba(196, 30, 58, 0.10);
-  }
-
-  .home-mobile-menu__link:active {
-    transform: translateY(1px);
-  }
 }
 
-.nav-link {
-  color: #333;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.nav-link:hover {
-  color: var(--madurai-temple-red);
-  position: relative;
-}
-
-.nav-link:hover::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--madurai-saffron), var(--madurai-temple-red));
-  border-radius: 2px;
-}
-
-.nav-cta {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.nav-cta .book-now-btn {
-  white-space: nowrap;
-}
-
-/* Smaller Admin Login button in header */
+/* Filter Search Section - Madurai Style */
 .home-container .book-now-btn.admin-login-btn {
   padding: 10px 14px;
   font-size: 13px;
@@ -665,31 +347,6 @@ body, html {
 }
 
 .header-email i {
-  color: var(--madurai-saffron);
-}
-
-.phone-number {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--madurai-temple-red);
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.phone-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.phone-email {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b5a52;
-}
-
-.phone-number i {
   color: var(--madurai-saffron);
 }
 
@@ -1126,6 +783,45 @@ body, html {
   align-items: center;
   border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.seo-services-footer {
+  background: #1a1208;
+  color: #fff;
+  padding: 48px 20px 56px;
+}
+
+.seo-services-footer h2 {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.seo-services-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.seo-services-footer__nav a {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5e6d0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid rgba(255, 107, 53, 0.35);
+  transition: background 0.15s, color 0.15s;
+}
+
+.seo-services-footer__nav a:hover {
+  background: #ff6b35;
+  color: #fff;
 }
 
 .hero-right::before {
@@ -2710,11 +2406,6 @@ body, html {
     font-size: 36px;
   }
 
-  .main-nav {
-    gap: 15px;
-    font-size: 14px;
-  }
-
   .offer-title {
     font-size: 36px;
   }
@@ -2757,18 +2448,6 @@ body, html {
 
 /* Responsive Updates */
 @media (max-width: 968px) {
-  .nav-cta {
-    gap: 10px;
-  }
-  
-  .phone-number {
-    font-size: 12px;
-  }
-  
-  .phone-number span {
-    display: none;
-  }
-  
   .services-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2784,22 +2463,6 @@ body, html {
     gap: 10px;
   }
 
-  .header-content {
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
-  .main-nav {
-    order: 3;
-    width: 100%;
-    justify-content: space-around;
-    gap: 10px;
-  }
-  
-  .nav-cta {
-    order: 2;
-  }
-  
   .hero-highlights {
     gap: 15px;
     padding: 0 10px;

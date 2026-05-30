@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
-import Header from './Header'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
+import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './Home.css'
 
@@ -262,10 +262,8 @@ function Home() {
   return (
     <div className="home-container" style={{ backgroundImage: `url(${meenakshiImage})` }}>
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <Header showEnquiryCta={false} />
 
-      {/* Hero Section */}
-      <section id="main-content" className="hero-section ">
+      <section id="main-content" className="hero-section">
         {/* Filter Search Section - Positioned above hero content */}
         <div className="filter-section">
           <div className="filter-container">
@@ -894,6 +892,20 @@ function Home() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* SEO service links for internal linking */}
+      <section className="seo-services-footer" aria-label="Madurai cab services">
+        <div className="container">
+          <h2>Madurai Tours, Cabs &amp; Travel Services</h2>
+          <nav className="seo-services-footer__nav">
+            {SEO_LANDING_PAGES.map((page) => (
+              <Link key={page.slug} to={`/${page.slug}`}>
+                {page.h1.split('—')[0].trim()}
+              </Link>
+            ))}
+          </nav>
         </div>
       </section>
 

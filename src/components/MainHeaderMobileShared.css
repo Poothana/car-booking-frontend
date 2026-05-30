@@ -28,7 +28,7 @@
 }
 
 @media (max-width: 699px) {
-  header.main-header.main-header--hide-enquiry-mobile .book-now-btn {
+  header.main-header.main-header--hide-enquiry-mobile .header-enquire-btn {
     display: none !important;
   }
 

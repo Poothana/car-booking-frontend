@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
-import Header from './Header'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import './PopularDestinations.css'
 
 export default function PopularDestinations() {
   return (
     <>
-      <Header showEnquiryCtaOnMobile={false} />
       <main className="popular-destinations-page">
         <div className="pd-inner">
           <header className="pd-hero">
