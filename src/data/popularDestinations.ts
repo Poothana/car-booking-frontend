@@ -4,11 +4,16 @@ export type PopularDestination = {
   tamilName: string
   icon: string
   excerpt: string
-  /** Hero / card image (Unsplash or other HTTPS URL). */
+  /** Local /public path or HTTPS URL — must match the destination visually. */
   image: string
   imageAlt: string
 }
 
+/**
+ * Destination card images live in /public/destinations/ (subject-matched photos).
+ * Do not use random Unsplash “travel” stock — it previously mapped Madurai to a
+ * foreign skyline and Valparai to alpine snow peaks.
+ */
 export const POPULAR_DESTINATIONS: PopularDestination[] = [
   {
     slug: 'ooty',
@@ -17,9 +22,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🏔️',
     excerpt:
       'Experience the beauty of the Nilgiri hills with pleasant weather, tea plantations, lakes, and scenic mountain roads. Perfect for family trips and honeymoon travel.',
-    image:
-      'https://images.unsplash.com/photo-1622279452202-5b847faf7033?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Nilgiri hills and tea plantations near Ooty',
+    image: '/destinations/ooty.jpg',
+    imageAlt: 'Ooty lake with boats and forested Nilgiri hills',
   },
   {
     slug: 'kodaikanal',
@@ -28,9 +32,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🌲',
     excerpt:
       'Discover the Princess of Hill Stations with misty valleys, pine forests, waterfalls, and peaceful lakes. Ideal for weekend getaways and nature lovers.',
-    image:
-      'https://images.unsplash.com/photo-1501785888031-bb785b93739c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Misty hills and lake scenery typical of Kodaikanal',
+    image: '/destinations/kodaikanal.jpg',
+    imageAlt: 'Kodaikanal lake surrounded by green hills',
   },
   {
     slug: 'kanyakumari',
@@ -39,9 +42,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🌊',
     excerpt:
       'Visit the southern tip of India where three seas meet. Enjoy sunrise views, Vivekananda Rock Memorial, beaches, and cultural landmarks.',
-    image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Coastal view at Kanyakumari',
+    image: '/destinations/kanyakumari.jpg',
+    imageAlt: 'Vivekananda Rock Memorial at Kanyakumari',
   },
   {
     slug: 'madurai',
@@ -50,9 +52,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🛕',
     excerpt:
       'Madurai tourism highlights include Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Memorial Museum, and classic Tamil street food. Book local sightseeing and multi-day packages with Mathi Cabs.',
-    image:
-      'https://images.unsplash.com/photo-1583417319070-4a69db38a482?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Madurai temple architecture and tourism landmark',
+    image: '/destinations/madurai.avif',
+    imageAlt: 'Meenakshi Amman Temple gopurams in Madurai',
   },
   {
     slug: 'rameswaram',
@@ -61,9 +62,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🌉',
     excerpt:
       'A spiritual and coastal destination known for Ramanathaswamy Temple, Pamban Bridge, Dhanushkodi, and serene beaches.',
-    image:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Coastal shoreline and travel scenery',
+    image: '/destinations/rameswaram.jpg',
+    imageAlt: 'Pamban Bridge connecting Rameswaram to the mainland',
   },
   {
     slug: 'yercaud',
@@ -72,9 +72,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🌿',
     excerpt:
       'Enjoy peaceful hill station vibes surrounded by coffee plantations, gardens, viewpoints, and cool climate in the Shevaroy Hills.',
-    image:
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Forest road and green hills',
+    image: '/destinations/yercaud.jpg',
+    imageAlt: 'Scenic view of Yercaud hill station',
   },
   {
     slug: 'coimbatore',
@@ -83,9 +82,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🐘',
     excerpt:
       'A vibrant city near famous tourist attractions like Isha Yoga Center, Adiyogi statue, waterfalls, and hill station routes.',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Peaceful nature and travel backdrop',
+    image: '/destinations/coimbatore.jpg',
+    imageAlt: 'Adiyogi Shiva statue near Coimbatore',
   },
   {
     slug: 'mudumalai',
@@ -94,9 +92,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🐅',
     excerpt:
       'Adventure through wildlife forests and safari experiences with chances to spot elephants, deer, peacocks, and exotic birds.',
-    image:
-      'https://images.unsplash.com/photo-1564760055776-f84d0bbe3b55?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Elephant in natural forest habitat',
+    image: '/destinations/mudumalai.jpg',
+    imageAlt: 'Wildlife habitat in Mudumalai National Park region',
   },
   {
     slug: 'velankanni',
@@ -105,9 +102,8 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '⛪',
     excerpt:
       "One of India's most visited pilgrimage destinations, known for the Basilica of Our Lady of Good Health and peaceful coastal atmosphere.",
-    image:
-      'https://images.unsplash.com/photo-1510593223784-781348a95359?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Historic church facade',
+    image: '/destinations/velankanni.jpg',
+    imageAlt: 'Basilica of Our Lady of Good Health at Velankanni',
   },
   {
     slug: 'valparai',
@@ -116,13 +112,12 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     icon: '🌄',
     excerpt:
       'A hidden gem filled with tea estates, winding roads, waterfalls, and breathtaking Western Ghats landscapes.',
-    image:
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Mountain peaks and dramatic sky',
+    image: '/destinations/valparai.jpg',
+    imageAlt: 'Tea plantation hills typical of Valparai and the Western Ghats',
   },
 ]
 
 export function getDestinationBySlug(slug: string | undefined): PopularDestination | undefined {
   if (!slug) return undefined
-  return POPULAR_DESTINATIONS.find(d => d.slug === slug)
+  return POPULAR_DESTINATIONS.find((d) => d.slug === slug)
 }
