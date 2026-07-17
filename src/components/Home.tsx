@@ -585,7 +585,10 @@ function Home() {
                       className="tariff-v2-card__media-img"
                       loading="lazy"
                       onError={(e) => {
-                        ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+                        const media = (e.currentTarget as HTMLImageElement).closest(
+                          '.tariff-v2-card__media',
+                        ) as HTMLElement | null
+                        if (media) media.style.display = 'none'
                       }}
                     />
                   </div>
