@@ -1,5 +1,6 @@
 export const SEO_LANDING_SLUGS = [
   'madurai-tourism',
+  'madurai-tourism-packages',
   'madurai-tours-and-travels',
   'madurai-cabs',
   'madurai-taxi-service',
@@ -45,6 +46,7 @@ export function getAllPrerenderRoutes() {
 export const SITEMAP_PRIORITIES = {
   '/': '1.0',
   '/madurai-tourism': '0.98',
+  '/madurai-tourism-packages': '0.97',
   '/madurai-tours-and-travels': '0.95',
   '/madurai-cabs': '0.95',
   '/madurai-taxi-service': '0.9',
