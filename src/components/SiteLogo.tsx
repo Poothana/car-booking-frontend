@@ -1,4 +1,3 @@
-import mathiCabsLogo from '../assets/images/mathi-cabs-logo.png'
 import './SiteLogo.css'
 
 type Props = {
@@ -7,5 +6,14 @@ type Props = {
 }
 
 export default function SiteLogo({ alt = 'Mathi Cabs', className = '' }: Props) {
-  return <img src={mathiCabsLogo} alt={alt} className={`site-logo-img ${className}`.trim()} decoding="async" />
+  return (
+    <img
+      src="/mathi-cabs-logo.webp"
+      alt={alt}
+      className={`site-logo-img ${className}`.trim()}
+      width={320}
+      height={132}
+      decoding="async"
+    />
+  )
 }

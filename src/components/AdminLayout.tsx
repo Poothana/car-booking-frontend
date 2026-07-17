@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import SiteLogo from './SiteLogo'
 import './AdminLayout.css'
 import { setAdminAuthed } from './AdminProtectedRoute'

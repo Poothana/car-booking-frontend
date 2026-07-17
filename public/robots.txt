@@ -18,7 +18,10 @@ Allow: /madurai-to-ooty-cab
 Allow: /madurai-local-sightseeing
 Allow: /outstation-cabs-from-madurai
 
-# Block admin and private areas
+# ALLOW Google to fetch the vehicle inventory list
+Allow: /api/cars/list
+
+# Block admin, private areas, and general backend data
 Disallow: /admin
 Disallow: /admin/
 Disallow: /api/

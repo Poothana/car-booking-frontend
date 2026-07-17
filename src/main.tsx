@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 import './components/MobileContactTopBar.css'
 import './components/MobileFooterNav.css'

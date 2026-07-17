@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avif'
-import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
 import { phoneTelHref, whatsappHref, BUSINESS } from '../lib/siteConfig'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import { DEFAULT_FLEET_CARDS } from '../data/defaultFleet'
 import './Home.css'
+
+const meenakshiImage = '/hero-meenakshi.webp'
+const trivaluvarImage = '/thiruvalluvar-statue.webp'
 
 type HireMode = 'local' | 'outstation'
 
@@ -444,6 +445,10 @@ function Home() {
                   src={trivaluvarImage}
                   alt="Thiruvalluvar Statue" 
                   className="trivallur-statue-image"
+                  width={360}
+                  height={192}
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
               <h1 className="offer-title">
@@ -897,7 +902,7 @@ function Home() {
                 to={`/popular-destinations/${d.slug}`}
                 className="destination-card destination-card--link"
               >
-                <img src={d.image} alt={d.imageAlt} loading="lazy" />
+                <img src={d.image} alt={d.imageAlt} loading="lazy" width={600} height={400} />
                 <div className="destination-overlay">
                   <div className="destination-card-icon" aria-hidden="true">
                     {d.icon}
