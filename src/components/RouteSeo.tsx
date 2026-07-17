@@ -12,11 +12,11 @@ const STATIC_SEO: Record<string, {
   schema?: Record<string, unknown>[]
 }> = {
   '/': {
-    title: 'Mathi Cabs | #1 Tours and Travels in Madurai | Best Car Rental Service',
+    title: 'Best Tours and Travels in Madurai | Madurai Tourism Packages | Mathi Cabs',
     description:
-      'Mathi Cabs is a trusted Madurai tours and travels company. Book affordable cabs, outstation taxis, airport transfers & Tamil Nadu tour packages. 24/7 service.',
+      'Mathi Cabs — trusted tours and travels in Madurai. Book Madurai tourism packages, local sightseeing, outstation taxis, airport transfers & Tamil Nadu cab tours. 24/7 service.',
     keywords:
-      'Madurai tours and travels, Madurai cabs, car rental Madurai, taxi service Madurai, outstation cabs Madurai, Mathi Cabs',
+      'tours and travels in madurai, madurai tourism, madurai tours and travels, madurai cabs, car rental madurai, taxi service madurai, mathi cabs',
     schema: [buildLocalBusinessSchema(), buildWebSiteSchema()],
   },
   '/cars': {
@@ -76,19 +76,38 @@ export default function RouteSeo() {
     const dest = getDestinationBySlug(destMatch[1])
     if (dest) {
       const path = `/popular-destinations/${dest.slug}`
+      const isMaduraiHub = dest.slug === 'madurai'
       return (
         <SeoHead
           key={path}
-          title={`Madurai to ${dest.name} Taxi & Tour Package | Mathi Cabs`}
-          description={`Book Madurai to ${dest.name} cab with Mathi Cabs. ${dest.excerpt} Enquire for fare and itinerary.`}
+          title={
+            isMaduraiHub
+              ? 'Madurai Tourism Guide | Places to Visit & Cab Packages | Mathi Cabs'
+              : `Madurai to ${dest.name} Taxi & Tour Package | Mathi Cabs`
+          }
+          description={
+            isMaduraiHub
+              ? 'Explore Madurai tourism with Mathi Cabs — Meenakshi Temple, Nayakkar Mahal, local sightseeing packages and cab tours. Book 1–3 day itineraries.'
+              : `Book Madurai to ${dest.name} cab with Mathi Cabs. ${dest.excerpt} Enquire for fare and itinerary.`
+          }
           path={path}
-          keywords={`madurai to ${dest.name.toLowerCase()} taxi, ${dest.name.toLowerCase()} tour from madurai, mathi cabs`}
+          keywords={
+            isMaduraiHub
+              ? 'madurai tourism, places to visit in madurai, madurai sightseeing, mathi cabs'
+              : `madurai to ${dest.name.toLowerCase()} taxi, ${dest.name.toLowerCase()} tour from madurai, mathi cabs`
+          }
           breadcrumbs={[
             { name: 'Home', path: '/' },
             { name: 'Destinations', path: '/popular-destinations' },
             { name: dest.name, path },
           ]}
-          schema={[buildServiceSchema(`Madurai to ${dest.name} Cab Service`, dest.excerpt, path)]}
+          schema={[
+            buildServiceSchema(
+              isMaduraiHub ? 'Madurai Tourism & Sightseeing Cabs' : `Madurai to ${dest.name} Cab Service`,
+              dest.excerpt,
+              path,
+            ),
+          ]}
         />
       )
     }

@@ -64,8 +64,11 @@ export function whatsappHref(message?: string): string {
 export function buildLocalBusinessSchema(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': ['TravelAgency', 'LocalBusiness'],
     name: BUSINESS.name,
+    alternateName: SITE_NAME,
+    description:
+      'Madurai tours and travels operator offering Madurai tourism packages, local sightseeing cabs, outstation taxis, and airport transfers across Tamil Nadu.',
     image: `${SITE_URL}/logo.png`,
     url: SITE_URL,
     telephone: SUPPORT_PHONE,
@@ -83,6 +86,10 @@ export function buildLocalBusinessSchema(): Record<string, unknown> {
       latitude: BUSINESS.latitude,
       longitude: BUSINESS.longitude,
     },
+    areaServed: {
+      '@type': 'City',
+      name: 'Madurai',
+    },
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -90,7 +97,15 @@ export function buildLocalBusinessSchema(): Record<string, unknown> {
       closes: '23:59',
     },
     priceRange: '$$',
-    serviceType: ['Car Rental', 'Taxi Service', 'Tours and Travels', 'Outstation Cabs', 'Airport Transfer'],
+    serviceType: [
+      'Madurai Tourism Packages',
+      'Tours and Travels',
+      'Car Rental',
+      'Taxi Service',
+      'Outstation Cabs',
+      'Airport Transfer',
+      'Local Sightseeing',
+    ],
   }
 }
 

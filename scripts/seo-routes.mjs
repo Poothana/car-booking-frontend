@@ -1,4 +1,5 @@
 export const SEO_LANDING_SLUGS = [
+  'madurai-tourism',
   'madurai-tours-and-travels',
   'madurai-cabs',
   'madurai-taxi-service',
@@ -24,10 +25,10 @@ export const POPULAR_DESTINATION_SLUGS = [
   'valparai',
 ]
 
+/** Routes included in sitemap + prerender (excludes noindex pages like /booking). */
 export const STATIC_ROUTES = [
   '/',
   '/cars',
-  '/booking',
   '/enquiry',
   '/tamil-nadu-map',
   '/popular-destinations',
@@ -43,19 +44,20 @@ export function getAllPrerenderRoutes() {
 
 export const SITEMAP_PRIORITIES = {
   '/': '1.0',
+  '/madurai-tourism': '0.98',
   '/madurai-tours-and-travels': '0.95',
   '/madurai-cabs': '0.95',
   '/madurai-taxi-service': '0.9',
   '/madurai-airport-taxi': '0.9',
   '/madurai-car-rental': '0.9',
-  '/madurai-local-sightseeing': '0.9',
+  '/madurai-local-sightseeing': '0.92',
   '/outstation-cabs-from-madurai': '0.9',
   '/madurai-to-rameswaram-taxi': '0.85',
   '/madurai-to-kodaikanal-cab': '0.85',
   '/madurai-to-ooty-cab': '0.85',
   '/cars': '0.9',
-  '/booking': '0.8',
   '/enquiry': '0.7',
   '/tamil-nadu-map': '0.8',
   '/popular-destinations': '0.9',
+  '/popular-destinations/madurai': '0.85',
 }

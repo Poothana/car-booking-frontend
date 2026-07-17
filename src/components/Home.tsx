@@ -4,7 +4,7 @@ import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avi
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
-import { phoneTelHref, whatsappHref } from '../lib/siteConfig'
+import { phoneTelHref, whatsappHref, BUSINESS, SITE_NAME } from '../lib/siteConfig'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './Home.css'
 
@@ -438,9 +438,12 @@ function Home() {
                   className="trivallur-statue-image"
                 />
               </div>
-              <h2 className="offer-title">
-                Are you looking for a great trip?
-              </h2>
+              <h1 className="offer-title">
+                Your Trusted Tours &amp; Travels Partner in Madurai
+              </h1>
+              <p className="offer-subtitle">
+                Madurai tourism packages, local sightseeing &amp; outstation cabs — book 24/7 with Mathi Cabs.
+              </p>
               <div className="offer-features">
                 <div className="feature-item">
                   <span className="feature-icon">
@@ -899,7 +902,7 @@ function Home() {
       {/* SEO service links for internal linking */}
       <section className="seo-services-footer" aria-label="Madurai cab services">
         <div className="container">
-          <h2>Madurai Tours, Cabs &amp; Travel Services</h2>
+          <h2>Madurai Tours, Tourism &amp; Travel Services</h2>
           <nav className="seo-services-footer__nav">
             {SEO_LANDING_PAGES.map((page) => (
               <Link key={page.slug} to={`/${page.slug}`}>
@@ -907,6 +910,12 @@ function Home() {
               </Link>
             ))}
           </nav>
+          <address className="seo-nap">
+            <strong>{SITE_NAME} Tours and Travels</strong>
+            <span>{BUSINESS.addressLine}</span>
+            <a href={phoneTelHref()}>{BUSINESS.phone}</a>
+            <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
+          </address>
         </div>
       </section>
 

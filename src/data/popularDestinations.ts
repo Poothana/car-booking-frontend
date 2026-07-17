@@ -49,10 +49,10 @@ export const POPULAR_DESTINATIONS: PopularDestination[] = [
     tamilName: 'மதுரை',
     icon: '🛕',
     excerpt:
-      'Explore the ancient city famous for the Meenakshi Amman Temple, vibrant streets, traditional food, and rich Tamil heritage.',
+      'Madurai tourism highlights include Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Memorial Museum, and classic Tamil street food. Book local sightseeing and multi-day packages with Mathi Cabs.',
     image:
       'https://images.unsplash.com/photo-1583417319070-4a69db38a482?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Madurai temple architecture',
+    imageAlt: 'Madurai temple architecture and tourism landmark',
   },
   {
     slug: 'rameswaram',

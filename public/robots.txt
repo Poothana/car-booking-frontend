@@ -1,11 +1,11 @@
 User-agent: *
 Allow: /
 Allow: /cars
-Allow: /booking
 Allow: /enquiry
 Allow: /tamil-nadu-map
 Allow: /popular-destinations
 Allow: /popular-destinations/
+Allow: /madurai-tourism
 Allow: /madurai-tours-and-travels
 Allow: /madurai-cabs
 Allow: /madurai-taxi-service
@@ -21,6 +21,7 @@ Allow: /outstation-cabs-from-madurai
 Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
+Disallow: /booking
 
 # Sitemap location
 Sitemap: https://mathicabs.in/sitemap.xml

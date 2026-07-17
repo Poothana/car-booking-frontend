@@ -36,6 +36,9 @@ export default function Header() {
           <Link to="/tamil-nadu-map" className="nav-link">
             <i className="fas fa-map-marked-alt"></i> TN Map
           </Link>
+          <Link to="/madurai-tourism" className="nav-link">
+            <i className="fas fa-landmark"></i> Madurai Tourism
+          </Link>
           <Link to="/popular-destinations" className="nav-link">
             <i className="fas fa-mountain"></i> Destinations
           </Link>

@@ -16,30 +16,121 @@ export type SeoLandingPage = {
 
 export const SEO_LANDING_PAGES: SeoLandingPage[] = [
   {
-    slug: 'madurai-tours-and-travels',
-    title: 'Madurai Tours and Travels | Mathi Cabs — #1 Travel Agency',
+    slug: 'madurai-tourism',
+    title: 'Madurai Tourism & Sightseeing Packages | Places to Visit | Mathi Cabs',
     description:
-      'Mathi Cabs is a trusted Madurai tours and travels company offering local sightseeing, outstation trips, pilgrimage tours & Tamil Nadu packages. Book 24/7.',
+      'Plan Madurai tourism with Mathi Cabs — 1-day, 2-day & 3-day sightseeing packages. Meenakshi Temple, Nayakkar Mahal, Alagar Kovil & more. Book local tours from Madurai.',
     keywords:
-      'madurai tours and travels, tours and travels madurai, madurai travel agency, tamil nadu tour packages, mathi cabs',
-    h1: 'Madurai Tours and Travels — Your Trusted Travel Partner',
+      'madurai tourism, madurai sightseeing, places to visit in madurai, madurai tourist places, madurai temple tour, madurai itinerary, tours and travels madurai',
+    h1: 'Madurai Tourism & Sightseeing Packages',
+    tamilSubtitle: 'மதுரை சுற்றுலா — இடங்கள், பேக்கேஜ்கள் மற்றும் கேப் சேவை',
+    intro: [
+      'Madurai tourism is built around temples, heritage palaces, classical Tamil culture, and flavourful street food. Mathi Cabs helps visitors explore the Temple City with chauffeur-driven sightseeing packages — from a focused one-day temple circuit to multi-day Madurai itineraries that include nearby pilgrimage and nature spots.',
+      'Whether you are a first-time tourist, a family on a weekend trip, or a pilgrim combining Madurai with Rameswaram, our local drivers know temple opening hours, crowd patterns, and the most efficient route order so you spend more time at attractions and less time stuck in traffic.',
+    ],
+    sections: [
+      {
+        heading: 'Top Tourist Places in Madurai',
+        paragraphs: [
+          'Meenakshi Amman Temple — the heart of Madurai tourism. Visit early morning (around 5:00 AM–12:30 PM and evening darshan hours) for cooler weather and fewer queues. Dress code applies; photography rules vary by area. Plan 2–3 hours for a proper visit.',
+          'Thirumalai Nayakkar Mahal — 17th-century palace known for its towering pillars and evening light-and-sound show (timings vary by season; confirm on the day). Ideal mid-day or late-afternoon stop after the temple.',
+          'Gandhi Memorial Museum — housed in the historic Tamukkam Palace; closed on Mondays. Good stop for history lovers and a quieter break between temple visits.',
+          'Vandiyur Mariamman Teppakulam — large temple tank, especially lively during Theppam (float) festival season. Alagar Kovil & Pazhamudhir Solai — hill temples about 21 km from the city centre, best as an afternoon half-day extension.',
+          'Other popular stops: Koodal Azhagar Temple, Pudhu Mandapam market streets for shopping, and Madurai\'s famous jigarthanda and banana-leaf meals near the temple area.',
+        ],
+      },
+      {
+        heading: '1-Day Madurai Local Temple Tour',
+        paragraphs: [
+          'Morning: Pickup from hotel, railway station, or Madurai Airport (IXM). Start at Meenakshi Amman Temple for darshan and a walk around the temple corridors.',
+          'Midday: Thirumalai Nayakkar Mahal and lunch in the city. Afternoon: Gandhi Memorial Museum or Koodal Azhagar Temple, then shopping near Pudhu Mandapam. Optional evening: Alagar Kovil if time and traffic allow.',
+          'Package typically covers 8 hours of cab hire with a local driver. Ideal for short stays and travellers who want the classic Madurai tourism highlights in one day.',
+        ],
+      },
+      {
+        heading: '2-Day Madurai Tourism Itinerary',
+        paragraphs: [
+          'Day 1: Full Madurai city circuit — Meenakshi Temple, Nayakkar Mahal, museum, tank, and local food stops. Evening free for temple lighting and street shopping.',
+          'Day 2: Morning Alagar Kovil and Pazhamudhir Solai, or a short outstation add-on to Tirupparankundram Murugan Temple. Afternoon return to Madurai for departure, or continue to Rameswaram the same evening if your schedule is tight.',
+          'This two-day Madurai tourism plan suits families who want a relaxed pace without rushing temple queues.',
+        ],
+      },
+      {
+        heading: '3-Day Madurai & Nearby Tour Package',
+        paragraphs: [
+          'Day 1: Madurai local sightseeing as above. Day 2: Madurai to Rameswaram (about 170 km) — Ramanathaswamy Temple, Pamban Bridge views, and coastal stops. Day 3: Return via Dhanushkodi viewpoint (subject to weather and access) or an alternative hill/pilgrimage stop such as Kodaikanal for travellers who prefer cooler weather.',
+          'Mathi Cabs can customise this 3-day Madurai tourism package for pilgrimage-only, family leisure, or mixed heritage + nature travel. Vehicle options range from sedan to tempo traveller for groups.',
+        ],
+      },
+      {
+        heading: 'Book Madurai Tourism Cabs with Mathi Cabs',
+        paragraphs: [
+          'Mathi Cabs is a Madurai-based tours and travels operator offering local sightseeing cabs, outstation taxis, and multi-day tour packages across Tamil Nadu. Transparent daily and per-km tariffs, verified drivers, and 24/7 booking support.',
+          'Call or enquire online to get a quote for Madurai tourism packages, airport pickup, or custom itineraries. We also run dedicated pages for Madurai local sightseeing, Madurai to Rameswaram taxi, and other popular routes.',
+        ],
+      },
+    ],
+    highlights: [
+      '1-day, 2-day & 3-day Madurai packages',
+      'Temple timings & local route planning',
+      'Meenakshi Temple circuit experts',
+      'Airport / hotel / station pickup',
+      'Family & pilgrimage-friendly fleets',
+    ],
+    faqs: [
+      {
+        question: 'What are the best places to visit in Madurai for tourists?',
+        answer:
+          'Start with Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Memorial Museum, Vandiyur Mariamman Teppakulam, and Alagar Kovil. Mathi Cabs packages cover these Madurai tourism highlights with efficient routing.',
+      },
+      {
+        question: 'How many days are enough for Madurai tourism?',
+        answer:
+          'One full day covers the main city temples and palace. Two days are better for a relaxed pace plus Alagar Kovil. Three days work well if you add Rameswaram or another nearby destination.',
+      },
+      {
+        question: 'Do you provide Madurai sightseeing packages with a driver?',
+        answer:
+          'Yes. Our Madurai tourism packages include chauffeur-driven cars for half-day, full-day, and multi-day itineraries. You can customise stops based on temple timings and your interests.',
+      },
+      {
+        question: 'Can I combine Madurai tourism with Rameswaram or Kodaikanal?',
+        answer:
+          'Yes. Popular combinations are Madurai–Rameswaram pilgrimage and Madurai–Kodaikanal hill station trips. Ask us for a custom cab itinerary and fare quote.',
+      },
+    ],
+    relatedSlugs: [
+      'madurai-local-sightseeing',
+      'madurai-tours-and-travels',
+      'madurai-to-rameswaram-taxi',
+      'outstation-cabs-from-madurai',
+    ],
+  },
+  {
+    slug: 'madurai-tours-and-travels',
+    title: 'Best Tours and Travels in Madurai | Madurai Tourism Packages | Mathi Cabs',
+    description:
+      'Mathi Cabs — trusted tours and travels in Madurai. Local sightseeing, Madurai tourism packages, outstation cabs & Tamil Nadu tour packages. Book 24/7.',
+    keywords:
+      'madurai tours and travels, tours and travels madurai, tours and travels in madurai, madurai travel agency, madurai tourism packages, mathi cabs',
+    h1: 'Tours and Travels in Madurai — Your Trusted Travel Partner',
     tamilSubtitle: 'மதுரை சுற்றுலா மற்றும் பயண சேவை',
     intro: [
-      'Looking for the best Madurai tours and travels company? Mathi Cabs has been serving travellers across Tamil Nadu with reliable cabs, experienced drivers, and transparent pricing. Whether you need a one-day Madurai city tour, a family trip to hill stations, or a pilgrimage to Rameswaram, we handle every detail so you can travel stress-free.',
-      'Our fleet includes sedans, SUVs, MUVs, and tempo travellers suited for solo travellers, families, and group tours. Every vehicle is well-maintained, fully insured, and driven by professional chauffeurs who know Madurai roads and Tamil Nadu routes inside out.',
+      'Looking for reliable tours and travels in Madurai? Mathi Cabs serves travellers across Tamil Nadu with chauffeur-driven cabs, experienced local drivers, and transparent pricing. Whether you need a one-day Madurai city tour, a Madurai tourism package, a family trip to hill stations, or a pilgrimage to Rameswaram, we handle the transport so you can travel stress-free.',
+      'Our fleet includes sedans, SUVs, MUVs, and tempo travellers suited for solo travellers, families, and group tours. Every vehicle is well-maintained and driven by professional chauffeurs who know Madurai roads, temple timings, and Tamil Nadu routes.',
     ],
     sections: [
       {
         heading: 'Why Choose Mathi Cabs for Tours and Travels in Madurai?',
         paragraphs: [
-          'Madurai is the cultural heart of Tamil Nadu, and the gateway to iconic destinations like Rameswaram, Kodaikanal, Ooty, and Kanyakumari. A local tours and travels partner makes all the difference — you get accurate fare estimates, flexible itineraries, and drivers who understand temple timings, hill road conditions, and seasonal travel patterns.',
-          'We offer both packaged tours and fully custom itineraries. Tell us your dates, group size, and destinations — we will recommend the right vehicle and route plan. No hidden charges: toll, parking, and hill station fees are explained upfront before you confirm.',
+          'Madurai is the cultural heart of Tamil Nadu and the gateway to Rameswaram, Kodaikanal, Ooty, and Kanyakumari. A local tours and travels partner helps with accurate fare estimates, flexible itineraries, and drivers who understand temple timings, hill road conditions, and seasonal travel patterns.',
+          'We offer packaged Madurai tourism itineraries and fully custom trips. Tell us your dates, group size, and destinations — we recommend the right vehicle and route. Toll, parking, and hill-station fees are explained upfront before you confirm.',
         ],
       },
       {
         heading: 'Our Tour Services from Madurai',
         paragraphs: [
-          'Local sightseeing covering Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Museum, and Alagar Kovil. Outstation one-way and round-trip cabs to all major Tamil Nadu cities. Multi-day tour packages for families and corporate groups. Wedding and event transportation with decorated vehicles on request.',
+          'Madurai tourism and local sightseeing covering Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Museum, and Alagar Kovil. Outstation one-way and round-trip cabs to all major Tamil Nadu cities. Multi-day tour packages for families and corporate groups. Wedding and event transportation on request.',
         ],
       },
     ],
@@ -48,18 +139,18 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
       'Transparent tariff — no hidden costs',
       'Professional, verified drivers',
       'Sedan to tempo traveller fleet',
-      'Local & outstation packages',
+      'Local tourism & outstation packages',
     ],
     faqs: [
       {
-        question: 'Which is the best tours and travels company in Madurai?',
+        question: 'Which tours and travels company serves Madurai tourists well?',
         answer:
-          'Mathi Cabs is among the most trusted Madurai tours and travels providers, offering local sightseeing, outstation cabs, and Tamil Nadu tour packages with transparent pricing and 24/7 support.',
+          'Mathi Cabs is a Madurai-based tours and travels provider offering local sightseeing, Madurai tourism packages, outstation cabs, and Tamil Nadu itineraries with transparent pricing and 24/7 support.',
       },
       {
         question: 'Do you offer custom tour packages from Madurai?',
         answer:
-          'Yes. We create fully custom itineraries based on your dates, destinations, and budget. Contact us via phone or the enquiry form for a personalised quote.',
+          'Yes. We create custom itineraries based on your dates, destinations, and budget. Contact us via phone or the enquiry form for a personalised quote.',
       },
       {
         question: 'What types of vehicles are available for group tours?',
@@ -67,7 +158,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
           'We offer sedans (4 seats), SUVs/MUVs (6–7 seats), and tempo travellers (12–14 seats) for group tours from Madurai.',
       },
     ],
-    relatedSlugs: ['madurai-cabs', 'madurai-local-sightseeing', 'outstation-cabs-from-madurai'],
+    relatedSlugs: ['madurai-tourism', 'madurai-cabs', 'madurai-local-sightseeing', 'outstation-cabs-from-madurai'],
   },
   {
     slug: 'madurai-cabs',
@@ -371,19 +462,26 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     slug: 'madurai-local-sightseeing',
     title: 'Madurai Local Sightseeing | City Tour Packages | Mathi Cabs',
     description:
-      'Book Madurai local sightseeing cab tours. Meenakshi Temple, Thirumalai Nayakkar Mahal, Gandhi Museum & more. Full-day packages. Mathi Cabs.',
-    keywords: 'madurai local sightseeing, madurai city tour, madurai temple tour, madurai one day tour',
+      'Book Madurai local sightseeing cab tours. Meenakshi Temple, Thirumalai Nayakkar Mahal, Gandhi Museum & more. Full-day packages with Mathi Cabs.',
+    keywords:
+      'madurai local sightseeing, madurai city tour, madurai temple tour, madurai one day tour, madurai tourism sightseeing',
     h1: 'Madurai Local Sightseeing — City Tour Packages',
     tamilSubtitle: 'மதுரை உள்ளூர் சுற்றுலா',
     intro: [
       'Discover the Temple City with Mathi Cabs Madurai local sightseeing packages. Our full-day city tours cover iconic landmarks including Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Memorial Museum, Vandiyur Mariamman Teppakulam, and Alagar Kovil.',
-      'Packages include 8 hours of cab hire with a knowledgeable local driver who can suggest the best visit order based on temple timings and crowd levels.',
+      'Packages include 8 hours of cab hire with a knowledgeable local driver who can suggest the best visit order based on temple timings and crowd levels. For full 1–3 day Madurai tourism itineraries, see our Madurai Tourism packages page.',
     ],
     sections: [
       {
         heading: 'Popular Madurai Sightseeing Spots',
         paragraphs: [
-          'Meenakshi Amman Temple — world-famous Dravidian architecture, best visited early morning. Thirumalai Nayakkar Mahal — 17th-century palace with evening light show. Gandhi Memorial Museum — history of India\'s freedom movement. Alagar Kovil — hill temple 21 km from city centre. Pazhamudhir Solai — Murugan temple in Alagar hills.',
+          'Meenakshi Amman Temple — world-famous Dravidian architecture; best visited early morning. Thirumalai Nayakkar Mahal — 17th-century palace with evening light show. Gandhi Memorial Museum — history of India\'s freedom movement (closed Mondays). Alagar Kovil — hill temple about 21 km from the city centre. Pazhamudhir Solai — Murugan temple in the Alagar hills.',
+        ],
+      },
+      {
+        heading: 'Half-Day and Full-Day City Tour Options',
+        paragraphs: [
+          'Half-day (4 hours): Meenakshi Temple plus one palace or museum stop — ideal after an airport arrival. Full-day (8 hours): classic temple–palace–museum–tank circuit with optional Alagar Kovil. Multi-day extensions are available under our Madurai tourism packages.',
         ],
       },
     ],
@@ -406,7 +504,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
           'Absolutely. Tell us which spots you want to visit and we will plan the most efficient route. Custom half-day and full-day packages are available.',
       },
     ],
-    relatedSlugs: ['madurai-tours-and-travels', 'madurai-cabs', 'madurai-to-rameswaram-taxi'],
+    relatedSlugs: ['madurai-tourism', 'madurai-tours-and-travels', 'madurai-cabs', 'madurai-to-rameswaram-taxi'],
   },
   {
     slug: 'outstation-cabs-from-madurai',
