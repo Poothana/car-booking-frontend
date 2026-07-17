@@ -2,7 +2,11 @@ import { useLocation } from 'react-router-dom'
 import SeoHead, { buildServiceSchema } from './SeoHead'
 import { getDestinationBySlug } from '../data/popularDestinations'
 import { getSeoLandingPage } from '../data/seoLandingPages'
-import { buildLocalBusinessSchema, buildWebSiteSchema } from '../lib/siteConfig'
+import {
+  buildLocalBusinessSchema,
+  buildTaxiServiceSchema,
+  buildWebSiteSchema,
+} from '../lib/siteConfig'
 
 const STATIC_SEO: Record<string, {
   title: string
@@ -17,7 +21,7 @@ const STATIC_SEO: Record<string, {
       'Mathi Cabs — trusted tours and travels in Madurai. Book Madurai tourism packages, local sightseeing, outstation taxis, airport transfers & Tamil Nadu cab tours. 24/7 service.',
     keywords:
       'tours and travels in madurai, madurai tourism, madurai tours and travels, madurai cabs, car rental madurai, taxi service madurai, mathi cabs',
-    schema: [buildLocalBusinessSchema(), buildWebSiteSchema()],
+    schema: [buildLocalBusinessSchema(), buildTaxiServiceSchema(), buildWebSiteSchema()],
   },
   '/cars': {
     title: 'Madurai Cabs & Car Rental — View Fleet & Tariff | Mathi Cabs',

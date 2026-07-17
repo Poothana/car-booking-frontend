@@ -12,8 +12,8 @@ export const SITE_URL = env('VITE_SITE_URL', 'https://mathicabs.in')
 export const SITE_NAME = env('VITE_SITE_NAME', 'Mathi Cabs')
 export const PUBLIC_WEBSITE = env('VITE_PUBLIC_WEBSITE', 'www.mathicabs.in')
 
-export const SUPPORT_PHONE = env('VITE_SUPPORT_PHONE', '+91 63800 63873')
-export const SUPPORT_EMAIL = env('VITE_SUPPORT_EMAIL', 'poothanapuvi@gmail.com')
+export const SUPPORT_PHONE = env('VITE_SUPPORT_PHONE', '+91 8220084469')
+export const SUPPORT_EMAIL = env('VITE_SUPPORT_EMAIL', 'mathicabs08@gmail.com')
 
 /** Digits only, for wa.me links. Defaults to SUPPORT_PHONE digits. */
 export const WHATSAPP_PHONE = env(
@@ -40,6 +40,9 @@ export const BUSINESS = {
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/logo.png`
 
+export const ENTITY_TAGLINE =
+  'Mathi Cabs Tours and Travels — headquartered in Madurai, Tamil Nadu. Serving Madurai tourism, local sightseeing, and outstation travels.'
+
 export function absoluteUrl(path: string): string {
   if (path.startsWith('http')) return path
   const normalized = path.startsWith('/') ? path : `/${path}`
@@ -61,35 +64,70 @@ export function whatsappHref(message?: string): string {
   return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`
 }
 
+function postalAddress() {
+  return {
+    '@type': 'PostalAddress',
+    streetAddress: BUSINESS.streetAddress,
+    addressLocality: BUSINESS.locality,
+    addressRegion: BUSINESS.region,
+    postalCode: BUSINESS.postalCode,
+    addressCountry: BUSINESS.country,
+  }
+}
+
+function maduraiAreasServed() {
+  return [
+    { '@type': 'City', name: 'Madurai' },
+    { '@type': 'AdministrativeArea', name: 'Madurai District' },
+    { '@type': 'AdministrativeArea', name: 'Rameswaram' },
+    { '@type': 'AdministrativeArea', name: 'Kodaikanal' },
+    { '@type': 'AdministrativeArea', name: 'Ooty' },
+    { '@type': 'AdministrativeArea', name: 'Kanyakumari' },
+    { '@type': 'AdministrativeArea', name: 'Tamil Nadu' },
+  ]
+}
+
+/**
+ * Primary entity schema for Mathi Cabs (Madurai HQ).
+ * Reinforces car-rental / tours identity vs unrelated brand collisions online.
+ */
 export function buildLocalBusinessSchema(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
-    '@type': ['TravelAgency', 'LocalBusiness'],
+    '@type': ['TravelAgency', 'TaxiService', 'LocalBusiness'],
+    '@id': `${SITE_URL}/#organization`,
     name: BUSINESS.name,
-    alternateName: SITE_NAME,
+    alternateName: [SITE_NAME, 'Mathi Cabs Madurai', 'Mathi Cabs Tours and Travels Madurai'],
+    legalName: BUSINESS.name,
     description:
-      'Madurai tours and travels operator offering Madurai tourism packages, local sightseeing cabs, outstation taxis, and airport transfers across Tamil Nadu.',
+      'Mathi Cabs Tours and Travels is a Madurai-headquartered tours and travels / taxi service near Meenakshi Temple. We provide Madurai tourism packages, local sightseeing cabs, outstation taxis, and airport transfers across Tamil Nadu. This Madurai operator is distinct from unrelated businesses using a similar name in other cities.',
+    slogan: ENTITY_TAGLINE,
     image: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/logo.png`,
     url: SITE_URL,
     telephone: SUPPORT_PHONE,
     email: SUPPORT_EMAIL,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: BUSINESS.streetAddress,
-      addressLocality: BUSINESS.locality,
-      addressRegion: BUSINESS.region,
-      postalCode: BUSINESS.postalCode,
-      addressCountry: BUSINESS.country,
-    },
+    address: postalAddress(),
     geo: {
       '@type': 'GeoCoordinates',
       latitude: BUSINESS.latitude,
       longitude: BUSINESS.longitude,
     },
-    areaServed: {
-      '@type': 'City',
-      name: 'Madurai',
+    hasMap: `https://www.google.com/maps?q=${encodeURIComponent(BUSINESS.addressLine)}`,
+    areaServed: maduraiAreasServed(),
+    foundingLocation: {
+      '@type': 'Place',
+      name: 'Madurai, Tamil Nadu',
+      address: postalAddress(),
     },
+    knowsAbout: [
+      'Madurai tourism',
+      'Madurai local sightseeing',
+      'Tours and travels in Madurai',
+      'Madurai airport taxi',
+      'Outstation cabs from Madurai',
+      'Meenakshi Temple cab tours',
+    ],
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -97,15 +135,51 @@ export function buildLocalBusinessSchema(): Record<string, unknown> {
       closes: '23:59',
     },
     priceRange: '$$',
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'Cash, UPI, Bank Transfer',
     serviceType: [
       'Madurai Tourism Packages',
-      'Tours and Travels',
-      'Car Rental',
-      'Taxi Service',
+      'Tours and Travels Madurai',
+      'Taxi Service Madurai',
+      'Car Rental Madurai',
       'Outstation Cabs',
       'Airport Transfer',
       'Local Sightseeing',
     ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: SUPPORT_PHONE,
+      contactType: 'customer service',
+      areaServed: 'IN',
+      availableLanguage: ['English', 'Tamil'],
+    },
+  }
+}
+
+/** TaxiService-focused schema (homepage / entity reinforcement). */
+export function buildTaxiServiceSchema(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TaxiService',
+    '@id': `${SITE_URL}/#taxi-service`,
+    name: BUSINESS.name,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    image: `${SITE_URL}/logo.png`,
+    telephone: SUPPORT_PHONE,
+    email: SUPPORT_EMAIL,
+    description:
+      'Chauffeur-driven taxi and cab service headquartered in Madurai for city sightseeing, tourism packages, and outstation travel.',
+    address: postalAddress(),
+    areaServed: maduraiAreasServed(),
+    provider: {
+      '@type': 'LocalBusiness',
+      '@id': `${SITE_URL}/#organization`,
+      name: BUSINESS.name,
+      telephone: SUPPORT_PHONE,
+      address: postalAddress(),
+      url: SITE_URL,
+    },
   }
 }
 
@@ -113,8 +187,15 @@ export function buildWebSiteSchema(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
     name: SITE_NAME,
+    alternateName: BUSINESS.name,
     url: SITE_URL,
+    description: ENTITY_TAGLINE,
+    publisher: {
+      '@id': `${SITE_URL}/#organization`,
+    },
+    inLanguage: 'en-IN',
     potentialAction: {
       '@type': 'SearchAction',
       target: {

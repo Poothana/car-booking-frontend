@@ -1,5 +1,12 @@
 import { Helmet } from 'react-helmet-async'
-import { absoluteUrl, BUSINESS, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '../lib/siteConfig'
+import {
+  absoluteUrl,
+  buildLocalBusinessSchema,
+  BUSINESS,
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+} from '../lib/siteConfig'
 
 export type FaqItem = {
   question: string
@@ -38,6 +45,22 @@ export default function SeoHead({
   const robots = noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
 
   const structuredData: Record<string, unknown>[] = [...schema]
+
+  // Reinforce Madurai entity on every indexable page (helps vs brand/location collisions).
+  if (!noindex) {
+    const hasOrg = structuredData.some((item) => {
+      const id = item['@id']
+      const type = item['@type']
+      return (
+        id === `${SITE_URL}/#organization` ||
+        type === 'TravelAgency' ||
+        (Array.isArray(type) && type.includes('TravelAgency'))
+      )
+    })
+    if (!hasOrg) {
+      structuredData.unshift(buildLocalBusinessSchema())
+    }
+  }
 
   if (faqs && faqs.length > 0) {
     structuredData.push({
@@ -110,7 +133,8 @@ export function buildServiceSchema(name: string, description: string, path: stri
     name,
     description,
     provider: {
-      '@type': 'LocalBusiness',
+      '@type': ['TravelAgency', 'TaxiService', 'LocalBusiness'],
+      '@id': `${SITE_URL}/#organization`,
       name: BUSINESS.name,
       telephone: BUSINESS.phone,
       email: BUSINESS.email,
@@ -118,16 +142,16 @@ export function buildServiceSchema(name: string, description: string, path: stri
       address: {
         '@type': 'PostalAddress',
         streetAddress: BUSINESS.streetAddress,
-        addressLocality: BUSINESS.locality,
+        addressLocality: 'Madurai',
         addressRegion: BUSINESS.region,
         postalCode: BUSINESS.postalCode,
         addressCountry: BUSINESS.country,
       },
     },
-    areaServed: {
-      '@type': 'City',
-      name: 'Madurai',
-    },
+    areaServed: [
+      { '@type': 'City', name: 'Madurai' },
+      { '@type': 'AdministrativeArea', name: 'Tamil Nadu' },
+    ],
     url: absoluteUrl(path),
   }
 }
