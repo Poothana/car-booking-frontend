@@ -4,7 +4,7 @@ import meenakshiImage from '../assets/images/Bg/meenakshi-amman-temple-india.avi
 import trivaluvarImage from '../assets/images/Bg/trivaluvar.jpeg'
 import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
-import { phoneTelHref, whatsappHref, BUSINESS, SITE_NAME } from '../lib/siteConfig'
+import { phoneTelHref, whatsappHref, BUSINESS } from '../lib/siteConfig'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import { DEFAULT_FLEET_CARDS } from '../data/defaultFleet'
 import './Home.css'
@@ -265,10 +265,14 @@ function Home() {
   }
 
   return (
-    <div className="home-container" style={{ backgroundImage: `url(${meenakshiImage})` }}>
+    <div className="home-container">
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      <section id="main-content" className="hero-section">
+      <section
+        id="main-content"
+        className="hero-section"
+        style={{ backgroundImage: `url(${meenakshiImage})` }}
+      >
         {/* Filter Search Section - Positioned above hero content */}
         <div className="filter-section">
           <div className="filter-container">
@@ -919,12 +923,6 @@ function Home() {
               </Link>
             ))}
           </nav>
-          <address className="seo-nap">
-            <strong>{SITE_NAME} Tours and Travels</strong>
-            <span>{BUSINESS.addressLine}</span>
-            <a href={phoneTelHref()}>{BUSINESS.phone}</a>
-            <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
-          </address>
         </div>
       </section>
 

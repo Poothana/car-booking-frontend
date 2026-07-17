@@ -50,42 +50,23 @@ body, html {
 .home-container {
   width: 100%;
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: var(--madurai-cream);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-y: auto;
   position: relative;
+  overflow-x: hidden;
+}
+
+/* Temple photo stays in the hero only — do not use a fixed full-page overlay
+   (that caused the Meenakshi image to reappear under/after the footer on scroll). */
+
+.home-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Mobile booking card wrapper (desktop keeps existing layout) */
 .home-mobile-book-card {
   display: contents;
-}
-
-.home-container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: inherit;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  filter: blur(2px);
-  z-index: 0;
-  transform: scale(1.05);
-  width: 100%;
-  height: 100%;
-}
-
-.home-container > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* Top Bar - Utility Header */
@@ -667,11 +648,12 @@ body, html {
   box-shadow: 0 4px 10px rgba(185, 28, 28, 0.45);
 }
 
-/* Hero Section */
+/* Hero Section — Meenakshi temple backdrop scoped here only */
 .hero-section {
   padding: 100px 20px 40px 20px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
+  background-color: #2c1810;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -681,26 +663,20 @@ body, html {
 .hero-section::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-image: inherit;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(5px);
-  z-index: 0;
+  filter: blur(2px);
   transform: scale(1.05);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .hero-section > * {
   position: relative;
   z-index: 1;
-}
-
-.hero-section::before {
-  display: none;
 }
 
 .hero-content {
@@ -788,7 +764,14 @@ body, html {
 .seo-services-footer {
   background: #1a1208;
   color: #fff;
-  padding: 48px 20px 56px;
+  padding: 48px 20px 40px;
+  margin-bottom: 0;
+}
+
+/* Connect homepage service links into the global site footer without a gap */
+.home-container + .site-footer {
+  border-top: none;
+  padding-top: 8px;
 }
 
 .seo-services-footer h2 {
@@ -2470,17 +2453,6 @@ body, html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-}
-
-/* Mobile Background Fix */
-@media (max-width: 768px) {
-  .home-container {
-    background-attachment: scroll;
-  }
-  
-  .home-container::before {
-    background-attachment: scroll;
   }
 }
 

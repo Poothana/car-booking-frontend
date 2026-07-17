@@ -4,6 +4,8 @@
   padding: 36px 20px 28px;
   margin-top: 0;
   border-top: 3px solid #ff6b35;
+  position: relative;
+  z-index: 5;
 }
 
 .site-footer__inner {
