@@ -38,7 +38,7 @@ export const BUSINESS = {
   ),
 } as const
 
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/logo.png`
 
 export function absoluteUrl(path: string): string {
   if (path.startsWith('http')) return path

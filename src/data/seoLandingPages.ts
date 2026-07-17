@@ -48,11 +48,28 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
         ],
       },
       {
-        heading: '2-Day Madurai Tourism Itinerary',
+        heading: '2-Day Madurai Tourism Itinerary (Detailed Guide)',
         paragraphs: [
-          'Day 1: Full Madurai city circuit — Meenakshi Temple, Nayakkar Mahal, museum, tank, and local food stops. Evening free for temple lighting and street shopping.',
-          'Day 2: Morning Alagar Kovil and Pazhamudhir Solai, or a short outstation add-on to Tirupparankundram Murugan Temple. Afternoon return to Madurai for departure, or continue to Rameswaram the same evening if your schedule is tight.',
-          'This two-day Madurai tourism plan suits families who want a relaxed pace without rushing temple queues.',
+          'Day 1 — Temple City core (recommended timeline): 5:30–6:00 AM hotel/airport pickup. 6:15–9:00 AM Meenakshi Amman Temple (early entry helps avoid queues; modest dress code; keep footwear and bags organised). 9:30–11:00 AM breakfast + short rest. 11:15 AM–1:00 PM Thirumalai Nayakkar Mahal (check same-day ticket counter timings and any light-and-sound schedule). 1:00–2:30 PM Madurai banana-leaf lunch near the temple area. 3:00–4:30 PM Gandhi Memorial Museum (closed Mondays) or Koodal Azhagar Temple. 5:00–6:30 PM Vandiyur Mariamman Teppakulam / evening market stroll. Night: jigarthanda and shopping near Pudhu Mandapam.',
+          'Day 2 — Hills & heritage extension: Morning drive to Alagar Kovil (about 21 km) and Pazhamudhir Solai. Optional add-on: Tirupparankundram Murugan Temple before noon. Afternoon free for hotel checkout, railway station drop, or continue toward Rameswaram if you booked a multi-day pilgrimage package.',
+          'This two-day Madurai tourism plan is designed for families who want temple time without rushing. Mathi Cabs adjusts the order if a festival day creates heavy temple crowds.',
+        ],
+      },
+      {
+        heading: 'Timings, Entry Fees & Practical Tips',
+        paragraphs: [
+          'Meenakshi Amman Temple: Plan early morning or evening darshan windows; midday heat and queues are heavier. Photography rules differ by zone inside the complex — follow posted signs and priest/security instructions. Footwear must be left outside.',
+          'Thirumalai Nayakkar Mahal: Entry tickets are usually sold at the palace counter; rates differ for Indian and foreign visitors and can change — confirm at the gate. The evening light-and-sound show (when running) is popular; ask your Mathi Cabs driver to time the afternoon stop accordingly.',
+          'Gandhi Memorial Museum: Generally closed on Mondays. Allow 60–90 minutes. Combine with a calm mid-afternoon slot after lunch.',
+          'Alagar Kovil / Pazhamudhir Solai: Best as a half-day extension. Carry water; hill roads can be busy on weekends and festival days.',
+          'Always keep a buffer for traffic around the temple four streets. Your chauffeur will suggest the most efficient pickup/drop points for each stop.',
+        ],
+      },
+      {
+        heading: 'What to Eat on a Madurai Tourism Day',
+        paragraphs: [
+          'Classic Madurai tourism is incomplete without local food: banana-leaf meals (meals with sambar, rasam, poriyal), Kari dosai, and the city\'s signature jigarthanda. Temple-area restaurants and long-standing local eateries are easiest to reach when you travel by cab with short waiting time.',
+          'Ask your driver for hygienic, well-known stops suited to your group (veg / non-veg, mild spice for children or elders). We can build a food-focused evening into your package on request.',
         ],
       },
       {
@@ -65,24 +82,24 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
       {
         heading: 'Madurai Tourism Package Vehicles & Indicative Pricing',
         paragraphs: [
-          'Sedan (4 seats) — best for couples and small families on a 1-day Madurai city tour. Local full-day (8 hours / ~80 km) packages typically start from our standard sedan daily hire rate; confirm the live tariff on our fleet page or by phone.',
-          'SUV / MUV (6–7 seats) — ideal for families with luggage or elders. Comfortable for Madurai temple circuits and short Alagar Kovil extensions. Priced above sedan rates with the same transparent per-day + driver batta structure.',
-          'Tempo Traveller (12–14 seats) — for group Madurai tourism, temple tours, and multi-day packages with friends or corporate guests. Group rates are quoted per day based on kilometres and overnight stay needs.',
-          'All packages include a chauffeur. Toll, parking, and temple parking fees are explained before booking. Airport (IXM), Madurai Junction, and hotel pickups are available. View current fleet tariffs on our cars page or enquire for a written quote.',
+          'Sedan (Dzire / Etios class, 4 seats) — couples and small families on a 1-day Madurai city tour. Local full-day packages typically start from about ₹2,500/day (indicative; confirm live tariff). Fuel/km and driver batta as agreed before trip start.',
+          'SUV / MUV (Innova / Ertiga class, 6–7 seats) — families with luggage or elders. Indicative full-day rates from about ₹3,500–₹4,500 depending on model (Innova Crysta higher). Ideal for temple circuits plus Alagar Kovil.',
+          'Tempo Traveller (12–14 seats) — group Madurai tourism and multi-day packages. Indicative from about ₹5,500/day; quoted firmly after dates and kilometre plan.',
+          'All packages include a chauffeur. Toll, parking, and temple parking fees are explained before booking. Airport (IXM), Madurai Junction, and hotel pickups available. Call or enquire for a written quote matching your dates.',
         ],
       },
       {
         heading: 'Book Madurai Tourism Cabs with Mathi Cabs',
         paragraphs: [
-          'Mathi Cabs is a Madurai-based tours and travels operator offering local sightseeing cabs, outstation taxis, and multi-day tour packages across Tamil Nadu. Transparent daily and per-km tariffs, verified drivers, and 24/7 booking support.',
-          'Call or enquire online to get a quote for Madurai tourism packages, airport pickup, or custom itineraries. We also run dedicated pages for Madurai local sightseeing, Madurai to Rameswaram taxi, and other popular routes.',
+          'Mathi Cabs is a Madurai-based tours and travels operator offering local sightseeing cabs, outstation taxis, and multi-day tour packages across Tamil Nadu. Transparent daily and per-km tariffs, verified drivers, and 24/7 booking support near the Meenakshi Temple area.',
+          'Call or enquire online to get a quote for Madurai tourism packages, airport pickup, or custom itineraries. Continue reading our Madurai tourism packages page for ready 1/2/3-day plans, or book Madurai local sightseeing for a focused city circuit.',
         ],
       },
     ],
     highlights: [
       '1-day, 2-day & 3-day Madurai packages',
-      'Sedan, SUV & tempo traveller options',
-      'Temple timings & local route planning',
+      'Sedan, SUV, Crysta & tempo traveller',
+      'Temple timings & route planning',
       'Airport / hotel / station pickup',
       'Transparent package quotes',
     ],
@@ -91,6 +108,11 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
         question: 'What are the best places to visit in Madurai for tourists?',
         answer:
           'Start with Meenakshi Amman Temple, Thirumalai Nayakkar Mahal, Gandhi Memorial Museum, Vandiyur Mariamman Teppakulam, and Alagar Kovil. Mathi Cabs packages cover these Madurai tourism highlights with efficient routing.',
+      },
+      {
+        question: 'What time should I visit Meenakshi Amman Temple?',
+        answer:
+          'Early morning (from about 5:00–6:00 AM onwards, subject to temple schedules) is cooler and usually less crowded. Evening darshan is also popular. Your Mathi Cabs driver can align pickup with the best window for your group.',
       },
       {
         question: 'How many days are enough for Madurai tourism?',
@@ -105,7 +127,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
       {
         question: 'Which vehicle should I choose for a Madurai city tour?',
         answer:
-          'Choose a sedan for 1–3 travellers, an SUV/MUV for families of 4–6 with luggage, and a tempo traveller for groups of 8+. We confirm availability and the exact package fare before you book.',
+          'Choose a sedan for 1–3 travellers, an SUV/MUV or Innova Crysta for families of 4–6 with luggage, and a tempo traveller for groups of 8+. We confirm availability and the exact package fare before you book.',
       },
       {
         question: 'Can I combine Madurai tourism with Rameswaram or Kodaikanal?',

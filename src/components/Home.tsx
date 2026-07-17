@@ -6,6 +6,7 @@ import { POPULAR_DESTINATIONS } from '../data/popularDestinations'
 import { SEO_LANDING_PAGES } from '../data/seoLandingPages'
 import { phoneTelHref, whatsappHref, BUSINESS, SITE_NAME } from '../lib/siteConfig'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
+import { DEFAULT_FLEET_CARDS } from '../data/defaultFleet'
 import './Home.css'
 
 type HireMode = 'local' | 'outstation'
@@ -44,6 +45,7 @@ interface FleetTariffCard {
   icon: FleetIcon
   imageUrl?: string
   seats?: number
+  examples?: string
   rentPerDay: number
   fuelPerKm: number
   abovePerKm: number
@@ -105,7 +107,9 @@ function Home() {
   const [showDropSuggestions, setShowDropSuggestions] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [fleetHireMode, setFleetHireMode] = useState<HireMode>('local')
-  const [fleetCards, setFleetCards] = useState<FleetTariffCard[]>([])
+  const [fleetCards, setFleetCards] = useState<FleetTariffCard[]>(() =>
+    DEFAULT_FLEET_CARDS.map((c) => ({ ...c })),
+  )
   const [fleetLoading, setFleetLoading] = useState(false)
   const pickupRef = useRef<HTMLDivElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
@@ -233,10 +237,10 @@ function Home() {
           // keep only those having some tariff data
           .filter(c => c.rentPerDay > 0 || c.abovePerKm > 0)
 
-        setFleetCards(cards)
+        setFleetCards(cards.length > 0 ? cards : DEFAULT_FLEET_CARDS.map((c) => ({ ...c })))
       } catch (e) {
         console.error('Fleet fetch failed:', e)
-        setFleetCards([])
+        setFleetCards(DEFAULT_FLEET_CARDS.map((c) => ({ ...c })))
       } finally {
         setFleetLoading(false)
       }
@@ -554,10 +558,12 @@ function Home() {
             ) : fleetCards.length === 0 ? (
               <div className="tariff-v2-notice" role="note">
                 <div className="tariff-v2-notice__left">
-                  <i className="fas fa-info-circle" aria-hidden="true"></i>
-                  <span>No cars available right now.</span>
+                  <i className="fas fa-phone-alt" aria-hidden="true"></i>
+                  <span>Call us to book Sedan, SUV or Tempo Traveller.</span>
                 </div>
-                <span className="tariff-v2-notice__right">Please check back soon</span>
+                <span className="tariff-v2-notice__right">
+                  <a href={phoneTelHref()}>{BUSINESS.phone}</a>
+                </span>
               </div>
             ) : (
               fleetCards.map((pkg) => (
@@ -583,6 +589,9 @@ function Home() {
                     <h3 className="tariff-v2-card__name">{pkg.name}</h3>
                     {pkg.seats ? (
                       <div className="tariff-v2-card__seats">{pkg.seats} Seater</div>
+                    ) : null}
+                    {pkg.examples ? (
+                      <div className="tariff-v2-card__seats">{pkg.examples}</div>
                     ) : null}
                   </div>
                 </div>
@@ -799,61 +808,61 @@ function Home() {
           <div className="testimonial-slider">
             <div className={`testimonial-item ${currentTestimonial === 0 ? 'active' : ''}`}>
               <div className="testimonial-text">
-                "Excellent service! Booked a car for a family trip to Kodaikanal. The vehicle was clean, well-maintained, and the driver was very knowledgeable about the routes. Will definitely use again!"
+                "We booked Mathi Cabs for a Madurai temple tour and Meenakshi Amman visit. The driver knew darshan timings and parking spots — made the day easy for our parents."
               </div>
               <div className="testimonial-author">
                 <div className="author-avatar">
                   <i className="fas fa-user"></i>
                 </div>
                 <div className="author-info">
-                  <h4>Rajesh Kumar</h4>
-                  <p>Family Trip • March 2023</p>
+                  <h4>Senthil Kumar</h4>
+                  <p>Madurai local sightseeing · Family trip</p>
                 </div>
               </div>
             </div>
-            
+
             <div className={`testimonial-item ${currentTestimonial === 1 ? 'active' : ''}`}>
               <div className="testimonial-text">
-                "As a business traveler, I need reliable transportation. CarRental provided a professional chauffeur and comfortable sedan for my meetings. Punctual and courteous service."
+                "Airport pickup from Madurai IXM was on time. Clean Innova, polite driver, and clear fare for our outstation drop. Will use Mathi Cabs again for Tamil Nadu tours."
               </div>
               <div className="testimonial-author">
                 <div className="author-avatar">
                   <i className="fas fa-user-tie"></i>
                 </div>
                 <div className="author-info">
-                  <h4>Priya Sharma</h4>
-                  <p>Business Travel • February 2023</p>
+                  <h4>Lakshmi Priya</h4>
+                  <p>Madurai Airport taxi · Business travel</p>
                 </div>
               </div>
             </div>
-            
+
             <div className={`testimonial-item ${currentTestimonial === 2 ? 'active' : ''}`}>
               <div className="testimonial-text">
-                "Booked a car for a weekend getaway to Kodaikanal. The booking process was smooth, pickup was hassle-free, and the car was in perfect condition. Great value for money and perfect for travelers!"
+                "Madurai to Rameswaram pilgrimage cab was comfortable for our group. Transparent pricing with driver batta explained before we started — no surprises."
               </div>
               <div className="testimonial-author">
                 <div className="author-avatar">
                   <i className="fas fa-user-graduate"></i>
                 </div>
                 <div className="author-info">
-                  <h4>Arun Balaji</h4>
-                  <p>Weekend Trip • January 2023</p>
+                  <h4>Karthik R.</h4>
+                  <p>Madurai–Rameswaram pilgrimage</p>
                 </div>
               </div>
             </div>
-            
+
             <div className="testimonial-nav">
-              <button 
+              <button
                 className={`nav-dot ${currentTestimonial === 0 ? 'active' : ''}`}
                 onClick={() => goToTestimonial(0)}
                 aria-label="Testimonial 1"
               ></button>
-              <button 
+              <button
                 className={`nav-dot ${currentTestimonial === 1 ? 'active' : ''}`}
                 onClick={() => goToTestimonial(1)}
                 aria-label="Testimonial 2"
               ></button>
-              <button 
+              <button
                 className={`nav-dot ${currentTestimonial === 2 ? 'active' : ''}`}
                 onClick={() => goToTestimonial(2)}
                 aria-label="Testimonial 3"

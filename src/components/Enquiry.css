@@ -307,6 +307,19 @@
   display: block;
 }
 
+.enquiry-map-note {
+  margin: 10px 4px 0;
+  font-size: 13px;
+  color: #5c4a42;
+  line-height: 1.4;
+}
+
+.enquiry-map-note a {
+  color: var(--madurai-temple-red, #c41e3a);
+  font-weight: 600;
+  text-decoration: none;
+}
+
 @media (max-width: 900px) {
   .enquiry-back {
     position: static;

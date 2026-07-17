@@ -5,6 +5,7 @@ import {
   emailMailtoHref,
   phoneTelHref,
   PUBLIC_WEBSITE,
+  SITE_NAME,
   SITE_URL,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
@@ -257,12 +258,16 @@ function Enquiry() {
 
           <div className="enquiry-map">
             <iframe
-              title="Google Map"
-              src="https://www.google.com/maps?q=Madurai%2C%20Tamil%20Nadu&output=embed"
+              title={`${SITE_NAME} location — ${BUSINESS.addressLine}`}
+              src={`https://www.google.com/maps?q=${encodeURIComponent(BUSINESS.addressLine)}&output=embed`}
               loading="eager"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
+            <p className="enquiry-map-note">
+              {BUSINESS.name} · {BUSINESS.addressLine} ·{' '}
+              <a href={phoneTelHref()}>{SUPPORT_PHONE}</a>
+            </p>
           </div>
         </div>
       </div>

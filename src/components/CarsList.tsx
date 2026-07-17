@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { resolveApiUrl, resolveStorageCarsUrl } from '../lib/apiBase'
 import './CarsList.css'
 
@@ -582,8 +582,14 @@ function CarsList() {
           {/* Car Listings */}
           <div className="car-listings">
             {sortedCars.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '50px', fontSize: '18px' }}>
-                No cars available
+              <div className="cars-empty-fallback" style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <h3 style={{ marginBottom: 12 }}>Our Madurai fleet</h3>
+                <p style={{ marginBottom: 20, color: '#555' }}>
+                  Sedan · SUV / Innova · Innova Crysta · Tempo Traveller — available for local sightseeing and outstation tours.
+                </p>
+                <Link to="/enquiry" className="book-now-btn" style={{ display: 'inline-flex' }}>
+                  Enquire / Book Now
+                </Link>
               </div>
             ) : (
               sortedCars.map((car) => (

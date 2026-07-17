@@ -12,7 +12,7 @@ const STATIC_SEO: Record<string, {
   schema?: Record<string, unknown>[]
 }> = {
   '/': {
-    title: 'Best Tours and Travels in Madurai | Madurai Tourism Packages | Mathi Cabs',
+    title: 'Mathi Cabs | Best Tours and Travels in Madurai | Car Rentals',
     description:
       'Mathi Cabs — trusted tours and travels in Madurai. Book Madurai tourism packages, local sightseeing, outstation taxis, airport transfers & Tamil Nadu cab tours. 24/7 service.',
     keywords:
