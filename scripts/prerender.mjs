@@ -107,10 +107,27 @@ function cleanHead(html, route) {
 async function prerender() {
   const routes = getAllPrerenderRoutes()
   const server = await startServer()
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  })
+
+  let browser
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    })
+  } catch (launchErr) {
+    server.close()
+    const msg = launchErr instanceof Error ? launchErr.message : String(launchErr)
+    console.error('Prerender failed: could not launch Chrome for Puppeteer.')
+    console.error(msg)
+    console.error('')
+    console.error('On Ubuntu/Debian servers, install Chrome system libraries first:')
+    console.error('  cd car-booking-frontend && npm run install:prerender-deps')
+    console.error('  # or: bash scripts/install-puppeteer-deps.sh')
+    console.error('')
+    console.error('To build without prerender (not recommended for production SEO):')
+    console.error('  SKIP_PRERENDER=1 npm run build')
+    process.exit(1)
+  }
 
   console.log(`Prerendering ${routes.length} routes...`)
 
@@ -139,6 +156,11 @@ async function prerender() {
   }
 
   console.log('Prerender complete.')
+}
+
+if (process.env.SKIP_PRERENDER === '1' || process.env.SKIP_PRERENDER === 'true') {
+  console.log('SKIP_PRERENDER set — skipping prerender step.')
+  process.exit(0)
 }
 
 prerender().catch((err) => {
