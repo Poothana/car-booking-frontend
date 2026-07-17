@@ -4,7 +4,7 @@ import { getDestinationBySlug } from '../data/popularDestinations'
 import { getSeoLandingPage } from '../data/seoLandingPages'
 import {
   buildLocalBusinessSchema,
-  buildTaxiServiceSchema,
+  buildTravelAgencyEntitySchema,
   buildWebSiteSchema,
 } from '../lib/siteConfig'
 
@@ -21,7 +21,7 @@ const STATIC_SEO: Record<string, {
       'Mathi Cabs — trusted tours and travels in Madurai. Book Madurai tourism packages, local sightseeing, outstation taxis, airport transfers & Tamil Nadu cab tours. 24/7 service.',
     keywords:
       'tours and travels in madurai, madurai tourism, madurai tours and travels, madurai cabs, car rental madurai, taxi service madurai, mathi cabs',
-    schema: [buildLocalBusinessSchema(), buildTaxiServiceSchema(), buildWebSiteSchema()],
+    schema: [buildTravelAgencyEntitySchema(), buildLocalBusinessSchema(), buildWebSiteSchema()],
   },
   '/cars': {
     title: 'Madurai Cabs & Car Rental — View Fleet & Tariff | Mathi Cabs',

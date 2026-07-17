@@ -30,6 +30,21 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     ],
     sections: [
       {
+        heading: 'Why Madurai is a Top Tamil Nadu Tourism Destination',
+        paragraphs: [
+          'Madurai is one of the oldest living cities in South India and the cultural capital of Tamil Nadu. For centuries it has been a pilgrimage, trade, and learning centre — which is why Madurai tourism combines temples, palace architecture, museums, markets, and authentic Tamil food in a single compact city circuit.',
+          'Unlike hill stations or beach-only destinations, Madurai rewards travellers who want heritage, spirituality, and street-level culture. A well-planned 1–2 day Madurai itinerary covers Meenakshi Amman Temple, Nayakkar Mahal, Gandhi Museum, local food lanes, and optional half-day trips to Alagar Kovil or Tirupparankundram.',
+          'Mathi Cabs is headquartered in Madurai (Near Meenakshi Temple) and operates local sightseeing cabs, Madurai tourism packages, and outstation routes to Rameswaram, Kodaikanal, Ooty, and Kanyakumari — we are a Madurai tours and travels operator, not affiliated with unrelated listings in other cities.',
+        ],
+      },
+      {
+        heading: 'Best Time to Visit Madurai for Tourism',
+        paragraphs: [
+          'October to March is generally the most comfortable season for Madurai tourism — cooler mornings and evenings suit temple visits and walking tours. April–May can be hot; plan Meenakshi Temple darshan early morning and indoor stops (museum, palace) mid-day.',
+          'Festival seasons (Chithirai, Avani Moolam, Navarathri, etc.) bring vibrant temple processions but also larger crowds — book your cab package early and allow extra time at the temple complex. Monsoon months (June–September) are less crowded; carry light rain gear for outdoor stops.',
+        ],
+      },
+      {
         heading: 'Top Tourist Places in Madurai',
         paragraphs: [
           'Meenakshi Amman Temple — the heart of Madurai tourism. Visit early morning (around 5:00 AM–12:30 PM and evening darshan hours) for cooler weather and fewer queues. Dress code applies; photography rules vary by area. Plan 2–3 hours for a proper visit.',

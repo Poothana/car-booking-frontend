@@ -22,7 +22,8 @@ export const WHATSAPP_PHONE = env(
 )
 
 export const BUSINESS = {
-  name: env('VITE_BUSINESS_NAME', `${SITE_NAME} Tours and Travels`),
+  name: env('VITE_BUSINESS_NAME', 'Mathi Cabs Tours and Travels Madurai'),
+  legalName: env('VITE_BUSINESS_LEGAL_NAME', 'Mathi Cabs Tours and Travels Madurai'),
   phone: SUPPORT_PHONE,
   email: SUPPORT_EMAIL,
   streetAddress: env('VITE_BUSINESS_STREET', 'Near Meenakshi Temple'),
@@ -37,6 +38,9 @@ export const BUSINESS = {
     'Near Meenakshi Temple, Madurai, Tamil Nadu 625001',
   ),
 } as const
+
+/** Optional Google Business Profile URL — add to .env when verified (sameAs). */
+export const GOOGLE_BUSINESS_URL = env('VITE_GOOGLE_BUSINESS_URL', '')
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/logo.png`
 
@@ -87,6 +91,49 @@ function maduraiAreasServed() {
   ]
 }
 
+function sameAsLinks(): string[] {
+  const links = [`https://wa.me/${WHATSAPP_PHONE}`]
+  if (GOOGLE_BUSINESS_URL) links.unshift(GOOGLE_BUSINESS_URL)
+  return links
+}
+
+/**
+ * Primary TravelAgency entity schema — matches Madurai HQ footprint for Google entity disambiguation.
+ * Injected on homepage and all indexable pages.
+ */
+export function buildTravelAgencyEntitySchema(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TravelAgency',
+    '@id': `${SITE_URL}/#travel-agency`,
+    name: BUSINESS.legalName,
+    alternateName: [SITE_NAME, 'Mathi Cabs Madurai', 'Mathi Cabs Tours and Travels'],
+    url: `${SITE_URL}/`,
+    logo: `${SITE_URL}/logo.png`,
+    image: `${SITE_URL}/logo.png`,
+    telephone: SUPPORT_PHONE,
+    email: SUPPORT_EMAIL,
+    address: postalAddress(),
+    areaServed: [
+      { '@type': 'AdministrativeArea', name: 'Madurai' },
+      { '@type': 'AdministrativeArea', name: 'Rameswaram' },
+      { '@type': 'AdministrativeArea', name: 'Kodaikanal' },
+      { '@type': 'AdministrativeArea', name: 'Ooty' },
+      { '@type': 'AdministrativeArea', name: 'Kanyakumari' },
+      { '@type': 'AdministrativeArea', name: 'Tamil Nadu' },
+    ],
+    description:
+      'Official website for Mathi Cabs Tours and Travels based exclusively in Madurai. We specialize in Madurai tourism packages, local temple sightseeing, and outstation taxi rentals. We are not affiliated with any retail or alternative entities outside of Madurai.',
+    sameAs: sameAsLinks(),
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: BUSINESS.latitude,
+      longitude: BUSINESS.longitude,
+    },
+    hasMap: `https://www.google.com/maps?q=${encodeURIComponent(BUSINESS.addressLine)}`,
+  }
+}
+
 /**
  * Primary entity schema for Mathi Cabs (Madurai HQ).
  * Reinforces car-rental / tours identity vs unrelated brand collisions online.
@@ -94,13 +141,13 @@ function maduraiAreasServed() {
 export function buildLocalBusinessSchema(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
-    '@type': ['TravelAgency', 'TaxiService', 'LocalBusiness'],
+    '@type': ['TaxiService', 'LocalBusiness'],
     '@id': `${SITE_URL}/#organization`,
-    name: BUSINESS.name,
-    alternateName: [SITE_NAME, 'Mathi Cabs Madurai', 'Mathi Cabs Tours and Travels Madurai'],
-    legalName: BUSINESS.name,
+    name: BUSINESS.legalName,
+    alternateName: [SITE_NAME, 'Mathi Cabs Madurai'],
+    legalName: BUSINESS.legalName,
     description:
-      'Mathi Cabs Tours and Travels is a Madurai-headquartered tours and travels / taxi service near Meenakshi Temple. We provide Madurai tourism packages, local sightseeing cabs, outstation taxis, and airport transfers across Tamil Nadu. This Madurai operator is distinct from unrelated businesses using a similar name in other cities.',
+      'Mathi Cabs Tours and Travels Madurai — chauffeur-driven cabs for Madurai tourism, local sightseeing, outstation travel, and airport transfers. Headquartered near Meenakshi Temple; not affiliated with unrelated businesses using a similar name in other cities.',
     slogan: ENTITY_TAGLINE,
     image: `${SITE_URL}/logo.png`,
     logo: `${SITE_URL}/logo.png`,
@@ -115,19 +162,9 @@ export function buildLocalBusinessSchema(): Record<string, unknown> {
     },
     hasMap: `https://www.google.com/maps?q=${encodeURIComponent(BUSINESS.addressLine)}`,
     areaServed: maduraiAreasServed(),
-    foundingLocation: {
-      '@type': 'Place',
-      name: 'Madurai, Tamil Nadu',
-      address: postalAddress(),
+    parentOrganization: {
+      '@id': `${SITE_URL}/#travel-agency`,
     },
-    knowsAbout: [
-      'Madurai tourism',
-      'Madurai local sightseeing',
-      'Tours and travels in Madurai',
-      'Madurai airport taxi',
-      'Outstation cabs from Madurai',
-      'Meenakshi Temple cab tours',
-    ],
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

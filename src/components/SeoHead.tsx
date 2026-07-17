@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import {
   absoluteUrl,
-  buildLocalBusinessSchema,
+  buildTravelAgencyEntitySchema,
   BUSINESS,
   DEFAULT_OG_IMAGE,
   SITE_NAME,
@@ -46,19 +46,15 @@ export default function SeoHead({
 
   const structuredData: Record<string, unknown>[] = [...schema]
 
-  // Reinforce Madurai entity on every indexable page (helps vs brand/location collisions).
+  // Reinforce Madurai TravelAgency entity on every indexable page.
   if (!noindex) {
-    const hasOrg = structuredData.some((item) => {
+    const hasTravelAgency = structuredData.some((item) => {
       const id = item['@id']
       const type = item['@type']
-      return (
-        id === `${SITE_URL}/#organization` ||
-        type === 'TravelAgency' ||
-        (Array.isArray(type) && type.includes('TravelAgency'))
-      )
+      return id === `${SITE_URL}/#travel-agency` || type === 'TravelAgency'
     })
-    if (!hasOrg) {
-      structuredData.unshift(buildLocalBusinessSchema())
+    if (!hasTravelAgency) {
+      structuredData.unshift(buildTravelAgencyEntitySchema())
     }
   }
 
