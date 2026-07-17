@@ -36,22 +36,22 @@ export default function Header() {
           <Link to="/tamil-nadu-map" className="nav-link">
             <i className="fas fa-map-marked-alt"></i> TN Map
           </Link>
-          <Link to="/madurai-tourism" className="nav-link">
-            <i className="fas fa-landmark"></i> Madurai Tourism
+          <Link to="/madurai-tourism" className="nav-link" title="Madurai Tourism">
+            <i className="fas fa-landmark" aria-hidden="true"></i> Tourism
           </Link>
           <Link to="/popular-destinations" className="nav-link">
-            <i className="fas fa-mountain"></i> Destinations
+            <i className="fas fa-mountain" aria-hidden="true"></i> Destinations
           </Link>
         </nav>
 
         <div className="nav-cta">
-          <div className="phone-number">
-            <i className="fas fa-phone-alt"></i>
+          <a className="phone-number" href={`tel:${SUPPORT_PHONE.replace(/\D/g, '')}`}>
+            <i className="fas fa-phone-alt" aria-hidden="true"></i>
             <div className="phone-text">
               <span>{SUPPORT_PHONE}</span>
               <span className="phone-email">{SUPPORT_EMAIL}</span>
             </div>
-          </div>
+          </a>
 
           {showEnquiryCta && (
             <Link to="/enquiry" className="header-enquire-btn" aria-label="Go to enquiry page">

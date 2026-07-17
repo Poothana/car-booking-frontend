@@ -20,19 +20,21 @@
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .logo-section {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .logo-section--mark {
@@ -73,24 +75,26 @@
 
 .main-nav {
   display: flex;
-  gap: 24px;
+  gap: 14px;
   align-items: center;
-  flex-shrink: 1;
+  justify-content: center;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .nav-link {
   color: #333;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   transition: color 0.3s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-link i {
   margin-right: 4px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .nav-link:hover {
@@ -113,7 +117,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  margin-left: auto;
+  max-width: 100%;
 }
 
 .phone-number {
@@ -122,23 +128,36 @@
   gap: 8px;
   color: var(--madurai-temple-red);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
+  text-decoration: none;
+  min-width: 0;
+  max-width: 210px;
 }
 
 .phone-text {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.phone-text > span:first-child {
+  white-space: nowrap;
 }
 
 .phone-email {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #6b5a52;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
 .phone-number i {
   color: var(--madurai-saffron);
+  flex-shrink: 0;
 }
 
 /* Header Enquire CTA — green default, Madurai theme on hover */
@@ -160,6 +179,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .header-enquire-btn:hover {
@@ -227,38 +247,77 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
+  .header-content {
+    max-width: 100%;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
   .main-nav {
-    gap: 16px;
+    gap: 10px;
   }
 
   .nav-link {
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .nav-link i {
+    display: none;
   }
 
   .phone-email {
     display: none;
   }
+
+  .phone-number {
+    max-width: none;
+  }
+
+  .header-enquire-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  .main-nav {
+    gap: 8px;
+  }
+
+  .nav-link {
+    font-size: 12px;
+  }
+
+  .phone-number {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 980px) {
   .header-content {
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
   }
+
   .main-nav {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 14px;
+    gap: 12px;
     width: 100%;
+    order: 3;
   }
+
   .nav-cta {
-    width: 100%;
-    justify-content: space-between;
+    margin-left: 0;
+    width: auto;
+    justify-content: flex-end;
     gap: 10px;
   }
+
   .book-now-btn {
     padding: 10px 14px;
     font-size: 13px;
